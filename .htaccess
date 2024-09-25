@@ -5,3 +5,4 @@ RewriteRule ^/?$ index.php [L]
 RewriteRule ^acceder/?$ templates/accounts/login.php [L]
 
 # templates
+RewriteRule ^dashboard/?$ templates/admin/dashboard.php [L]
