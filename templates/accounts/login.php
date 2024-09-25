@@ -9,9 +9,9 @@ require __DIR__. '/../../php/global.php';
     <title>Acceder</title>
     <?php
         require_js('global.js');
-        require_css_cdn('https://cdn.jsdelivr.net/npm/sweetalert2@11.14.1/dist/sweetalert2.min.css');
-        require_lib_cdn('https://cdn.tailwindcss.com');
-        require_lib_cdn('https://cdn.jsdelivr.net/npm/sweetalert2@11.14.1/dist/sweetalert2.all.min.js');
+        require_lib_css('sweetalert2/sweetalert2.min.css');
+        require_lib_js('tailwind/tailwind.js');
+        require_lib_js('sweetalert2/sweetalert2.all.min.js');
         require_lib_js('jquery/jquery.min.js');
         require_js('login.script.js');
     ?>
@@ -35,12 +35,12 @@ require __DIR__. '/../../php/global.php';
 
         <div class="flex items-center md:p-8 p-6 bg-white md:rounded-tl-[55px] md:rounded-bl-[55px] h-full">
             <form id='login-form' class="max-w-lg w-full mx-auto">
-                <div class="mb-12 text-center">
-                    <div class="flex items-center justify-center mb-4">
-                    <img src="/<?php echo $wb_subdir?>/src/img/logoma.svg" class="h-8 imgLogo" alt="Logo">
-                        <span class="text-gray-800 text-xl font-semibold">Serviaves</span>
-                    </div>
+            <div class="mb-12 text-center">
+                <div class="flex items-center justify-center mb-4">
+                    <img src="/<?php echo $wb_subdir?>/src/img/logoma.svg" class="h-10 imgLogo mr-2" alt="Logo">
+                    <span class="text-gray-800 text-xl font-semibold">Serviaves</span>
                 </div>
+            </div>
                 <div>
                     <label class="text-gray-800 text-xs block mb-2">Nombre de usuario</label>
                     <div class="relative flex items-center">
@@ -70,7 +70,7 @@ require __DIR__. '/../../php/global.php';
                 </div>
 
                 <div id="login-alert" class="text-red-500 mb-4" hidden></div>
-                <button type="submit" class="btn-iniciar-sesion w-full py-3 px-6 text-sm font-semibold tracking-wider rounded-full text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition ease-in-out duration-300 mt-4">Iniciar Sesión</button>
+                <button type="submit" class="btn-iniciar-sesion w-full py-3 px-6 text-sm font-semibold tracking-wider rounded-full text-white focus:outline-none focus:ring-2 focus:ring-gray-600 focus:ring-offset-2 transition ease-in-out duration-300 mt-4">Iniciar sesión</button>
             </form>
         </div>
     </div>

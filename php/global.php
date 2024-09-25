@@ -251,6 +251,8 @@
         }
     }
 
+    //$favicon = '<link rel="icon" type="image/x-icon" href="'.$wb_subdir'/images/favicon.ico">';
+
     $colores_paleta = array(
         "amarillo" => "#FFFF00",
         "azul" => "#0000FF",
@@ -268,4 +270,76 @@
         "rojo" => "#FF0000",
         "verde" => "#008000"
     );
+
+    //ENCRYPT AND UNENCRYPT DATA FROM USERS
+    
+    function encript($cText, $lEncrip)    {
+        $cNew = "";
+        $nIni = 99;
+        $nLen = mb_strlen($cText, 'utf-8');
+        if (empty($cText)) {
+            return $cText;
+        }
+        $cText = trim($cText);
+        // Desencriptar
+        for ($i = mb_strlen($cText, 'utf-8') - 1; $i >= 0; $i--) {
+            $c = mb_substr($cText, $i, 1, 'utf-8');
+    
+            $n = 0;
+            
+            if ($lEncrip){
+
+                $c = mb_ord($c, 'utf-8') + $nIni;
+
+            } else {
+                switch ($c) {
+                    case '“':
+                        $c = 48;
+                        break;
+                    case '”':
+                        $c = 49;
+                        break;
+                    case '•':
+                        $c = 50;
+                        break;
+                    case '–':
+                        $c = 51;
+                        break;
+                    case '—':
+                        $c = 52;
+                        break;
+                    case '˜':
+                        $c = 53;
+                        break;
+                    case '™':
+                        $c = 54;
+                        break;
+                    case 'š':
+                        $c = 55;
+                        break;
+                    case '›':
+                        $c = 56;
+                        break;
+                    case 'œ':
+                        $c = 57;
+                        break;
+                    case 'Ž':
+                        $c = 43;
+                        break;
+                    default:
+                        $c = mb_ord($c, 'utf-8') - $nIni;
+                        break;
+                }
+            }
+            
+            $cNew .= '&#' . $c . ';';
+            $cNew = html_entity_decode($cNew);
+            // Utilizamos la secuencia de escape para representar el caracter
+        }
+        // if (!$lEncrip) {
+        //     //$cNew = str_pad($cNew, $nLen, " ", 'utf-8');
+        // }
+        
+        return $cNew;
+    }
 ?>

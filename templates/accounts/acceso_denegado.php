@@ -1,5 +1,5 @@
 <?php
-    require_lib_cdn('https://cdn.tailwindcss.com');
+    require_lib_js('tailwind/tailwind.js');
     global $wb_subdir;
 ?>
 <div class="min-h-screen flex justify-center items-center bg-gray-200">
