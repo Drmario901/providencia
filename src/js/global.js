@@ -1,6 +1,12 @@
 domain = location.href.match(/^(https?:\/\/[^\/]+\/)/)[0]
 let wb_subdir = `${domain}providencia`;
 
+       window.addEventListener('load', () => {
+      document.getElementById('loading-spinner').style.display = 'none';
+      document.getElementById('content').style.display = 'block';
+    });
+
+//btn-logout
 jQuery(document).ready(function($) {
     $('#logout-btn').on('click', function() {
         let userId = $(this).data('id'); 
