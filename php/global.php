@@ -343,23 +343,4 @@
         return $cNew;
     }
 
-    function encriptar($cText, $lEncrip){
-        $cNew = "";
-        $nIni = 99;
-        $nLen = strlen($cText);
-        if (empty($cText)) {
-            return $cText;
-        }
-        $cText = trim($cText);
-        // Desencriptar
-        for ($i = strlen($cText); $i >= 1; $i--) {
-            $c = substr($cText, $i - 1, 1);
-            $c = ord($c) + ($lEncrip ? $nIni : (-1 * $nIni));
-            $cNew .= chr($c);
-        }
-        $cNew = mb_convert_encoding($cNew, 'UTF-8', 'ISO-8859-1');
-        
-        return html_entity_decode($cNew);
-    }
-
 ?>

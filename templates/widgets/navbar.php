@@ -5,15 +5,14 @@
 
     include __DIR__.'/../../php/conexion.php';
     $id_usuario = $_SESSION['CUENTA_ID'];
-    $row = $conexion->query("SELECT u.nombre, ru.nombre as nombre_perfil, u.imagen
-    FROM usuarios u LEFT JOIN roles_usuario ru ON u.acceso = ru.id_rol
-    WHERE id_usuario = '$id_usuario'")->fetch_assoc();
+    $row = $conexion->query("SELECT * FROM dpusuarios
+    WHERE OPE_NUMERO = '$id_usuario'")->fetch_assoc();
 
-    $profile_img = $row['imagen'];
-    $profile_img_path = __DIR__.'/../../uploads/profile-img/'.$profile_img;
+    // $profile_img = $row['imagen'];
+    // $profile_img_path = __DIR__.'/../../uploads/profile-img/'.$profile_img;
     
-    $nombre = $row['nombre'];
-    $nombre_perfil = ucfirst($row['nombre_perfil']);
+    $nombre = $row['OPE_NOMSIS'];
+    $nombre_perfil = ucfirst($row['OPE_CARSIS']);
 
         $profile_img = "/$wb_subdir/src/img/Default-user.jpg";
 

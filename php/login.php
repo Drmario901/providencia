@@ -1,7 +1,4 @@
 <?php
-    // ini_set('display_errors', 1);
-    // ini_set('display_startup_errors', 1);
-    // error_reporting(E_ALL);
     require __DIR__.'/global.php';
     require __DIR__.'/conexion.php';
 
@@ -11,38 +8,39 @@
     $resp['err_msg'] = '';
 
     if ($data) {
-        $usuario = encript($data['usuario'], true);
-        $pass = encript($data['contrasena'], true);
-        $query = "SELECT OPE_NOMBRE, OPE_CLAVE FROM dpusuarios WHERE OPE_NOMBRE = '$usuario'";
+        $usuario = $data['usuario']; 
+        $pass = $data['contrasena']; 
+
+        $found = false;
+
+        $query = "SELECT OPE_NUMERO, OPE_NOMBRE, OPE_CLAVE FROM dpusuarios";
         $result = $conexion->query($query);
-        
-        if($result->num_rows > 0){
-            $row = $result->fetch_assoc();
 
-            if ($row['OPE_CLAVE'] == $pass){ 
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $nombre = encript($row['OPE_NOMBRE'], false);
+                $passUncrypted = encript($row['OPE_CLAVE'], false);
 
-                $id_usuario = $row['OPE_NUMERO'];
-                
-                $_SESSION['CUENTA_ID'] = $id_usuario;
-                // $_SESSION['acceso'] = $row['acceso'];
-                
-                // // registra en la base de datos
-
-                // registrar_accion('inicia sesion');
-                // $conexion->query("UPDATE usuarios SET ultimo_acceso = CURRENT_TIMESTAMP() WHERE id_usuario = '$id_usuario'");
-
+                if ($usuario == $nombre && $pass == $passUncrypted) {
+                    $found = true;
+                    $id_usuario = $row['OPE_NUMERO'];
+                    break;
+                }
             }
-            else {
-                $resp['err_msg'] = 'Contraseña incorrecta, '.$pass.'';
-            }
+        } else {
+            $resp['err_msg'] = $conexion->error;
         }
-        else {
-            $resp['err_msg'] = 'El usuario no existe, '. $usuario.'';
+
+        if ($found) {
+            $_SESSION['CUENTA_ID'] = $id_usuario;
+            $_SESSION['acceso'] = $nivel_acceso_admin;
+            //$resp['success'] = 'OK';
+        } else {
+            $resp['err_msg'] = 'Usuario o contraseña incorrectos.';
         }
+    } else {
+        $resp['err_msg'] = 'Error, reportar problema.';
     }
-    else {
-        $resp['err_msg'] = 'No se ha enviado ningún dato';
-    }
-    
+
     echo json_encode($resp);
 ?>
