@@ -1,7 +1,7 @@
 function mostrarPass() {
     const passwordInput = $('#contrasena');
     const passwordToggle = $('#password-toggle');
-    
+
     const type = passwordInput.attr('type') === 'password' ? 'text' : 'password';
     passwordInput.attr('type', type);
     passwordToggle.find('svg').toggleClass('hidden');
@@ -14,20 +14,20 @@ jQuery(document).ready(function($) {
     $('#login-form').on('submit', function(e) {
         e.preventDefault();
 
-        const usuario = $('#usuario').val();
-        const contrasena = $('#contrasena').val();
+        const usuario = $.trim($('#usuario').val());
+        const contrasena = $.trim($('#contrasena').val());
 
         if (usuario && contrasena) {
             Swal.fire({
                 title: 'Accediendo',
                 allowEscapeKey: false,
                 allowOutsideClick: false,
-                showConfirmButton: false, 
+                showConfirmButton: false,
                 onBeforeOpen: () => {
-                    Swal.showLoading(); 
+                    Swal.showLoading();
                 }
             });
-        
+
             $.ajax({
                 url: wb_subdir + '/php/login.php',
                 method: 'POST',
@@ -35,6 +35,8 @@ jQuery(document).ready(function($) {
             })
             .done(function(response) {
                 response = JSON.parse(response);
+                console.log(contrasena);
+                console.log(response);
 
                 if (response.err_msg) {
                     Swal.fire({

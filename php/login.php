@@ -1,7 +1,7 @@
 <?php
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL);
+    // ini_set('display_errors', 1);
+    // ini_set('display_startup_errors', 1);
+    // error_reporting(E_ALL);
 
     require __DIR__.'/global.php';
     require __DIR__.'/conexion.php';
@@ -14,14 +14,14 @@
     if ($data) {
         $usuario = encript($data['usuario'], true);
         //$contrasenaHash = hash('sha256', $data['contrasena']); 
-        $pass = encript($data['contrasena'], true);
+        $pass = encript('12345', true);
         $query = "SELECT OPE_NOMBRE, OPE_CLAVE FROM dpusuarios WHERE OPE_NOMBRE = '$usuario'";
         $result = $conexion->query($query);
         
         if($result->num_rows > 0){
             $row = $result->fetch_assoc();
 
-            if ($row['OPE_CLAVE'] == $contrasenaHash){ 
+            if ($row['OPE_CLAVE'] == $passEncriptada){ 
 
                 $id_usuario = $row['OPE_NUMERO'];
                 
@@ -35,11 +35,11 @@
 
             }
             else {
-                $resp['err_msg'] = 'Contraseña incorrecta';
+                $resp['err_msg'] = 'Contraseña incorrecta, '. $pass.' ';
             }
         }
         else {
-            $resp['err_msg'] = 'El usuario no existe';
+            $resp['err_msg'] = 'El usuario no existe, '. $usuario.' ';
         }
     }
     else {

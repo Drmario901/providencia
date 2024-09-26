@@ -273,7 +273,7 @@
 
     //ENCRYPT AND UNENCRYPT DATA FROM USERS
     
-    function encript($cText, $lEncrip)    {
+    function encript($cText, $lEncrip) {
         $cNew = "";
         $nIni = 99;
         $nLen = mb_strlen($cText, 'utf-8');
@@ -288,9 +288,9 @@
             $n = 0;
             
             if ($lEncrip){
-
+    
                 $c = mb_ord($c, 'utf-8') + $nIni;
-
+    
             } else {
                 switch ($c) {
                     case '“':
@@ -336,10 +336,11 @@
             $cNew = html_entity_decode($cNew);
             // Utilizamos la secuencia de escape para representar el caracter
         }
-        // if (!$lEncrip) {
-        //     //$cNew = str_pad($cNew, $nLen, " ", 'utf-8');
-        // }
+        if (!$lEncrip) {
+            //$cNew = str_pad($cNew, $nLen, " ", 'utf-8');
+        }
         
         return $cNew;
     }
+
 ?>
