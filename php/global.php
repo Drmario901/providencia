@@ -57,7 +57,7 @@
      */
     function require_lib_css(string $dir){
         global $wb_subdir;
-        echo "<link rel='stylesheet' href='/$wb_subdir/src/_lib/$dir'>";
+        echo "<link rel='stylesheet' href='/$wb_subdir/src/css/_lib/$dir'>";
     }
 
     class ExcepcionDeSesion extends Exception {}
