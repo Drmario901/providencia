@@ -19,6 +19,14 @@
     /* Niveles de acceso */
     $nivel_acceso_admin = '60';
     
+
+    //DISABLE TAILWIND DARKMODE
+
+    $disable = '<script>
+    tailwind.config = {
+      darkMode: "false", 
+    };
+  </script>';
     /**
      * Importa un script partiendo de la carpeta '/src/js/'
      * @param $dir La dirección del archivo js. Por ejemplo, si vale 'script.js', apunta hacia '/src/js/script.js'
@@ -47,6 +55,7 @@
         global $wb_subdir;
         echo "<script type='text/javascript' src='/$wb_subdir/src/js/_lib/$dir'></script>";
     }
+
     //SCRIPT POR CDN
     function require_lib_cdn(string $cdn_url){
         echo "<script type='text/javascript' src='$cdn_url'></script>";

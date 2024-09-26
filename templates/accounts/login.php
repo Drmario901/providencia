@@ -1,5 +1,5 @@
 <?php
-require __DIR__. '/../../php/global.php';
+    require __DIR__. '/../../php/global.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,20 +25,20 @@ require __DIR__. '/../../php/global.php';
             background-color: #0d5bbf; 
         }
     </style>
+    
 </head>
 <body>
-<div class="font-[sans-serif] bg-gray-900 md:h-screen">
+<div class="font-[sans-serif] bg-blue-900 md:h-screen">
     <div class="grid md:grid-cols-2 items-center gap-8 h-full">
         <div class="max-md:order-1 p-4">
-            <img src="https://readymadeui.com/signin-image.webp" class="lg:max-w-[80%] w-full h-full object-contain block mx-auto" alt="login-image" />
+            <img src="/<?php echo $wb_subdir?>/src/img/logoma.svg" class="lg:max-w-[80%] w-full h-full object-contain block mx-auto" alt="login-image" />
         </div>
 
         <div class="flex items-center md:p-8 p-6 bg-white md:rounded-tl-[55px] md:rounded-bl-[55px] h-full">
             <form id='login-form' class="max-w-lg w-full mx-auto">
             <div class="mb-12 text-center">
                 <div class="flex items-center justify-center mb-4">
-                    <img src="/<?php echo $wb_subdir?>/src/img/logoma.svg" class="h-10 imgLogo mr-2" alt="Logo">
-                    <span class="text-gray-800 text-xl font-semibold">Serviaves</span>
+                <img src="/<?php echo $wb_subdir ?>/src/img/serviaves-text.png" alt="Serviaves" class="w-1/2" />
                 </div>
             </div>
                 <div>

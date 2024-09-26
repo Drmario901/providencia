@@ -41,6 +41,7 @@ jQuery(document).ready(function($) {
                 if (response.err_msg) {
                     Swal.fire({
                         icon: 'error',
+                        confirmButtonColor: '#053684',
                         title: 'Error',
                         text: response.err_msg,
                     });

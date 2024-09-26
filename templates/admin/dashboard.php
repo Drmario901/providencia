@@ -9,15 +9,13 @@
     <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard - Serviaves</title>
-<script>    
-    if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark')
-    }
-</script>
 <?php
     require_lib_js('tailwind/tailwind.js');
+    require_lib_js('sweetalert2/sweetalert2.all.min.js');
+    require_lib_css('sweetalert2/sweetalert2.min.css');
+    require_lib_js('jquery/jquery.min.js');
+    require_js('global.js');
+    echo $disable; 
 ?> 
   </head>
 
