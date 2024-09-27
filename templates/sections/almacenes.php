@@ -22,8 +22,8 @@
 
   </head>
   <?php
-  //SPINNER
-  require __DIR__. '/../stuff/spinner.php'; 
+    //SPINNER
+    require __DIR__. '/../stuff/spinner.php'; 
   ?>
 
 <!-- NAVBAR -->
