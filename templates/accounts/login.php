@@ -14,6 +14,7 @@
         require_lib_css('sweetalert2/sweetalert2.min.css');
         require_lib_js('jquery/jquery.min.js');
         require_js('login.script.js');
+        echo $favicon; 
     ?>
     <style>
         .btn-iniciar-sesion {

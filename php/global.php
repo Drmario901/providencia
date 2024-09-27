@@ -260,7 +260,7 @@
         }
     }
 
-    //$favicon = '<link rel="icon" type="image/x-icon" href="'.$wb_subdir'/images/favicon.ico">';
+    $favicon = '<link rel="icon" type="image/x-icon" href="/'.$wb_subdir.'/src/img/logoma.ico">';
 
     $colores_paleta = array(
         "amarillo" => "#FFFF00",
