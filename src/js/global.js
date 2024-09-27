@@ -1,7 +1,50 @@
 domain = location.href.match(/^(https?:\/\/[^\/]+\/)/)[0]
 let wb_subdir = `${domain}providencia`;
 
-       window.addEventListener('load', () => {
+//ASIDE  SUBMENU BEHAVIOR 
+document.addEventListener('DOMContentLoaded', function () {
+    const currentUrl = window.location.pathname;
+    const menuToggles = document.querySelectorAll('.menu-toggle');
+
+    menuToggles.forEach(function (toggle) {
+        const target = toggle.getAttribute('data-target');
+        const submenu = document.getElementById(target);
+        
+        if (submenu) {
+            const links = submenu.querySelectorAll('.menu-link');
+
+            links.forEach(function (link) {
+                if (link.getAttribute('href') === currentUrl) {
+                    submenu.classList.remove('hidden');
+                    submenu.classList.add('block');
+
+                    link.classList.add('bg-gray-100', 'dark:bg-gray-700');
+                    toggle.classList.add('text-gray-900', 'dark:text-white');
+                }
+            });
+
+            toggle.addEventListener('click', function () {
+                if (submenu.classList.contains('hidden')) {
+                    submenu.classList.remove('hidden');
+                    submenu.classList.add('block');
+                } else {
+                    submenu.classList.add('hidden');
+                    submenu.classList.remove('block');
+                }
+            });
+        }
+    });
+
+    const allLinks = document.querySelectorAll('.menu-link');
+    allLinks.forEach(function (link) {
+        if (link.getAttribute('href') === currentUrl) {
+            link.classList.add('bg-gray-100', 'dark:bg-gray-700');
+        }
+    });
+});
+
+//SPINNER
+      window.addEventListener('load', () => {
       document.getElementById('loading-spinner').style.display = 'none';
       document.getElementById('content').style.display = 'block';
     });

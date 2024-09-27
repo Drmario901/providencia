@@ -4,5 +4,12 @@ RewriteBase /providencia/
 RewriteRule ^/?$ index.php [L]
 RewriteRule ^acceder/?$ templates/accounts/login.php [L]
 
-# templates
+# templates 
 RewriteRule ^dashboard/?$ templates/admin/dashboard.php [L]
+
+#inventario 
+RewriteRule ^inventario/almacenes?$ templates/sections/almacenes.php [L]
+RewriteRule ^inventario/productos?$ templates/sections/almacenes.php [L]
+#vehiculos
+RewriteRule ^vehiculos/entrada?$ templates/sections/vehiculosEntrada.php [L] ##entrada##
+RewriteRule ^vehiculos/salida?$ templates/sections/vehiculosSalida.php [L] ##salida##
