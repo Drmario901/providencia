@@ -9,7 +9,7 @@
     WHERE OPE_NUMERO = '$id_usuario'")->fetch_assoc();
 
     $nombre = $row['OPE_NOMSIS'];
-    $nombre_perfil = ucfirst($row['OPE_CARSIS']);
+    $nombre_perfil = $row['OPE_USUSIS'];
 
     $profile_img = "/$wb_subdir/src/img/Default-user.jpg";
 

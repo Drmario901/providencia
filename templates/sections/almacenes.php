@@ -8,43 +8,35 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Serviaves - Almacenes</title>
-<?php
-    require_lib_js('tailwind/tailwind.js');
-    require_lib_js('sweetalert2/sweetalert2.all.min.js');
-    require_lib_css('sweetalert2/sweetalert2.min.css');
-    require_lib_js('jquery/jquery.min.js');
-    require_js('global.js');
-    echo $favicon;
-    echo $disable; 
-?> 
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Serviaves - Almacenes</title>
+    <?php
+        require_lib_js('tailwind/tailwind.js');
+        require_lib_js('sweetalert2/sweetalert2.all.min.js');
+        require_lib_css('sweetalert2/sweetalert2.min.css');
+        require_lib_js('jquery/jquery.min.js');
+        require_js('global.js');
+        echo $favicon;
+        echo $disable; 
+    ?> 
+    <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@latest"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
   </head>
-  <?php
-    //SPINNER
-    require __DIR__. '/../stuff/spinner.php'; 
-  ?>
-
-<!-- NAVBAR -->
-  <body class="bg-gray-50 dark:bg-gray-800">
-    <?php require __DIR__. '/../widgets/navbar.php'; ?>
-<div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
-<!-- ASIDE -->
-  <?php require __DIR__. '/../widgets/aside.php'; ?>
-
-<div class="fixed inset-0 z-10 hidden bg-gray-900/50 dark:bg-gray-900/90" id="sidebarBackdrop"></div>
   
-  <div id="main-content" class="relative w-full h-full overflow-y-auto bg-gray-50 lg:ml-64 dark:bg-gray-900">
-    <main>
-    <div class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900">
-    <div class="mb-4 col-span-full xl:mb-2">
-        <nav class="flex mb-5" aria-label="Breadcrumb">
+  <body class="bg-gray-100">
+    <?php require __DIR__. '/../widgets/navbar.php'; ?>
+    <div class="flex pt-16 overflow-hidden">
+        <?php require __DIR__. '/../widgets/aside.php'; ?>
+        
+        <div id="main-content" class="relative w-full h-full p-6 bg-white shadow-md rounded-lg dark:bg-gray-900 lg:ml-64">
+            <main>
+                <nav class="flex mb-5" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
               <li class="inline-flex items-center">
                 <a href="#" class="inline-flex items-center text-gray-700 hover:text-primary-600 dark:text-gray-300 dark:hover:text-primary-500">
                   <svg class="w-5 h-5 mr-2.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-                    Inventario
+                  Inventario
                 </a>
               </li>
               <li>
@@ -55,85 +47,144 @@
               </li>
             </ol>
         </nav>
-    </div>
-
-<div class="grid grid-cols-1 px-4 pt-6 xl:grid-cols-3 xl:gap-4 dark:bg-gray-900">
-            <div class="mb-4 col-span-full xl:mb-2">
-                <nav class="flex mb-5" aria-label="Breadcrumb">
-                </nav>
-            </div>
-            
-            <div class="col-span-full">
-                <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Inventario</h2>
-                <div class="mt-4">
-                    <table class="min-w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg">
-                        <thead>
-                            <tr class="bg-gray-100 dark:bg-gray-700 text-gray-600 uppercase text-xs leading-normal">
-                                <th class="py-3 px-6 text-left">Producto</th>
-                                <th class="py-3 px-6 text-left">Cantidad</th>
-                                <th class="py-3 px-6 text-left">Acciones</th>
+                <div class="bg-white shadow-lg rounded-lg p-4 dark:bg-gray-800">
+                    <table id="default-table" class="min-w-full bg-white dark:bg-gray-800">
+                        <thead class="bg-gray-50 dark:bg-gray-700">
+                            <tr>
+                                <!-- <th class="px-4 py-2">TABLE HEADINGS</th> -->
                             </tr>
                         </thead>
-                        <tbody id="inventoryTable">
-                            <tr class="text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                <td class="py-3 px-6">Producto 1</td>
-                                <td class="py-3 px-6">10</td>
-                                <td class="py-3 px-6">
-                                    <button class="text-blue-500" data-modal-toggle="modal-edit">Editar</button>
-                                </td>
-                            </tr>
+                        <tbody>
+                            <!-- CONTENT -->
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
 
-        <!-- MODAL -->
-        <div id="modal-edit" class="fixed inset-0 z-50 hidden bg-gray-900/50 dark:bg-gray-900/90">
-            <div class="flex items-center justify-center h-full">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-                    <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Editar Producto</h3>
-                    <div class="mt-4">
-                        <label for="product-name" class="block text-sm">Nombre del Producto:</label>
-                        <input type="text" id="product-name" class="border border-gray-300 rounded-md p-2 w-full" placeholder="Nombre del Producto">
-                        <label for="product-quantity" class="block text-sm mt-4">Cantidad:</label>
-                        <input type="number" id="product-quantity" class="border border-gray-300 rounded-md p-2 w-full" placeholder="Cantidad">
+                <footer class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+                    &copy; <?php echo date('Y'); ?> <a href="/<?php echo $wb_subdir?>/" class="hover:underline" target="_blank">Serviaves C.A</a>. Todos los derechos reservados.
+                </footer>
+            </main>   
+        </div>
+    </div>
+
+    <!-- Main modal -->
+<div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                    Create New Product
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-toggle="crud-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form class="p-4 md:p-5">
+                <div class="grid gap-4 mb-4 grid-cols-2">
+                    <div class="col-span-2">
+                        <label for="name" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Name</label>
+                        <input type="text" name="name" id="name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Type product name" required="">
                     </div>
-                    <div class="mt-6 flex justify-end">
-                        <button class="bg-blue-500 text-white rounded-md px-4 py-2" id="save-btn">Guardar</button>
-                        <button class="ml-2 text-gray-500" data-modal-toggle="modal-edit">Cancelar</button>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="price" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Price</label>
+                        <input type="number" name="price" id="price" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="$2999" required="">
+                    </div>
+                    <div class="col-span-2 sm:col-span-1">
+                        <label for="category" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Category</label>
+                        <select id="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500">
+                            <option selected="">Select category</option>
+                            <option value="TV">TV/Monitors</option>
+                            <option value="PC">PC</option>
+                            <option value="GA">Gaming/Console</option>
+                            <option value="PH">Phones</option>
+                        </select>
+                    </div>
+                    <div class="col-span-2">
+                        <label for="description" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Product Description</label>
+                        <textarea id="description" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Write product description here"></textarea>                    
                     </div>
                 </div>
-            </div>
+                <button type="submit" class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <svg class="me-1 -ms-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path></svg>
+                    Add new product
+                </button>
+            </form>
         </div>
-        
-        <p class="my-10 text-sm text-center text-gray-500">
-            &copy; <?php echo date('Y'); ?> <a href="/<?php echo $wb_subdir?>/" class="hover:underline" target="_blank">Serviaves C.A</a>. Todos los derechos reservados.
-        </p>
-    </main>   
-  </div>
-</div>
+    </div>
+</div> 
 
-<script>
-    jQuery(document).ready(function($) {
-        $('#search').on('input', function() {
-            const query = $(this).val().toLowerCase();
-            $('#inventoryTable tr').filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(query) > -1);
+
+    <?php
+        require_js('flowbite-stuff/buttons.js');
+        require_js('flowbite-stuff/app.bundle.js');
+        require_js('flowbite-stuff/datepicker.min.js'); 
+    ?>
+
+    <script>
+        jQuery(document).ready(function($) {
+            let dataTable;
+
+            function initializeDataTable(data) {
+                if (dataTable) {
+                    dataTable.destroy();
+                }
+
+                dataTable = new simpleDatatables.DataTable("#default-table", {
+                    data: {
+                        headings: ["Almacén", "Tipo", "Descripción", "Código", "Und. Medida", "Cantidad", "Acciones"],
+                        data: data
+                    }
+                });
+
+                $("#default-table").on('click', '.action-button', function() {
+                    const rowData = $(this).data('row');
+
+                    Swal.fire({
+                        title: `Acciones para ${rowData.descripcion}`,
+                        text: `Código: ${rowData.codigo}\nCantidad: ${rowData.cantidad}`,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Aceptar',
+                        cancelButtonText: 'Cancelar'
+                    });
+                });
+            }
+
+            $.ajax({
+                url: wb_subdir + '/php/inventario/inventario.php',
+                type: "POST",
+                dataType: "JSON",
+                success: function(data) {
+                    const formattedData = data.map(item => [
+                        item.almacen || '',           
+                        item.tipomateria || '',
+                        item.descripcion || '',           
+                        item.codigo || '',    
+                        item.unidadmedida || '',
+                        item.cantidad || '',               
+                        `<button data-modal-target="crud-modal" data-modal-toggle="crud-modal" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" type="button" data-row='${JSON.stringify({
+                            almacen: item.almacen,
+                            tipo: item.tipomateria,
+                            descripcion: item.descripcion,
+                            codigo: item.codigo,
+                            unidadmedida: item.unidadmedida,
+                            cantidad: item.cantidad
+                        })}'>Ver Acciones</button>`
+                    ]);
+
+                    initializeDataTable(formattedData);
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error al obtener los datos: " + error);
+                }
             });
         });
-        
-        $('[data-modal-toggle]').on('click', function() {
-            const modal = $($(this).data('modal-toggle'));
-            modal.toggleClass('hidden');
-        });
-    });
-</script>
-
-<?php
-  require_js('flowbite-stuff/buttons.js');
-  require_js('flowbite-stuff/app.bundle.js');
-  require_js('flowbite-stuff/datepicker.min.js'); 
-?>
+    </script>
   </body>
 </html>
