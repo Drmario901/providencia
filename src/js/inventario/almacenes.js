@@ -192,7 +192,7 @@ jQuery(document).ready(function($) {
                         </div>
                     </div>
                     <div class="text-center mb-4">
-                        <button id="view-lot-history" class="bg-blue-500 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Ver Detalle del Lote</button>
+                        <button id="view-lot-history" class="bg-blue-900 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Ver Detalle del Lote</button>
                     </div>
                     <div id="modal-lotes-table" class="min-w-full"></div>
                 </div>
