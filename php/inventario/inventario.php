@@ -261,7 +261,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     echo json_encode($response);
 } else {
     http_response_code(405);
-    echo json_encode(["error" => "Método no permitido"]);
+    echo json_encode(["error" => "NO DATA"]);
 }
 
 mysqli_close($conexion);
