@@ -1,6 +1,8 @@
 jQuery(document).ready(function($) {
     let dataTable;
     let modalTable;
+    let previousModalStack = [];
+    let isModalOpen = false; 
 
     function initializeDataTable(data) {
         if (dataTable) {
@@ -18,10 +20,13 @@ jQuery(document).ready(function($) {
 
         bindRowClickEvent();
         dataTable.on('datatable.page', bindRowClickEvent);
+        dataTable.on('datatable.perpage', bindRowClickEvent);
     }
 
     function bindRowClickEvent() {
         $("#default-table tbody").off("click", "tr").on("click", "tr", function() {
+            if (isModalOpen) return; 
+
             const cells = $(this).find('td').map(function() {
                 return $(this).text().trim();
             }).get();
@@ -88,6 +93,7 @@ jQuery(document).ready(function($) {
                         lote.cantidad,
                         lote.unidadmedida
                     ]);
+                    previousModalStack.push({ modalType: 'details', data: { almacen, tipo, codigo, descripcion, unidadMedida, cantidad, lotesData } });
                     showDetailsModal({ almacen, tipo, codigo, descripcion, unidadMedida, cantidad, lotesData });
                 } else {
                     Swal.fire('Sin datos', 'No se encontraron lotes.', 'info');
@@ -120,6 +126,7 @@ jQuery(document).ready(function($) {
                         mov.entradas,
                         mov.salidas
                     ]);
+                    previousModalStack.push({ modalType: 'lotHistory', data: { codigo, lotHistoryData, totalEntradas: response.totalEntradas, totalSalidas: response.totalSalidas } });
                     showLotHistoryModal(codigo, lotHistoryData, response.totalEntradas, response.totalSalidas);
                 } else {
                     Swal.fire('Sin datos', 'No se encontraron movimientos para este código.', 'info');
@@ -153,6 +160,7 @@ jQuery(document).ready(function($) {
                         mov.entradas,
                         mov.salidas
                     ]);
+                    previousModalStack.push({ modalType: 'singleLotHistory', data: { codigo, lote, lotHistoryData, totalEntradas: response.totalEntradas, totalSalidas: response.totalSalidas } });
                     showLotHistoryModal(lote, lotHistoryData, response.totalEntradas, response.totalSalidas);
                 } else {
                     Swal.fire('Sin datos', 'No se encontraron movimientos para este lote.', 'info');
@@ -165,10 +173,26 @@ jQuery(document).ready(function($) {
     }
 
     function showDetailsModal({ almacen, tipo, codigo, descripcion, unidadMedida, cantidad, lotesData }) {
+        isModalOpen = true; 
         Swal.fire({
             title: 'Inventario por Lotes',
-            html: `
-                <div class="bg-white shadow-lg rounded-lg p-4">
+            showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              }, 
+            html: 
+                `<div class="bg-white shadow-lg rounded-lg p-4">
+                    <button id="close-modal" class="close-button absolute top-0 right-0 m-4">&times;</button>
                     <div class="grid grid-cols-2 gap-4 mb-4">
                         <div>
                             <label class="block text-sm font-medium">Descripción</label>
@@ -195,10 +219,11 @@ jQuery(document).ready(function($) {
                         <button id="view-lot-history" class="bg-blue-900 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Ver Detalle del Lote</button>
                     </div>
                     <div id="modal-lotes-table" class="min-w-full"></div>
-                </div>
-            `,
+                </div>`,
             width: 800,
             showConfirmButton: false,
+            allowOutsideClick: false,
+            backdrop: true,
             didOpen: () => {
                 if (modalTable) {
                     modalTable.destroy();
@@ -220,15 +245,39 @@ jQuery(document).ready(function($) {
                     const selectedLote = $(this).find('td').eq(1).text().trim(); 
                     fetchSingleLotHistory(codigo, selectedLote);
                 });
+
+                $("#close-modal").on("click", function() {
+                    Swal.close();
+                    isModalOpen = false; 
+                });
+            },
+            willClose: () => {
+                isModalOpen = false; 
             }
         });
     }
 
     function showLotHistoryModal(lote, lotHistoryData, totalEntradas, totalSalidas) {
+        isModalOpen = true; 
         Swal.fire({
             title: 'Detalle del Lote',
-            html: `
-                <div class="bg-white shadow-lg rounded-lg p-4">
+            showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              },
+            html: 
+                `<div class="bg-white shadow-lg rounded-lg p-4">
+                    <button id="close-modal" class="close-button absolute top-0 right-0 m-4">&times;</button>
                     <div class="mb-4">
                         <label class="block text-sm font-medium">Lote</label>
                         <input type="text" value="${lote}" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" readonly>
@@ -244,10 +293,14 @@ jQuery(document).ready(function($) {
                             <input type="text" value="${totalSalidas}" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100 text-right" readonly>
                         </div>
                     </div>
-                </div>
-            `,
+                    <div class="text-center mt-4">
+                        <button id="back-modal" class="bg-gray-600 text-white rounded-lg px-4 py-2 hover:bg-gray-400">Volver</button>
+                    </div>
+                </div>`,
             width: 800,
             showConfirmButton: false,
+            allowOutsideClick: false,
+            backdrop: true,
             didOpen: () => {
                 if (modalTable) {
                     modalTable.destroy();
@@ -260,6 +313,28 @@ jQuery(document).ready(function($) {
                     perPage: 5,
                     perPageSelect: [5, 10, 20]
                 });
+
+                $("#close-modal").on("click", function() {
+                    Swal.close();
+                    isModalOpen = false; 
+                });
+
+                $("#back-modal").on("click", function() {
+                    if (previousModalStack.length > 1) {
+                        previousModalStack.pop();
+                        const previousModal = previousModalStack[previousModalStack.length - 1];
+                        if (previousModal.modalType === 'lotHistory') {
+                            showLotHistoryModal(previousModal.data.codigo, previousModal.data.lotHistoryData, previousModal.data.totalEntradas, previousModal.data.totalSalidas);
+                        } else if (previousModal.modalType === 'singleLotHistory') {
+                            showLotHistoryModal(previousModal.data.lote, previousModal.data.lotHistoryData, previousModal.data.totalEntradas, previousModal.data.totalSalidas);
+                        } else {
+                            showDetailsModal(previousModal.data);
+                        }
+                    }
+                });
+            },
+            willClose: () => {
+                isModalOpen = false; 
             }
         });
     }

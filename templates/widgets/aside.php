@@ -17,16 +17,16 @@
         <path fill-rule="evenodd" d="M20 10H4v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8ZM9 13v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1Z" clip-rule="evenodd"/>
         <path d="M2 6a2 2 0 0 1 2-2h16a2 2 0 1 1 0 4H4a2 2 0 0 1-2-2Z"/>
       </svg>
-                <span class="flex-1 ml-3 text-left whitespace-nowrap" sidebar-toggle-item>Inventario</span>
+                <span class="flex-1 ml-3 text-left whitespace-nowrap" sidebar-toggle-item>Almacenes</span>
                 <svg sidebar-toggle-item class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
             </button>
             <ul id="dropdown-inventario" class="menu-content space-y-2 py-2 hidden ">
               <li>
-                <a href="/<?php echo $wb_subdir ?>/inventario/almacenes" class="menu-link text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700 ">Almacenes</a>
+                <a href="/<?php echo $wb_subdir ?>/almacenes/inventario" class="menu-link text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700 ">Inventario</a>
               </li>
-              <li>
-                <a href="/<?php echo $wb_subdir ?>/inventario/productos" class="menu-link text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700 ">Productos</a>
-              </li>
+              <!-- <li>
+                <a href="/<?php echo $wb_subdir ?>/almacenes/productos" class="menu-link text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700 ">Productos</a>
+              </li> -->
             </ul>
           </li>
               <li>

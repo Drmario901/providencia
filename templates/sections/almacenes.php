@@ -15,6 +15,7 @@
         require_lib_js('sweetalert2/sweetalert2.all.min.js');
         require_lib_css('sweetalert2/sweetalert2.min.css');
         require_lib_css('simple-datatables/style.css');
+        require_lib_css('animate-css/animate-css.css');
         require_lib_js('jquery/jquery.min.js');
         require_lib_js('simple-datatables/simple-datatables.js');
         require_js('global.js');
@@ -53,13 +54,13 @@
         <!-- Input de Fecha -->
         <div class="mr-4">
             <label for="fecha-input" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha</label>
-            <input type="date" id="fecha-input" class="border-gray-300 rounded-lg p-2 dark:bg-gray-800 dark:border-gray-600">
+            <input type="date" id="fecha-input" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
         </div>
 
         <!-- Select de Almacenes -->
         <div class="mr-4">
             <label for="almacen-select" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Almacén</label>
-            <select id="almacen-select" class="border-gray-300 rounded-lg p-2 dark:bg-gray-800 dark:border-gray-600">
+            <select id="almacen-select" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                 <option value="">Todos los Almacenes</option>
                 <option value="201">201 - MATERIA PRIMA</option>
                 <option value="202">202 - MATERIA PRIMA PROCESADA</option>
