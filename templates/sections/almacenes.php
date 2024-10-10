@@ -82,7 +82,6 @@
             </tr>
         </thead>
         <tbody>
-            <!-- Aquí se insertarán dinámicamente las filas -->
         </tbody>
     </table>
 </div>
