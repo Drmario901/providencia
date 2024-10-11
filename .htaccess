@@ -13,3 +13,4 @@ RewriteRule ^almacenes/productos?$ templates/sections/almacenes.php [L]
 #vehiculos
 RewriteRule ^vehiculos/entrada?$ templates/sections/vehiculosEntrada.php [L] ##entrada##
 RewriteRule ^vehiculos/salida?$ templates/sections/vehiculosSalida.php [L] ##salida##
+RewriteRule ^vehiculos/consulta?$ templates/sections/vehiculosConsulta.php [L] ##consulta##

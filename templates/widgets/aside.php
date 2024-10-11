@@ -44,6 +44,9 @@
               <li>
                 <a href="/<?php echo $wb_subdir ?>/vehiculos/salida" class="menu-link text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700 ">Salida</a>
               </li>
+              <li>
+                <a href="/<?php echo $wb_subdir ?>/vehiculos/consulta" class="menu-link text-base text-gray-900 rounded-lg flex items-center p-2 group hover:bg-gray-100 transition duration-75 pl-11 dark:text-gray-200 dark:hover:bg-gray-700 ">Consulta</a>
+              </li>
             </ul>
           </li>
             </ul>
