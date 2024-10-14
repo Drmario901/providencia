@@ -1,6 +1,27 @@
 domain = location.href.match(/^(https?:\/\/[^\/]+\/)/)[0]
 let wb_subdir = `${domain}providencia`;
 
+//TIME BEHAVIOR 
+function updateTime() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    const formattedDateTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+    
+    const dateTimeElement = document.getElementById('dateTime');
+    if (dateTimeElement) {
+        dateTimeElement.textContent = formattedDateTime;
+    }
+}
+
+window.onload = function() {
+    updateTime(); 
+    setInterval(updateTime, 60000); 
+};
+
+
 //ASIDE  SUBMENU BEHAVIOR 
 document.addEventListener('DOMContentLoaded', function () {
     const currentUrl = window.location.pathname;

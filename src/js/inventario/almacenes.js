@@ -15,7 +15,7 @@ jQuery(document).ready(function($) {
                 data: data
             },
             perPage: 10,
-            perPageSelect: [10, 20, 30]
+            perPageSelect: [10, 20, 30, 50]
         });
 
         bindRowClickEvent();

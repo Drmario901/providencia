@@ -62,10 +62,7 @@
       </div>
     </div>
     <div class="absolute bottom-0 left-0 justify-center hidden w-full p-4 space-x-4 bg-white lg:flex dark:bg-gray-800" sidebar-bottom-menu>
-    <?php
-        date_default_timezone_set('America/Caracas');
-        echo date('h:i A');
-    ?>
+    <div id="dateTime"></div>
 </div>
 
   </div>
