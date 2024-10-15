@@ -1,3 +1,4 @@
+jQuery(document).ready(function($) {
 let vehicleTypes = []; 
 
 function fetchVehiclesData() {
@@ -32,7 +33,7 @@ function fetchSelectModal() {
 }
 
 
-jQuery(document).ready(function($) {
+
     let dataTable;
     let isModalOpen = false; 
 
@@ -69,31 +70,7 @@ jQuery(document).ready(function($) {
         });
     }
 
-    // function fetchInventoryData(almacen, fecha) {
-    //     $.ajax({
-    //         url: wb_subdir + '/php/inventario/inventario.php',
-    //         type: "POST",
-    //         data: {
-    //             caso: 1,
-    //             fecha: fecha,
-    //             almacen: almacen
-    //         },
-    //         dataType: "JSON",
-    //         success: function(response) {
-    //             if (response.validar) {
-    //                 const formattedData = formatDataForTable(response.data);
-    //                 initializeDataTable(formattedData);
-    //             } else {
-    //                 initializeDataTable([]);
-    //             }
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error("Error al obtener los datos: " + error);
-    //         }
-    //     });
-    // }
-
-    $('#searchPlateBtn').on('click', function() {
+    $('#registerPlate').on('click', function() {
         Swal.fire({
             title: 'Registrar nueva placa',
             html:
@@ -209,10 +186,6 @@ jQuery(document).ready(function($) {
                                 <label for="address" class="block text-sm font-medium text-gray-700">Dirección</label>
                                 <input type="text" id="address" name="address" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" placeholder="Ingrese la dirección">
                             </div>
-                        </div>
-                        <div>
-                            <label for="comments" class="block text-sm font-medium text-gray-700">Comentarios</label>
-                            <textarea id="comments" name="comments" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100"></textarea>
                         </div>
                         <div class="text-center mt-4">
                             <button type="submit" id="register-driver" class="bg-blue-900 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Registrar</button>
