@@ -77,9 +77,9 @@
                                                     <div class="tooltip-arrow" data-popper-arrow></div>
                                                 </div>
                                             </span>
-                                            <input type="text" name="plate" id="plate" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                            <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
                                             <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-plate" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por placa" id="">
+                                                <button data-tooltip-target="tooltip-plate" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por placa" id="viewPlates">
                                                     <i data-lucide="book" class="w-5 h-5"></i>
                                                 </button>
                                             </span>
@@ -101,9 +101,9 @@
                                                     <div class="tooltip-arrow" data-popper-arrow></div>
                                                 </div>
                                             </span>
-                                            <input type="text" name="driver" id="driver" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                            <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
                                             <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-driver" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por conductor" id="searchDriverBtn">
+                                                <button data-tooltip-target="tooltip-driver" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por conductor" id="viewDrivers">
                                                     <i data-lucide="book" class="w-5 h-5"></i>
                                                 </button>
                                             </span>
@@ -116,7 +116,7 @@
                                     <div class="relative">
                                         <label for="entryDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
                                         <div class="flex items-center">
-                                            <input type="date" name="entryDate" id="entryDate" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                            <input type="date" name="fecha-form" id="fecha-form" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                                             <div class="ml-3 flex items-center">
                                                 <input id="product-entry" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                                 <label for="product-entry" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ingreso de producto</label>
@@ -125,7 +125,7 @@
                                     </div>
                                     <div>
                                         <label for="product" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Producto</label>
-                                        <select name="product" id="product" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                        <select name="product" id="product" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
                                             <option value="">Seleccione un producto</option>
                                             <option value="maiz">Maíz</option>
                                         </select>
@@ -150,7 +150,7 @@
                             <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow overflow-x-auto">
                                 <div class="mb-4">
                                     <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
-                                    <input type="date" id="tableDate" name="tableDate" class="mt-1 block w-full rounded-md  border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                    <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
                                 <table id="default-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     
