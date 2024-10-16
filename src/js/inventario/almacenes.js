@@ -220,7 +220,7 @@ jQuery(document).ready(function($) {
                     </div>
                     <div id="modal-lotes-table" class="min-w-full"></div>
                 </div>`,
-            width: 800,
+            width: '80%',
             showConfirmButton: false,
             allowOutsideClick: false,
             backdrop: true,
@@ -297,7 +297,7 @@ jQuery(document).ready(function($) {
                         <button id="back-modal" class="bg-gray-600 text-white rounded-lg px-4 py-2 hover:bg-gray-400">Volver</button>
                     </div>
                 </div>`,
-            width: 800,
+            width: '80%',
             showConfirmButton: false,
             allowOutsideClick: false,
             backdrop: true,

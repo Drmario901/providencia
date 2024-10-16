@@ -124,6 +124,20 @@ function fetchSelectModal() {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              },
             didOpen: () => {
                 $("#close-modal").on("click", function() {
                     Swal.close();
@@ -148,6 +162,20 @@ function fetchSelectModal() {
                                     icon: 'success',
                                     title: 'Vehículo registrado',
                                     text: 'El vehículo ha sido registrado exitosamente.',
+                                    showClass: {
+                                        popup: `
+                                          animate__animated
+                                          animate__fadeInUp
+                                          animate__faster
+                                        `
+                                      },
+                                      hideClass: {
+                                        popup: `
+                                          animate__animated
+                                          animate__fadeOutDown
+                                          animate__faster
+                                        `
+                                      },
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     Swal.close();  
@@ -222,6 +250,20 @@ function fetchSelectModal() {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              },
             didOpen: () => {
                 $("#close-modal").on("click", function() {
                     Swal.close();
@@ -245,6 +287,20 @@ function fetchSelectModal() {
                                     title: 'Conductor registrado',
                                     text: 'El conductor ha sido registrado exitosamente.',
                                     confirmButtonColor: '#053684',
+                                    showClass: {
+                                        popup: `
+                                          animate__animated
+                                          animate__fadeInUp
+                                          animate__faster
+                                        `
+                                      },
+                                      hideClass: {
+                                        popup: `
+                                          animate__animated
+                                          animate__fadeOutDown
+                                          animate__faster
+                                        `
+                                      },
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     Swal.close();  
@@ -264,6 +320,20 @@ function fetchSelectModal() {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
+                                showClass: {
+                                    popup: `
+                                      animate__animated
+                                      animate__fadeInUp
+                                      animate__faster
+                                    `
+                                  },
+                                  hideClass: {
+                                    popup: `
+                                      animate__animated
+                                      animate__fadeOutDown
+                                      animate__faster
+                                    `
+                                  },
                                 text: 'Hubo un problema al registrar el conductor. Intente nuevamente.',
                                 confirmButtonText: 'OK'
                             });
@@ -289,6 +359,20 @@ function fetchSelectModal() {
             width: '80%', 
             showConfirmButton: false,
             allowOutsideClick: false,
+            showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              },
             backdrop: true,
             didOpen: () => {
                 $("#close-modal").on("click", function() {
@@ -363,6 +447,20 @@ function fetchSelectModal() {
             width: '80%', 
             showConfirmButton: false,
             allowOutsideClick: false,
+            showClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeInUp
+                  animate__faster
+                `
+              },
+              hideClass: {
+                popup: `
+                  animate__animated
+                  animate__fadeOutDown
+                  animate__faster
+                `
+              },
             backdrop: true,
             didOpen: () => {
                 $("#close-modal").on("click", function() {
