@@ -1,7 +1,7 @@
 <?php
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
@@ -16,13 +16,20 @@ if (isset($_POST['driverName'], $_POST['idCard'], $_POST['licenseType'])) {
     $phone = isset($_POST['phone']) ? mysqli_real_escape_string($conexion, $_POST['phone']) : '';
     $address = isset($_POST['address']) ? mysqli_real_escape_string($conexion, $_POST['address']) : '';
 
-    $query = "INSERT INTO dpconductores (CDT_NOMBRE, CDT_CI_RIF, CDT_GRLIC, CDT_TEL1, CDT_DIR1) 
-              VALUES ('$driverName', '$idCard', '$licenseType', '$phone', '$address')";
-    
-    if (mysqli_query($conexion, $query)) {
-        echo json_encode(["success" => true]);
+    $checkQuery = "SELECT * FROM dpconductores WHERE CDT_CI_RIF = '$idCard' OR CDT_NOMBRE = '$driverName'";
+    $result = mysqli_query($conexion, $checkQuery);
+
+    if (mysqli_num_rows($result) > 0) {
+        echo json_encode(["success" => false, "message" => "Ya existe un conductor con el mismo nombre o cédula."]);
     } else {
-        echo json_encode(["success" => false, "message" => "Error al insertar el conductor: " . mysqli_error($conexion)]);
+        $query = "INSERT INTO dpconductores (CDT_NOMBRE, CDT_CI_RIF, CDT_GRLIC, CDT_TEL1, CDT_DIR1, CDT_ACTIVO) 
+                  VALUES ('$driverName', '$idCard', '$licenseType', '$phone', '$address', '1')";
+        
+        if (mysqli_query($conexion, $query)) {
+            echo json_encode(["success" => true]);
+        } else {
+            echo json_encode(["success" => false, "message" => "Error al insertar el conductor: " . mysqli_error($conexion)]);
+        }
     }
 } else {
     echo json_encode(["success" => false, "message" => "Datos incompletos."]);

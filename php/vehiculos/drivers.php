@@ -16,8 +16,8 @@ while ($row = $resultado->fetch_assoc()){
         "nombre" => $row['CDT_NOMBRE'],
         "ci_rif" => $row['CDT_CI_RIF'],
         "grlic" => $row['CDT_GRLIC'],
-        "telefono" => $row['CDT_TEL1'],
-        "direccion" => $row['CDT_DIR1']
+       // "telefono" => $row['CDT_TEL1'],
+    //"direccion" => $row['CDT_DIR1']
     );
 }
 

@@ -14,7 +14,7 @@ while ($row = $resultado->fetch_assoc()){
     $salida["data"][] = array(
         "placa" => $row['VEH_PLACA'],
         "tipo" => $row['VEH_TIPO'],
-        "peso" => $row['VEH_PESTAR'],
+        //"peso" => $row['VEH_PESTAR'],
     );
 }
 

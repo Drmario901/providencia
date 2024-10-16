@@ -1,24 +1,6 @@
 jQuery(document).ready(function($) {
 let vehicleTypes = []; 
 
-function fetchVehiclesData() {
-    $.ajax({
-        url: wb_subdir + '/php/vehiculos/optionsVehiculos.php', 
-        type: 'POST',
-        data: {},
-        dataType: 'JSON',
-        success: function(response) {
-            //console.log(response);
-            vehicleTypes = response.data; 
-            fetchSelectModal(); 
-        },
-        error: function(xhr, status, error) {
-            console.error("Error: " + error);
-        }
-    });
-}
-fetchVehiclesData();
-
 function fetchSelectModal() {
     const vehicleTypeSelect = $("#vehicleType");
     vehicleTypeSelect.empty(); 
@@ -31,8 +13,6 @@ function fetchSelectModal() {
         vehicleTypeSelect.append(new Option(vehicle.vehiculo, vehicle.vehiculo)); 
     });
 }
-
-
 
     let dataTable;
     let isModalOpen = false; 
@@ -88,16 +68,23 @@ function fetchSelectModal() {
                             <div>
                                 <label for="vehicleType" class="block text-sm font-medium text-gray-700">Tipo de Vehículo</label>
                                 <select id="vehicleType" name="vehicleType" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" required>
-                                    <option value="">Seleccione un elemento</option>
+                                    <option value="">Seleccione un tipo</option>
+                                    <option value="Cava">Cava</option>
+                                    <option value="Plataformas">Plataformas</option>
+                                    <option value="Gandola">Gandola</option>
+                                    <option value="PickUp">PickUp</option>
+                                    <option value="Chuto">Chuto</option>
+                                    <option value="Moto">Moto</option>
+                                    <option value="Otro">Otro</option>
                                 </select>
                             </div>
                             <div>
                                 <label for="capacity" class="block text-sm font-medium text-gray-700">Capacidad (Toneladas)</label>
-                                <input type="number" step="0.01" id="capacity" name="capacity" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" required>
+                                <input type="number" step="0.01" id="capacity" name="capacity" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100">
                             </div>
                             <div>
                                 <label for="taraWeight" class="block text-sm font-medium text-gray-700">Peso Tara</label>
-                                <input type="number" step="0.01" id="taraWeight" name="taraWeight" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" required>
+                                <input type="number" step="0.01" id="taraWeight" name="taraWeight" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100">
                             </div>
                             <div>
                                 <label for="cubicMeters" class="block text-sm font-medium text-gray-700">Metros Cúbicos</label>
@@ -126,30 +113,42 @@ function fetchSelectModal() {
             allowOutsideClick: false,
             showClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeInUp
-                  animate__faster
+                animate__animated
+                animate__fadeInUp
+                animate__faster
                 `
-              },
-              hideClass: {
+            },
+            hideClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeOutDown
-                  animate__faster
+                animate__animated
+                animate__fadeOutDown
+                animate__faster
                 `
-              },
+            },
             didOpen: () => {
                 $("#close-modal").on("click", function() {
                     Swal.close();
                 });
-    
-                fetchVehiclesData();
-    
+        
                 $("#newVehicleForm").on("submit", function(e) {
                     e.preventDefault(); 
                     const form = document.getElementById('newVehicleForm');
                     const formData = new FormData(form);
-    
+        
+                    const plate = formData.get('plate').trim();
+                    const vehicleType = formData.get('vehicleType');
+        
+                    if (!plate || !vehicleType) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Los campos Placa y Tipo de Vehículo son obligatorios.',
+                            confirmButtonColor: '#053684',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+        
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/registerPlate.php',  
                         type: 'POST',
@@ -164,20 +163,21 @@ function fetchSelectModal() {
                                     text: 'El vehículo ha sido registrado exitosamente.',
                                     showClass: {
                                         popup: `
-                                          animate__animated
-                                          animate__fadeInUp
-                                          animate__faster
+                                        animate__animated
+                                        animate__fadeInUp
+                                        animate__faster
                                         `
-                                      },
-                                      hideClass: {
+                                    },
+                                    hideClass: {
                                         popup: `
-                                          animate__animated
-                                          animate__fadeOutDown
-                                          animate__faster
+                                        animate__animated
+                                        animate__fadeOutDown
+                                        animate__faster
                                         `
-                                      },
+                                    },
                                     confirmButtonText: 'OK'
                                 }).then(() => {
+                                    $("#plate").val(plate); 
                                     Swal.close();  
                                 });
                             } else {
@@ -203,7 +203,7 @@ function fetchSelectModal() {
             }
         });
     });
-
+    //REGISTER DRIVER
     $('#registerDriver').on('click', function() {
         Swal.fire({
             title: 'Registrar nuevo conductor',
@@ -220,11 +220,17 @@ function fetchSelectModal() {
                             </div>
                             <div>
                                 <label for="idCard" class="block text-sm font-medium text-gray-700">Cédula</label>
-                                <input type="text" id="idCard" name="idCard" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" placeholder="Ingrese la cédula" required>
+                                <div class="flex items-center">
+                                    <select id="idType" name="idType" class="border-gray-300 rounded-lg p-2 bg-gray-100">
+                                        <option value="V">V</option>
+                                        <option value="E">E</option>
+                                    </select>
+                                    <input type="text" id="idCard" name="idCard" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100 ml-2" placeholder="Ingrese la cédula" required>
+                                </div>
                             </div>
                             <div>
                                 <label for="licenseType" class="block text-sm font-medium text-gray-700">Tipo de Licencia</label>
-                                <select name="licenseType" id="licenseType" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 bg-white hover:bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition duration-150 ease-in-out" required>
+                                <select name="licenseType" id="licenseType" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" required>
                                     <option value="">Seleccione un tipo</option>
                                     <option value="1ra">1ra</option>
                                     <option value="2da">2da</option>
@@ -241,6 +247,7 @@ function fetchSelectModal() {
                                 <label for="address" class="block text-sm font-medium text-gray-700">Dirección</label>
                                 <input type="text" id="address" name="address" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" placeholder="Ingrese la dirección">
                             </div>
+                            <input type="hidden" id="driver" name="driver"> <!-- Campo oculto para cédula completa -->
                         </div>
                         <div class="text-center mt-4">
                             <button type="submit" id="register-driver" class="bg-blue-900 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Registrar</button>
@@ -269,10 +276,33 @@ function fetchSelectModal() {
                     Swal.close();
                 });
     
+                $("#idCard").on("input", function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+    
                 $("#newDriverForm").on("submit", function(e) {
                     e.preventDefault(); 
                     const form = document.getElementById('newDriverForm');
                     const formData = new FormData(form);
+                    
+                    const driverName = formData.get('driverName').trim();
+                    const idType = formData.get('idType'); 
+                    const idCard = formData.get('idCard').trim();
+                    const licenseType = formData.get('licenseType');
+    
+                    if (!driverName || !idCard || !licenseType) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Los campos Nombre del Conductor, Cédula y Tipo de Licencia son obligatorios.',
+                            confirmButtonColor: '#053684',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+    
+                    const fullIdCard = `${idType}${idCard}`;
+                    formData.set('idCard', fullIdCard); 
     
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/registerDriver.php',  
@@ -287,32 +317,29 @@ function fetchSelectModal() {
                                     title: 'Conductor registrado',
                                     text: 'El conductor ha sido registrado exitosamente.',
                                     confirmButtonColor: '#053684',
-                                    showClass: {
-                                        popup: `
-                                          animate__animated
-                                          animate__fadeInUp
-                                          animate__faster
-                                        `
-                                      },
-                                      hideClass: {
-                                        popup: `
-                                          animate__animated
-                                          animate__fadeOutDown
-                                          animate__faster
-                                        `
-                                      },
                                     confirmButtonText: 'OK'
                                 }).then(() => {
+                                    $("#driver").val(fullIdCard);
                                     Swal.close();  
                                 });
                             } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Error',
-                                    text: response.message,
-                                    confirmButtonColor: '#053684',
-                                    confirmButtonText: 'OK'
-                                });
+                                if (response.message.includes("Ya existe un conductor con el mismo nombre o cédula")) {
+                                    Swal.fire({
+                                        icon: 'warning',
+                                        title: 'Datos Duplicados',
+                                        text: response.message,
+                                        confirmButtonColor: '#053684',
+                                        confirmButtonText: 'Entendido'
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Error',
+                                        text: response.message,
+                                        confirmButtonColor: '#053684',
+                                        confirmButtonText: 'OK'
+                                    });
+                                }
                             }
                         },
                         error: function() {
@@ -344,8 +371,6 @@ function fetchSelectModal() {
         });
     });
     
-    
-
     $('#viewDrivers').on('click', function() {
         Swal.fire({
             title: 'Conductores Registrados',
@@ -389,8 +414,8 @@ function fetchSelectModal() {
                             driver.nombre,
                             driver.ci_rif,
                             driver.grlic,
-                            driver.telefono,
-                            driver.direccion
+                            //driver.telefono,
+                            //driver.direccion
                         ]);
     
                         if (window.driverTable) {
@@ -399,7 +424,7 @@ function fetchSelectModal() {
     
                         window.driverTable = new simpleDatatables.DataTable("#modal-drivers-table", {
                             data: {
-                                headings: ["Nombre", "Cédula", "Licencia", "Teléfono", "Dirección"],
+                                headings: ["Nombre", "Cédula", "Licencia"],
                                 data: driverData
                             },
                             perPage: 10,
@@ -476,7 +501,7 @@ function fetchSelectModal() {
                         const plateData = plate.map(plate => [
                             plate.placa,
                             plate.tipo,
-                            plate.peso
+                            //plate.peso
                         ]);
     
                         if (window.platesTable) {
@@ -485,7 +510,7 @@ function fetchSelectModal() {
     
                         window.platesTable = new simpleDatatables.DataTable("#modal-plates-table", {
                             data: {
-                                headings: ["Placa", "Tipo", "Peso de Vehiculo"],
+                                headings: ["Placa", "Tipo"], //"Peso de Vehiculo"],
                                 data: plateData
                             },
                             perPage: 10,
