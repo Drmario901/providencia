@@ -1,54 +1,37 @@
-jQuery(document).ready(function($) {
-let vehicleTypes = []; 
+jQuery(document).ready(function($) {  
 
-function fetchSelectModal() {
-    const vehicleTypeSelect = $("#vehicleType");
-    vehicleTypeSelect.empty(); 
-
-    vehicleTypes.sort(function(a, b) {
-        return a.vehiculo.localeCompare(b.vehiculo);
-    });
-
-    vehicleTypes.forEach(function(vehicle) {
-        vehicleTypeSelect.append(new Option(vehicle.vehiculo, vehicle.vehiculo)); 
-    });
-}
-
-    let dataTable;
-    let isModalOpen = false; 
-
-    function initializeDataTable(data) {
-        if (dataTable) {
-            dataTable.destroy();
-        }
-
-        dataTable = new simpleDatatables.DataTable("#default-table", {
-            data: {
-                headings: ["Almacén", "Tipo", "Código", "Descripción", "Und. Medida", "Cantidad"],
-                data: data
+    //READ WEIGHT FUNCTION
+    function readWeight() {
+        $.ajax({
+            url: 'http://localhost:81/index', 
+            method: 'POST',
+            success: function(response) {
+                const match = response.match(/[-+]?\d*\.?\d+/);
+                if (match) {
+                    const peso = match[0];
+                    console.log(peso)
+                    $('#entryWeight').val(peso);
+                }
+                Swal.close();
             },
-            perPage: 5,
-            perPageSelect: [5, 10]
-        });
-
-        bindRowClickEvent();
-        dataTable.on('datatable.page', bindRowClickEvent);
-        dataTable.on('datatable.perpage', bindRowClickEvent);
-    }
-
-    function bindRowClickEvent() {
-        $("#default-table tbody").off("click", "tr").on("click", "tr", function() {
-            if (isModalOpen) return; 
-
-            const cells = $(this).find('td').map(function() {
-                return $(this).text().trim();
-            }).get();
-
-            if (cells.length >= 6) {
-                fetchLotDetails(cells);
+            error: function(xhr, status, error) {
+                console.error('Error al obtener el peso:', error);
+                Swal.close();
             }
         });
     }
+
+    $('#readWeight').on('click', function() {
+        Swal.fire({
+            title: 'Esperando peso...',
+            text: 'Por favor, espera mientras se obtiene el peso.',
+            allowOutsideClick: false,
+            didOpen: () => {
+                Swal.showLoading();
+                readWeight(); 
+            }
+        });
+    });    
 
     //REGISTER PLATE MODAL
     $('#registerPlate').on('click', function() {
@@ -161,6 +144,7 @@ function fetchSelectModal() {
                                     icon: 'success',
                                     title: 'Vehículo registrado',
                                     text: 'El vehículo ha sido registrado exitosamente.',
+                                    confirmButtonColor: '#053684',
                                     showClass: {
                                         popup: `
                                         animate__animated
@@ -185,6 +169,7 @@ function fetchSelectModal() {
                                     icon: 'error',
                                     title: 'Error',
                                     text: response.message,
+                                    confirmButtonColor: '#053684',
                                     confirmButtonText: 'OK'
                                 });
                             }
@@ -195,6 +180,7 @@ function fetchSelectModal() {
                                 icon: 'error',
                                 title: 'Error',
                                 text: 'Hubo un problema al registrar el vehículo. Intente nuevamente.',
+                                confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
                         }
