@@ -1,3 +1,18 @@
+document.addEventListener('DOMContentLoaded', function () {
+    const productSelect = document.getElementById('productSelect');
+    const productEntryCheckbox = document.getElementById('product-entry');
+
+    productSelect.disabled = true;
+
+    productEntryCheckbox.addEventListener('change', function () {
+        if (this.checked) {
+            productSelect.disabled = false;
+        } else {
+            productSelect.disabled = true;
+        }
+    });
+});
+
 jQuery(document).ready(function($) {  
 
     //READ WEIGHT FUNCTION
@@ -31,7 +46,41 @@ jQuery(document).ready(function($) {
                 readWeight(); 
             }
         });
-    });    
+    });
+    
+    const $select = $("#productSelect");
+
+    $select.append($("<option>", {
+        value: '',
+        text: ''
+    }));
+
+    $select.select2({
+        placeholder: "Buscar producto...",
+        width: '100%',
+        allowClear: true
+    });
+
+    $.ajax({
+        url: wb_subdir + '/php/inventario/productsCode.php',
+        method: 'POST',
+        dataType: 'JSON',
+        success: function(data) {
+            const productos = data.data;
+            
+            $.each(productos, function(index, producto) {
+                $select.append($("<option>", {
+                    value: producto.codigo,
+                    text: `${producto.codigo} - ${producto.nombre}`
+                }));
+            });
+
+            $select.trigger('change');
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al cargar los datos:', error);
+        }
+    });
 
     //REGISTER PLATE MODAL
     $('#registerPlate').on('click', function() {
