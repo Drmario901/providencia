@@ -25,6 +25,26 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
+function updateTimeInput() {
+    const now = new Date();
+    const hours = now.getHours().toString().padStart(2, '0');
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+
+    const formattedDateTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+    
+    const hiddenInput = document.getElementById('hiddenTimeInput');
+    if (hiddenInput) {
+        hiddenInput.value = formattedDateTime;  
+    }
+}
+
+window.onload = function() {
+    updateTimeInput(); 
+    setInterval(updateTimeInput, 60000); 
+};
+
+
 jQuery(document).ready(function($) {  
 
     //READ WEIGHT FUNCTION
@@ -83,7 +103,7 @@ jQuery(document).ready(function($) {
             $.each(productos, function(index, producto) {
                 $select.append($("<option>", {
                     value: producto.codigo,
-                    text: `${producto.codigo} - ${producto.nombre}`
+                    text: `${producto.nombre}`
                 }));
             });
 
@@ -250,6 +270,7 @@ jQuery(document).ready(function($) {
             }
         });
     });
+
     //REGISTER DRIVER
     $('#registerDriver').on('click', function() {
         Swal.fire({
@@ -418,6 +439,7 @@ jQuery(document).ready(function($) {
         });
     });
     
+    //VIEW DRIVERS DATA
     $('#viewDrivers').on('click', function() {
         Swal.fire({
             title: 'Conductores Registrados',
@@ -571,6 +593,7 @@ jQuery(document).ready(function($) {
     
                             //$('#nombreInput').val(selectedDriver[0]);
                             $('#plate').val(selectedPlate[0]);
+                            $('#plateType').val(selectedPlate[1]);
                             //$('#licenciaInput').val(selectedDriver[2]);
                             //$('#telefonoInput').val(selectedDriver[3]);
                             //$('#direccionInput').val(selectedDriver[4]);

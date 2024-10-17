@@ -25,6 +25,10 @@
     ?> 
 
   </head>
+  <?php
+    //SPINNER
+    require __DIR__. '/../stuff/spinner.php'; 
+  ?>
   
   <body class="bg-gray-100">
     <?php require __DIR__. '/../widgets/navbar.php'; ?>
