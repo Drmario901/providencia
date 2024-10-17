@@ -1,14 +1,26 @@
 document.addEventListener('DOMContentLoaded', function () {
     const productSelect = document.getElementById('productSelect');
+    const productRegister = document.getElementById('registerForm');
+    const productWeight = document.getElementById('entryWeight');
+    const productRead = document.getElementById('readWeight');
     const productEntryCheckbox = document.getElementById('product-entry');
 
     productSelect.disabled = true;
+    productRegister.disabled = true;
+    productWeight.disabled = true;
+    productRead.disabled = true;
 
     productEntryCheckbox.addEventListener('change', function () {
         if (this.checked) {
             productSelect.disabled = false;
+            productRegister.disabled = false;
+            productWeight.disabled = false;
+            productRead.disabled = false;
         } else {
             productSelect.disabled = true;
+            productRegister.disabled = true;
+            productWeight.disabled = true;
+            productRead.disabled = true;
         }
     });
 });
