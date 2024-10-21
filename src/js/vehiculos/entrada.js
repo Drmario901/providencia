@@ -1,48 +1,22 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const productSelect = document.getElementById('productSelect');
-    const productRegister = document.getElementById('registerForm');
-    const productWeight = document.getElementById('entryWeight');
-    const productRead = document.getElementById('readWeight');
-    const productEntryCheckbox = document.getElementById('product-entry');
 
-    productSelect.disabled = true;
-    productRegister.disabled = true;
-    productWeight.disabled = true;
-    productRead.disabled = true;
+ function updateTimeInput() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2, '0');
+        const minutes = now.getMinutes().toString().padStart(2, '0');
+        const ampm = hours >= 12 ? 'PM' : 'AM';
 
-    productEntryCheckbox.addEventListener('change', function () {
-        if (this.checked) {
-            productSelect.disabled = false;
-            productRegister.disabled = false;
-            productWeight.disabled = false;
-            productRead.disabled = false;
-        } else {
-            productSelect.disabled = true;
-            productRegister.disabled = true;
-            productWeight.disabled = true;
-            productRead.disabled = true;
+        const formattedDateTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
+        
+        const hiddenInput = document.getElementById('hiddenTimeInput');
+        if (hiddenInput) {
+            hiddenInput.value = formattedDateTime;  
         }
-    });
-});
-
-function updateTimeInput() {
-    const now = new Date();
-    const hours = now.getHours().toString().padStart(2, '0');
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-
-    const formattedDateTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
-    
-    const hiddenInput = document.getElementById('hiddenTimeInput');
-    if (hiddenInput) {
-        hiddenInput.value = formattedDateTime;  
-    }
 }
 
-window.onload = function() {
-    updateTimeInput(); 
-    setInterval(updateTimeInput, 60000); 
-};
+    window.onload = function() {
+        updateTimeInput(); 
+        setInterval(updateTimeInput, 60000); 
+    };
 
 
 jQuery(document).ready(function($) {  
@@ -79,40 +53,186 @@ jQuery(document).ready(function($) {
             }
         });
     });
-    
-    const $select = $("#productSelect");
 
-    $select.append($("<option>", {
-        value: '',
-        text: ''
-    }));
 
-    $select.select2({
-        placeholder: "Buscar producto...",
-        width: '100%',
-        allowClear: true
-    });
+    //CHECKBOXES BEHAVIOR
+    const $productSelect = $("#productSelect"); 
+    const $multipleProductSelect = $("#multipleProductSelect"); 
+    const $productLabel = $("#productLabel");
+    const $multipleProductLabel = $("#multipleProductLabel");
+    const $productRegister = $("#registerForm");
+    const $productWeight = $("#entryWeight");
+    const $productRead = $("#readWeight");
+    const $productEntryCheckbox = $("#product-entry"); 
+    const $multipleProductsCheckbox = $("#multiple-products"); 
+    const $noProductEntryCheckbox = $("#no-product-entry"); 
 
-    $.ajax({
-        url: wb_subdir + '/php/inventario/productsCode.php',
-        method: 'POST',
-        dataType: 'JSON',
-        success: function(data) {
-            const productos = data.data;
-            
-            $.each(productos, function(index, producto) {
-                $select.append($("<option>", {
-                    value: producto.codigo,
-                    text: `${producto.nombre}`
-                }));
+    function initializeSelect2() {
+        $productSelect.select2({
+            placeholder: "Buscar producto...",
+            width: '100%',
+            allowClear: true
+        });
+    }
+
+    function initializeMultipleSelect2() {
+        $multipleProductSelect.select2({
+            placeholder: "Selecciona varios productos...",
+            width: '100%',
+            allowClear: true
+        });
+    }
+
+    function destroySelect2() {
+        if ($productSelect.hasClass("select2-hidden-accessible")) {
+            $productSelect.select2('destroy').hide(); 
+        }
+    }
+
+    function destroyMultipleSelect2() {
+        if ($multipleProductSelect.hasClass("select2-hidden-accessible")) {
+            $multipleProductSelect.select2('destroy').hide(); 
+        }
+    }
+
+    destroySelect2();
+    destroyMultipleSelect2();
+    $productRegister.addClass('hidden');
+    $productLabel.addClass('hidden');
+    $multipleProductLabel.addClass('hidden');
+    $productWeight.addClass('hidden');
+    $productRead.addClass('hidden');
+    $multipleProductSelect.addClass('hidden');
+
+    // Caso 1
+    $productEntryCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+            $productSelect.show();
+            initializeSelect2();
+            $productRegister.removeClass('hidden');
+            $productLabel.removeClass('hidden');
+            $productWeight.removeClass('hidden');
+            $productRead.removeClass('hidden');
+
+            $multipleProductsCheckbox.prop('disabled', true);
+            $noProductEntryCheckbox.prop('disabled', true);
+
+            $productSelect.empty();
+            $productSelect.append($("<option>", {
+                value: '',
+                text: ''
+            }));
+
+            $.ajax({
+                url: wb_subdir + '/php/inventario/productsCode.php',
+                method: 'POST',
+                dataType: 'JSON',
+                success: function(data) {
+                    const productos = data.data;
+
+                    $.each(productos, function(index, producto) {
+                        $productSelect.append($("<option>", {
+                            value: producto.codigo,
+                            text: producto.nombre
+                        }));
+                    });
+
+                    $productSelect.trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al cargar los datos:', error);
+                }
             });
+        } else {
+            destroySelect2();
+            $productRegister.addClass('hidden');
+            $productLabel.addClass('hidden');
+            $productWeight.addClass('hidden');
+            $productRead.addClass('hidden');
 
-            $select.trigger('change');
-        },
-        error: function(xhr, status, error) {
-            console.error('Error al cargar los datos:', error);
+            $multipleProductsCheckbox.prop('disabled', false);
+            $noProductEntryCheckbox.prop('disabled', false);
         }
     });
+
+    // Caso 2
+    $multipleProductsCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+            $multipleProductSelect.removeClass('hidden');
+            $multipleProductLabel.removeClass('hidden'); 
+            initializeMultipleSelect2();
+            $productRegister.removeClass('hidden');
+            $productWeight.removeClass('hidden');
+            $productRead.removeClass('hidden');
+
+            $productEntryCheckbox.prop('disabled', true);
+            $noProductEntryCheckbox.prop('disabled', true);
+
+            $multipleProductSelect.empty();
+
+            $.ajax({
+                url: wb_subdir + '/php/inventario/productsCode.php',
+                method: 'POST',
+                dataType: 'JSON',
+                success: function(data) {
+                    const productos = data.data;
+
+                    $.each(productos, function(index, producto) {
+                        $multipleProductSelect.append($("<option>", {
+                            value: producto.codigo,
+                            text: producto.nombre
+                        }));
+                    });
+
+                    $multipleProductSelect.trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al cargar los datos:', error);
+                }
+            });
+        } else {
+            destroyMultipleSelect2();
+            $productRegister.addClass('hidden');
+            $multipleProductLabel.addClass('hidden'); 
+            $productWeight.addClass('hidden');
+            $productRead.addClass('hidden');
+
+            $productEntryCheckbox.prop('disabled', false);
+            $noProductEntryCheckbox.prop('disabled', false);
+        }
+    });
+
+    // Caso 3
+    $noProductEntryCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+            $productRegister.removeClass('hidden');
+            $productWeight.removeClass('hidden');
+            $productRead.removeClass('hidden');
+            $productSelect.empty();
+            $productSelect.append($("<option>", {
+                value: 'Vacio',
+                text: 'Vacío'
+            }));
+
+            $productEntryCheckbox.prop('disabled', true);
+            $multipleProductsCheckbox.prop('disabled', true);
+
+            destroySelect2();
+            destroyMultipleSelect2();
+            $productLabel.addClass('hidden');
+            $multipleProductLabel.addClass('hidden');
+            $multipleProductSelect.addClass('hidden');
+        } else {
+            $productRegister.addClass('hidden');
+            $productWeight.addClass('hidden');
+            $productRead.addClass('hidden');
+            $productEntryCheckbox.prop('disabled', false);
+            $multipleProductsCheckbox.prop('disabled', false);
+        }
+    });
+
+
+
 
     //REGISTER PLATE MODAL
     $('#registerPlate').on('click', function() {
@@ -482,9 +602,7 @@ jQuery(document).ready(function($) {
                         const driverData = drivers.map(driver => [
                             driver.nombre,
                             driver.ci_rif,
-                            driver.grlic,
-                            //driver.telefono,
-                            //driver.direccion
+                            driver.grlic
                         ]);
     
                         if (window.driverTable) {
@@ -505,11 +623,7 @@ jQuery(document).ready(function($) {
                                 return $(this).text();
                             }).get();
     
-                            //$('#nombreInput').val(selectedDriver[0]);
                             $('#driver').val(selectedDriver[1]);
-                            //$('#licenciaInput').val(selectedDriver[2]);
-                            //$('#telefonoInput').val(selectedDriver[3]);
-                            //$('#direccionInput').val(selectedDriver[4]);
     
                             Swal.fire({
                                 icon: 'success',
@@ -579,7 +693,7 @@ jQuery(document).ready(function($) {
     
                         window.platesTable = new simpleDatatables.DataTable("#modal-plates-table", {
                             data: {
-                                headings: ["Placa", "Tipo"], //"Peso de Vehiculo"],
+                                headings: ["Placa", "Tipo"],
                                 data: plateData
                             },
                             perPage: 10,
@@ -590,13 +704,9 @@ jQuery(document).ready(function($) {
                             const selectedPlate = $(this).children('td').map(function() {
                                 return $(this).text();
                             }).get();
-    
-                            //$('#nombreInput').val(selectedDriver[0]);
+
                             $('#plate').val(selectedPlate[0]);
                             $('#plateType').val(selectedPlate[1]);
-                            //$('#licenciaInput').val(selectedDriver[2]);
-                            //$('#telefonoInput').val(selectedDriver[3]);
-                            //$('#direccionInput').val(selectedDriver[4]);
     
                             Swal.fire({
                                 icon: 'success',
@@ -618,19 +728,4 @@ jQuery(document).ready(function($) {
     const today = new Date().toISOString().split('T')[0];
     $("#fecha-form").val(today);
     $("#fecha-table").val(today);
-    
-
-    // $("#almacen-select").on("change", function() {
-    //     const almacen = $(this).val();
-    //     const fecha = $("#fecha-input").val();
-    //     fetchInventoryData(almacen, fecha);
-    // });
-
-    // $("#fecha-input").on("change", function() {
-    //     const almacen = $("#almacen-select").val();
-    //     const fecha = $(this).val();
-    //     fetchInventoryData(almacen, fecha);
-    // });
-
-    // fetchInventoryData("", today);
 });

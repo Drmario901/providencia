@@ -182,3 +182,14 @@
 .datatable-filter-active .datatable-filter::before {
     opacity: 1;
 }
+
+/* STATUS COLOR*/ 
+.row-pendiente {
+    background-color: #f8d7da;
+    color: #721c24; 
+}
+
+.row-finalizado {
+    background-color: #d4edda; 
+    color: #155724; 
+}

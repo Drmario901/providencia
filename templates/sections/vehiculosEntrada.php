@@ -66,118 +66,133 @@
                             <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Registro de Entrada de Vehículos</h1>
                         </header>
 
-                        <div class="grid md:grid-cols-6 gap-6 mb-6">
-                            <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow md:col-span-2">
-                                <form id="entryForm" class="space-y-4">
-                                    <div class="relative">
-                                        <label for="plate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placa</label>
-                                        <div class="flex">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-plate" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por placa" id="viewPlates">
-                                                    <i data-lucide="search" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-plate" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Buscar Placa
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
-                                            <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
-                                            <input type="text" id="plateType" hidden>
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-truck" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar vehículo" id="registerPlate">
-                                                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-truck" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Registrar Vehículo
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="relative">
-                                        <label for="driver" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Conductor</label>
-                                        <div class="flex">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-driver" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por conductor" id="viewDrivers">
-                                                    <i data-lucide="search" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-driver" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Buscar Conductor
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
-                                            <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-id" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar conductor" id="registerDriver">
-                                                    <i data-lucide="user-plus" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-id" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Registrar Conductor
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="relative">
-                                        <label for="entryDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
-                                        <div class="flex items-center">
-                                            <input type="date" name="fecha-form" id="fecha-form" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-                                            <input type="hidden" id="hiddenTimeInput" name="time">
-                                            <div class="ml-3 flex items-center">
-                                                <input id="product-entry" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
-                                                <label for="product-entry" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ingreso de producto</label>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label for="product" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Producto</label>
-                                        <select name="product" id="productSelect" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
-                                            
-                                        </select>
-                                    </div>
-                                    <div class="relative">
-                                        <label for="entryWeight" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peso de Entrada</label>
-                                        <div class="flex">
-                                            <input type="text" name="entryWeight" id="entryWeight" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
-                                            <button id="readWeight" type="button" class="inline-flex items-center px-3 text-sm font-medium text-white bg-blue-900 rounded-r-md border border-l-0 border-blue-600 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                                Leer peso
+                        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow mb-8">
+                            <form id="entryForm" class="space-y-4">
+                                <div class="relative">
+                                    <label for="plate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placa</label>
+                                    <div class="flex">
+                                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                            <button data-tooltip-target="tooltip-plate" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por placa" id="viewPlates">
+                                                <i data-lucide="search" class="w-5 h-5"></i>
                                             </button>
-                                        </div>
+                                            <div id="tooltip-plate" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                                Buscar Placa
+                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                            </div>
+                                        </span>
+                                        <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                        <input type="text" id="plateType" hidden>
+                                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                            <button data-tooltip-target="tooltip-truck" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar vehículo" id="registerPlate">
+                                                <i data-lucide="plus-circle" class="w-5 h-5"></i>
+                                            </button>
+                                            <div id="tooltip-truck" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                                Registrar Vehículo
+                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                            </div>
+                                        </span>
                                     </div>
-                                    <div class="text-center">
-                                        <button type="submit" id="registerForm" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                            Registrar
+                                </div>
+                                <div class="relative">
+                                    <label for="driver" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Conductor</label>
+                                    <div class="flex">
+                                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                            <button data-tooltip-target="tooltip-driver" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por conductor" id="viewDrivers">
+                                                <i data-lucide="search" class="w-5 h-5"></i>
+                                            </button>
+                                            <div id="tooltip-driver" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                                Buscar Conductor
+                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                            </div>
+                                        </span>
+                                        <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                        <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
+                                            <button data-tooltip-target="tooltip-id" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar conductor" id="registerDriver">
+                                                <i data-lucide="user-plus" class="w-5 h-5"></i>
+                                            </button>
+                                            <div id="tooltip-id" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                                Registrar Conductor
+                                                <div class="tooltip-arrow" data-popper-arrow></div>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="relative">
+                                    <label for="entryDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
+                                    <div class="flex items-center">
+                                        <input type="date" name="fecha-form" id="fecha-form" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required>
+                                        <input type="hidden" id="hiddenTimeInput" name="time">
+                                    </div>
+                                </div>
+                                <div class="space-y-2">
+                                    <div class="flex items-center">
+                                        <input id="product-entry" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="product-entry" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ingreso de producto</label>
+                                    </div>
+                                    <input type="text" id="custom-product" name="custom-product" placeholder="Ingrese producto personalizado" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500 hidden">
+                                    <div class="flex items-center">
+                                        <input id="multiple-products" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="multiple-products" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Múltiples productos</label>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <input id="no-product-entry" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                        <label for="no-product-entry" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ingreso sin producto</label>
+                                    </div>
+                                </div>
+                                <div>
+                                <label for="product" id="productLabel" class="hidden block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Producto</label>
+                                <select name="product" id="productSelect" class="hidden w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </select>
+                                <label for="multipleProductSelect" id="multipleProductLabel" class="hidden block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccione  productos</label>
+                                <select name="multipleProductSelect" id="multipleProductSelect" multiple="multiple" class="hidden w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </select>
+                                </div>
+                                <div class="relative">
+            
+                                    <label for="entryWeight" class="hidden block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peso de Entrada</label>
+                                    <div class="flex">
+                                        <input type="text" name="entryWeight" id="entryWeight" class="hidden rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                        <button id="readWeight" type="button" class="hidden inline-flex items-center px-3 text-sm font-medium text-white bg-blue-900 rounded-r-md border border-l-0 border-blue-600 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                            Leer peso
                                         </button>
                                     </div>
-                                </form>
+                                </div>
+                                <div class="text-center">
+                                    <button type="submit" id="registerForm" class="hidden inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        Registrar
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+                            <div class="mb-4">
+                                <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
+                                <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                             </div>
-                            
-                            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow md:col-span-4">
-                                <div class="mb-4">
-                                    <label for="tableDate" class="block text-sm font-medium    text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
-                                    <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                </div>
-                                <div class="overflow-x-auto">
-                                    <table id="default-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                        <thead class="bg-gray-50 dark:bg-gray-700">
-                                            <tr>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cedula conductor</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso - Tara</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Peso Tara</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo Producto</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ingresado</th>
-                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehiculo Activo</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700">
-                                            <!-- ELEMENTS -->
-                                        </tbody>
-                                    </table>
-                                </div>
+                            <div class="overflow-x-auto">
+                                <table id="default-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                    <thead class="bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso - Tara</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Peso Tara</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo Producto</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto ingresado</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehiculo Activo</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Bruto</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Neto</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Entrada</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Salida</th>
+                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700">
+                                        <!-- ELEMENTS -->
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
