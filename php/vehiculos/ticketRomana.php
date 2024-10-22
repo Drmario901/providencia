@@ -3,6 +3,8 @@ require __DIR__. '/../conexion.php';
 $bd = "serviaves_web";
 mysqli_select_db($conexion, $bd);
 
+date_default_timezone_set('America/Caracas');
+
 $id_entrada = $_POST['id_entrada'] ?? NULL;
 $silo = $_POST['silo'] ?? NULL;
 $destino = $_POST['destino'] ?? NULL;
