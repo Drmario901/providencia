@@ -624,6 +624,7 @@ jQuery(document).ready(function($) {
                             }).get();
     
                             $('#driver').val(selectedDriver[1]);
+                            $('#driverName').val(selectedDriver[0]);
     
                             Swal.fire({
                                 icon: 'success',

@@ -21,11 +21,13 @@
         require_js('global.js');
         require_js('vehiculos/entrada.js');
         require_js('vehiculos/tableEntry.js');
+        require_js('vehiculos/generate.romana.ticket.js');
         echo $favicon;
         echo $disable; 
     ?> 
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
 
     <style>
       .center-table {
@@ -106,6 +108,7 @@
                                             </div>
                                         </span>
                                         <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                        <input type="text" name="driverName" id="driverName" placeholder="Conductor" class="hidden rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
                                             <button data-tooltip-target="tooltip-id" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar conductor" id="registerDriver">
                                                 <i data-lucide="user-plus" class="w-5 h-5"></i>
@@ -166,10 +169,16 @@
                         </div>
                         
                         <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                            <div class="mb-4">
-                                <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
-                                <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                            </div>
+    <div class="mb-4 flex items-end space-x-4">
+        <div class="flex-grow">
+            <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
+            <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+        </div>
+        <button type="button" id="generateTicket" class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <i data-lucide="ticket" class="w-5 h-5 mr-2"></i>
+            Generar ticket
+        </button>
+    </div>
                             <div class="overflow-x-auto">
                                 <table id="default-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                     <thead class="bg-gray-50 dark:bg-gray-700">

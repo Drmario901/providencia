@@ -11,7 +11,7 @@ mysqli_select_db($conexion, $bd);
 
 $fecha_filtro = isset($_POST['fecha']) ? $_POST['fecha'] : '';
 
-$sql = "SELECT placa, tipo, peso_tara, fecha_peso_tara, hora_entrada, codigo_productos, producto_ingresado, vehiculo_activo, peso_bruto, peso_neto, hora_salida, estatus FROM vehiculos";
+$sql = "SELECT id, conductor, placa, tipo, peso_tara, fecha_peso_tara, hora_entrada, codigo_productos, producto_ingresado, vehiculo_activo, peso_bruto, peso_neto, hora_salida, estatus, caso  FROM vehiculos";
 
 if (!empty($fecha_filtro)) {
     $sql .= " WHERE fecha_peso_tara = ?";

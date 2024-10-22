@@ -144,6 +144,66 @@
             "install-path": "../phpoption/phpoption"
         },
         {
+            "name": "spipu/html2pdf",
+            "version": "v4.6.1",
+            "version_normalized": "4.6.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/spipu/html2pdf.git",
+                "reference": "4898439e170ebf032513b8d3a83f0f5ffe85fece"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/spipu/html2pdf/zipball/4898439e170ebf032513b8d3a83f0f5ffe85fece",
+                "reference": "4898439e170ebf032513b8d3a83f0f5ffe85fece",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.2",
+                "tecnickcom/tcpdf": "~6.2.0"
+            },
+            "suggest": {
+                "ext-gd": "Allows to embed images into the PDF",
+                "fagundes/zff-html2pdf": "zff-html2pdf module ~0.1.1, if you need to integrate HTML2PDF with Zend Framework 2 (zf2)"
+            },
+            "time": "2016-04-05T12:25:17+00:00",
+            "type": "library",
+            "installation-source": "source",
+            "autoload": {
+                "files": [
+                    "html2pdf.class.php",
+                    "_class/exception.class.php",
+                    "_class/locale.class.php",
+                    "_class/myPdf.class.php",
+                    "_class/parsingHtml.class.php",
+                    "_class/parsingCss.class.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL"
+            ],
+            "authors": [
+                {
+                    "name": "Spipu",
+                    "homepage": "https://github.com/spipu",
+                    "role": "Developer"
+                }
+            ],
+            "description": "HTML2PDF is a HTML to PDF converter written in PHP5 (it uses TCPDF). OFFICIAL PACKAGE",
+            "homepage": "http://html2pdf.fr/",
+            "keywords": [
+                "html",
+                "html2pdf",
+                "pdf"
+            ],
+            "support": {
+                "issues": "https://github.com/spipu/html2pdf/issues",
+                "source": "https://github.com/spipu/html2pdf/tree/4.6"
+            },
+            "install-path": "../spipu/html2pdf"
+        },
+        {
             "name": "symfony/polyfill-ctype",
             "version": "v1.31.0",
             "version_normalized": "1.31.0.0",
