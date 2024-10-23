@@ -72,6 +72,7 @@ jQuery(document).ready(function($) {
                                         icon: 'error',
                                         title: 'Error',
                                         text: 'Todos los campos son obligatorios.',
+                                        confirmButtonColor: '#053684',
                                         confirmButtonText: 'OK'
                                     });
                                     return;
@@ -107,7 +108,8 @@ jQuery(document).ready(function($) {
                                                         <div>Hora: ${data.hora}</div>
                                                     </div>
                                                 `,
-                                                confirmButtonText: 'Ver e Imprimir',
+                                                confirmButtonText: 'Ver',
+                                                confirmButtonColor: '#053684',
                                                 showCancelButton: true,
                                                 cancelButtonText: 'Cerrar'
                                             }).then((result) => {
@@ -119,7 +121,7 @@ jQuery(document).ready(function($) {
                                                             <div style="text-align: center;">Ticket Romana</div>
                                                             <hr>
                                                             <div>Fecha: ${data.fecha}</div>
-                                                            <div>Chofer: ${data.chofer}</div>
+                                                            <div>Conductor: ${data.chofer}</div>
                                                             <div>Cédula: ${data.cedula}</div>
                                                             <div>Placa: ${data.placa}</div>
                                                             <div>Destino: ${data.destino}</div>
@@ -139,7 +141,7 @@ jQuery(document).ready(function($) {
                                                         html2canvas: { scale: 2 },
                                                         jsPDF: { unit: 'pt', format: [226.77, 841.89], orientation: 'portrait' } 
                                                     };
-                                                    
+
                                                     html2pdf().set(options).from(ticketContent).toPdf().get('pdf').then(function (pdf) {
                                                         const blob = pdf.output('blob');
                                                         const blobUrl = URL.createObjectURL(blob);
@@ -154,6 +156,7 @@ jQuery(document).ready(function($) {
                                             icon: 'error',
                                             title: 'Error',
                                             text: 'Hubo un problema al generar el ticket.',
+                                            confirmButtonColor: '#053684',
                                             confirmButtonText: 'OK'
                                         });
                                     }
@@ -162,11 +165,23 @@ jQuery(document).ready(function($) {
                         }
                     });
                 } else {
-                    Swal.fire('Error', 'No se encontraron entradas para hoy.', 'error');
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se encontraron entradas para hoy.',
+                        confirmButtonColor: '#053684',
+                        confirmButtonText: 'OK'
+                    });
                 }
             },
             error: function() {
-                Swal.fire('Error', 'Hubo un problema al obtener las entradas.', 'error');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Problema para obtener las entradas.',
+                    confirmButtonColor: '#053684',
+                    confirmButtonText: 'OK'
+                });
             }
         });
     });

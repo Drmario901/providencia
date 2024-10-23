@@ -18,6 +18,9 @@
         require_lib_css('animate-css/animate-css.css');
         require_lib_js('jquery/jquery.min.js');
         require_lib_js('simple-datatables/simple-datatables.js');
+        require_lib_js('select2/select2.min.js');
+        require_lib_css('select2/select2.min.css');
+        require_lib_js('html2pdfjs/html2pdf.js');
         require_js('global.js');
         require_js('vehiculos/entrada.js');
         require_js('vehiculos/tableEntry.js');
@@ -25,10 +28,7 @@
         echo $favicon;
         echo $disable; 
     ?> 
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-
+    
     <style>
       .center-table {
         display: flex;
