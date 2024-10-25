@@ -48,7 +48,7 @@ if ($id_entrada) {
     $stmt->close();
 } else {
     $fecha_hoy = date('Y-m-d');
-    $query = "SELECT id, conductor, placa FROM vehiculos WHERE DATE(fecha_peso_tara) = '$fecha_hoy'";
+    $query = "SELECT id, conductor, placa FROM vehiculos WHERE DATE(fecha_peso_bruto) = '$fecha_hoy'";
     $result = $conexion->query($query);
 
     $entradas = [];
