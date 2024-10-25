@@ -11,13 +11,13 @@ mysqli_select_db($conexion, $bd);
 
 $vehiculoId = $_POST['vehiculoId']; 
 
-$query = "SELECT producto_ingresado FROM vehiculos WHERE id = '$vehiculoId'";
+$query = "SELECT productos_temp FROM vehiculos WHERE id = '$vehiculoId'";
 $result = mysqli_query($conexion, $query);
 
 $productos = [];
 
 if ($row = mysqli_fetch_assoc($result)) {
-    $productos = explode(',', $row['producto_ingresado']);
+    $productos = explode(',', $row['productos_temp']);
 }
 
 $productosFinal = [];

@@ -53,7 +53,7 @@ jQuery(document).ready(function($) {
                     perPage: 5,
                     perPageSelect: [5, 10, 20],
                     data: {
-                        headings: ["Numero", "Placa", "Conductor","Tipo", "Peso - Tara", "Fecha de Peso Tara", "Hora Entrada", "Código Producto", "Producto Ingresado", "Vehículo Activo", "Peso Bruto", "Peso Neto", "Hora Salida", "Estado", "Caso"],
+                        headings: ["Numero", "Placa", "Conductor","Tipo", "Peso Bruto", "Fecha", "Hora Entrada", "Código Producto", "Producto Ingresado", "Vehículo Activo", "Peso Tara", "Peso Neto", "Hora Salida", "Estado", "Caso"],
                         data: response.map(function(registro) {
                             let estatusClass = '';
                             if (registro.estatus === 'Pendiente') {
@@ -78,13 +78,13 @@ jQuery(document).ready(function($) {
                                 `<span class="font-bold">${registro.placa}</span>`,
                                 `<span class="font-bold">${registro.conductor}</span>`,
                                 `<span class="font-bold">${registro.tipo}</span>`,
-                                `<span class="font-bold">${registro.peso_tara}</span>`,
-                                `<span class="font-bold">${registro.fecha_peso_tara}</span>`,
+                                `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+                                `<span class="font-bold">${registro.fecha_peso_bruto}</span>`,
                                 `<span class="font-bold">${registro.hora_entrada}</span>`,
                                 `<span class="font-bold">${registro.codigo_productos}</span>`,
                                 `<span class="font-bold">${registro.producto_ingresado}</span>`,
                                 `<span class="font-bold">${registro.vehiculo_activo}</span>`,
-                                `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+                                `<span class="font-bold">${registro.peso_tara}</span>`,
                                 `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
                                 `<span class="font-bold">${registro.hora_salida || '-'}</span>`,
                                 `<span class="${estatusClass}">${registro.estatus}</span>`,
@@ -196,6 +196,34 @@ jQuery(document).ready(function($) {
     }
     
     function abrirModalCaso1(id) {
+        $.ajax({
+            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
+            method: 'POST',
+            data: { vehiculoId: id },
+            success: function(response) {
+                if (response.estatus === 'Finalizado') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Este vehículo ya ha finalizado su proceso de descarga.',
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#053684'
+                    });
+                    return; 
+                } else {
+                    iniciarModalCaso1(id);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al verificar el estatus del vehículo:', error);
+            }
+        });
+    }
+    
+    function iniciarModalCaso1(id) {
+        let pesoBrutoInicial = null; 
+        let pesoActual = null;
+        let pesoDescargadoTotal = 0; 
+    
         Swal.fire({
             title: 'Salida de Vehículo - Múltiples Productos',
             html: `
@@ -206,35 +234,30 @@ jQuery(document).ready(function($) {
                         </svg>
                     </button>
                     <form id="formSalidaCaso1" class="space-y-4">
-                        <div class="space-y-4">
-                            <div>
+                        <div class="space-y-4" id="productos-container">
+                            <div id="producto-section-1">
                                 <label for="producto" class="block text-sm font-medium text-gray-700 mb-1">Producto a descargar</label>
                                 <select id="producto" name="producto" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">Seleccione un producto</option>
                                 </select>
-                            </div>
-                            <div>
-                                <label for="pesoBruto" class="block text-sm font-medium text-gray-700 mb-1">Peso Bruto Actual</label>
-                                <div class="flex items-center space-x-2">
-                                    <input type="number" id="pesoBrutoCaso1" name="pesoBruto" 
-                                        class="flex-grow px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                        placeholder="Peso del vehículo" required>
-                                    <button type="button" id="leerPesoVehiculoCaso1" 
-                                        class="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-                                        Leer Peso
-                                    </button>
+                                <div class="mt-2">
+                                    <label for="pesoBruto" class="block text-sm font-medium text-gray-700 mb-1">Peso Bruto Actual</label>
+                                    <div class="flex items-center space-x-2">
+                                        <input type="number" id="pesoBrutoCaso1" name="pesoBruto" 
+                                            class="flex-grow px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                            placeholder="Peso del vehículo" required>
+                                        <button type="button" id="leerPesoVehiculoCaso1" 
+                                            class="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+                                            Leer Peso
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                            <div>
-                                <label for="pesoDescargado" class="block text-sm font-medium text-gray-700 mb-1">Peso Descargado</label>
-                                <input type="number" id="pesoDescargado" name="pesoDescargado" 
-                                    class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                    placeholder="Ingrese el peso del producto descargado" required>
-                            </div>
                         </div>
+                        <div id="notification" style="display:none;" class="mt-4 alert alert-success"></div>
                         <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
                         <div class="mt-6">
-                            <button type="submit" class="w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+                            <button type="button" id="registrarSalida" class="w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
                                 Registrar Salida Parcial
                             </button>
                         </div>
@@ -258,7 +281,7 @@ jQuery(document).ready(function($) {
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getProductsCase1.php',
                     method: 'POST',
-                    data: { vehiculoId: id }, 
+                    data: { vehiculoId: id },
                     success: function(response) {
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
@@ -275,12 +298,24 @@ jQuery(document).ready(function($) {
                     }
                 });
     
+                $.ajax({
+                    url: wb_subdir + '/php/vehiculos/getTaraCase1.php',
+                    method: 'POST',
+                    data: { vehiculoId: id },
+                    success: function(response) {
+                        pesoBrutoInicial = parseFloat(response.pesoBruto);
+                        pesoActual = pesoBrutoInicial;
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener el peso bruto inicial:', error);
+                    }
+                });
+    
                 $("#leerPesoVehiculoCaso1").on("click", function() {
                     let $button = $(this);
                     let originalButtonText = $button.html();
-                    
-                    $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...')
-                           .prop('disabled', true);
+    
+                    $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
     
                     $.ajax({
                         url: 'http://localhost:81/index',
@@ -288,8 +323,8 @@ jQuery(document).ready(function($) {
                         success: function(response) {
                             const match = response.match(/[-+]?\d*\.?\d+/);
                             if (match) {
-                                const peso = match[0];
-                                $('#pesoBrutoCaso1').val(peso); 
+                                pesoActual = parseFloat(match[0]);
+                                $('#pesoBrutoCaso1').val(pesoActual);
                             }
                         },
                         error: function(xhr, status, error) {
@@ -302,29 +337,61 @@ jQuery(document).ready(function($) {
                             });
                         },
                         complete: function() {
-                            $button.html(originalButtonText).prop('disabled', false); 
-                            lucide.createIcons(); 
+                            $button.html(originalButtonText).prop('disabled', false);
+                            lucide.createIcons();
                         }
                     });
                 });
     
-                $('#formSalidaCaso1').on('submit', function(e) {
+                $('#registrarSalida').on('click', function(e) {
                     e.preventDefault();
-                    let formData = new FormData(this);
+    
+                    const productoSeleccionado = $('#producto').val();
+                    const pesoBrutoActual = parseFloat($('#pesoBrutoCaso1').val());
+                    const pesoDescargado = pesoBrutoInicial - pesoBrutoActual;
+    
+                    if (!productoSeleccionado || isNaN(pesoDescargado) || pesoDescargado <= 0) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Debe seleccionar un producto y leer un peso válido.',
+                            confirmButtonColor: '#053684',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+    
+                    pesoDescargadoTotal += pesoDescargado;
+                    pesoBrutoInicial = pesoBrutoActual;
+                    pesoTara = pesoActual - pesoDescargadoTotal;
+    
                     $.ajax({
-                        url: 'ruta_para_registrar_salida_multiple.php',
+                        url: wb_subdir + '/php/vehiculos/saveVehicleExitCase1.php',
                         method: 'POST',
-                        data: formData,
-                        processData: false,
-                        contentType: false,
+                        data: {
+                            vehiculoId: id,
+                            producto: productoSeleccionado,
+                            pesoTara: pesoTara, 
+                            pesoNeto: pesoActual - pesoTara 
+                        },
                         success: function(response) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Salida parcial registrada',
-                                text: 'Producto descargado exitosamente.',
-                                confirmButtonText: 'OK'
-                            });
-                            cargarRegistros($('#fecha-table').val());
+                            $('#producto option:selected').remove();
+                            $('#pesoBrutoCaso1').val('');
+    
+                            if ($('#producto option').length > 1) {
+                                $("#notification").html(`<div class="alert alert-success">Producto ${productoSeleccionado} registrado correctamente.</div>`)
+                                    .fadeIn().delay(1500).fadeOut();
+                            } else {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Proceso completado',
+                                    text: 'Todos los productos han sido descargados. El proceso ha finalizado.',
+                                    confirmButtonText: 'OK'
+                                }).then(() => {
+                                    Swal.close();
+                                    cargarRegistros($('#fecha-table').val());
+                                });
+                            }
                         },
                         error: function() {
                             Swal.fire({
@@ -339,7 +406,6 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    
     
     function abrirModalCaso2(id) {
         Swal.fire({
@@ -408,8 +474,8 @@ jQuery(document).ready(function($) {
             conductor: $('#driverName').val(),
             cedula: $('#driver').val(),
             tipo: $('#plateType').val(),
-            peso_tara: $('#entryWeight').val(),
-            fecha_peso_tara: $('#fecha-form').val(),
+            peso_bruto: $('#entryWeight').val(),
+            fecha_peso_bruto: $('#fecha-form').val(),
             hora_entrada: $('#hiddenTimeInput').val(),
             vehiculo_activo: 'Sí',
             caso: $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2)  

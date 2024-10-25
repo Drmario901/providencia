@@ -1,24 +1,3 @@
-
- function updateTimeInput() {
-        const now = new Date();
-        const hours = now.getHours().toString().padStart(2, '0');
-        const minutes = now.getMinutes().toString().padStart(2, '0');
-        const ampm = hours >= 12 ? 'PM' : 'AM';
-
-        const formattedDateTime = `${hours % 12 || 12}:${minutes} ${ampm}`;
-        
-        const hiddenInput = document.getElementById('hiddenTimeInput');
-        if (hiddenInput) {
-            hiddenInput.value = formattedDateTime;  
-        }
-}
-
-    window.onload = function() {
-        updateTimeInput(); 
-        setInterval(updateTimeInput, 60000); 
-    };
-
-
 jQuery(document).ready(function($) {  
 
     //READ WEIGHT FUNCTION
