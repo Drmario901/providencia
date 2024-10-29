@@ -42,18 +42,10 @@ jQuery(document).ready(function($) {
                         showConfirmButton: false,
                         allowOutsideClick: false,
                         showClass: {
-                            popup: `
-                              animate__animated
-                              animate__fadeInUp
-                              animate__faster
-                            `
+                            popup: `animate__animated animate__fadeInUp animate__faster`
                         },
                         hideClass: {
-                            popup: `
-                              animate__animated
-                              animate__fadeOutDown
-                              animate__faster
-                            `
+                            popup: `animate__animated animate__fadeOutDown animate__faster`
                         },
                         didOpen: () => {
                             $("#close-modal").on("click", function() {
@@ -91,21 +83,23 @@ jQuery(document).ready(function($) {
                                             Swal.fire({
                                                 title: 'Ticket Generado',
                                                 html: `
-                                                    <div style="width: 240px; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000;">
-                                                        <div style="text-align: center; font-weight: bold;">Avícola La Providencia</div>
-                                                        <div style="text-align: center;">Ticket Romana</div>
-                                                        <hr>
-                                                        <div>Fecha: ${data.fecha}</div>
-                                                        <div>Chofer: ${data.chofer}</div>
-                                                        <div>Cédula: ${data.cedula}</div>
-                                                        <div>Placa: ${data.placa}</div>
-                                                        <div>Destino: ${data.destino}</div>
-                                                        <div>Producto: ${data.producto}</div>
-                                                        <div>Peso Tara: ${data.peso_tara}</div>
-                                                        <div>Peso Bruto: ${data.peso_bruto}</div>
-                                                        <div>Peso Neto: ${data.peso_neto}</div>
-                                                        <div>Silo de Carga: ${data.silo}</div>
-                                                        <div>Hora: ${data.hora}</div>
+                                                    <div style="width: 80mm; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000; background-color: #fff;">
+                                                        <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">Avícola La Providencia</div>
+                                                        <div style="text-align: center; margin-bottom: 10px;">Ticket Romana</div>
+                                                        <hr style="border-top: 1px dashed #000; margin: 10px 0;">
+                                                        <div style="margin-bottom: 5px;">Fecha: ${data.fecha}</div>
+                                                        <div style="margin-bottom: 5px;">Nota: ${data.nota}</div>
+                                                        <div style="margin-bottom: 5px;">Chofer: ${data.chofer}</div>
+                                                        <div style="margin-bottom: 5px;">Cédula: ${data.cedula}</div>
+                                                        <div style="margin-bottom: 5px;">Placa: ${data.placa}</div>
+                                                        <div style="margin-bottom: 5px;">Destino: ${data.destino}</div>
+                                                        <div style="margin-bottom: 5px;">Producto: ${data.producto}</div>
+                                                        <div style="margin-bottom: 5px;">Peso Tara: ${data.peso_tara}</div>
+                                                        <div style="margin-bottom: 5px;">Peso Bruto: ${data.peso_bruto}</div>
+                                                        <div style="margin-bottom: 5px;">Peso Neto: ${data.peso_neto}</div>
+                                                        <div style="border: 1px solid #000; text-align: center; padding: 5px; font-weight: bold; margin: 10px 0;">Silo de Carga: ${data.silo}</div>
+                                                        <div style="margin-top: 10px;">Hora: ${data.hora}</div>
+                                                        <hr style="border-top: 1px dashed #000; margin-top: 10px;">
                                                     </div>
                                                 `,
                                                 confirmButtonText: 'Ver',
@@ -116,30 +110,32 @@ jQuery(document).ready(function($) {
                                                 if (result.isConfirmed) {
                                                     const ticketContent = document.createElement('div');
                                                     ticketContent.innerHTML = `
-                                                        <div style="width: 240px; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000;">
-                                                            <div style="text-align: center; font-weight: bold;">Avícola La Providencia</div>
-                                                            <div style="text-align: center;">Ticket Romana</div>
-                                                            <hr>
-                                                            <div>Fecha: ${data.fecha}</div>
-                                                            <div>Conductor: ${data.chofer}</div>
-                                                            <div>Cédula: ${data.cedula}</div>
-                                                            <div>Placa: ${data.placa}</div>
-                                                            <div>Destino: ${data.destino}</div>
-                                                            <div>Producto: ${data.producto}</div>
-                                                            <div>Peso Tara: ${data.peso_tara}</div>
-                                                            <div>Peso Bruto: ${data.peso_bruto}</div>
-                                                            <div>Peso Neto: ${data.peso_neto}</div>
-                                                            <div>Silo de Carga: ${data.silo}</div>
-                                                            <div>Hora: ${data.hora}</div>
+                                                        <div style="width: 80mm; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000; background-color: #fff;">
+                                                            <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">Avícola La Providencia</div>
+                                                            <div style="text-align: center; margin-bottom: 10px;">Ticket Romana</div>
+                                                            <hr style="border-top: 1px dashed #000; margin: 10px 0;">
+                                                            <div style="margin-bottom: 5px;">Fecha: ${data.fecha}</div>
+                                                            <div style="margin-bottom: 5px;">Nota: ${data.nota}</div>
+                                                            <div style="margin-bottom: 5px;">Chofer: ${data.chofer}</div>
+                                                            <div style="margin-bottom: 5px;">Cédula: ${data.cedula}</div>
+                                                            <div style="margin-bottom: 5px;">Placa: ${data.placa}</div>
+                                                            <div style="margin-bottom: 5px;">Destino: ${data.destino}</div>
+                                                            <div style="margin-bottom: 5px;">Producto: ${data.producto}</div>
+                                                            <div style="margin-bottom: 5px;">Peso Tara: ${data.peso_tara}</div>
+                                                            <div style="margin-bottom: 5px;">Peso Bruto: ${data.peso_bruto}</div>
+                                                            <div style="margin-bottom: 5px;">Peso Neto: ${data.peso_neto}</div>
+                                                            <div style="border: 1px solid #000; text-align: center; padding: 5px; font-weight: bold; margin: 10px 0;">Silo de Carga: ${data.silo}</div>
+                                                            <div style="margin-top: 10px;">Hora: ${data.hora}</div>
+                                                            <hr style="border-top: 1px dashed #000; margin-top: 10px;">
                                                         </div>
                                                     `;
                                                     
                                                     const options = {
-                                                        margin: 0,
+                                                        margin: [5, 0, 5, 0],
                                                         filename: 'ticket_romana.pdf',
                                                         image: { type: 'jpeg', quality: 0.98 },
                                                         html2canvas: { scale: 2 },
-                                                        jsPDF: { unit: 'pt', format: [226.77, 841.89], orientation: 'portrait' } 
+                                                        jsPDF: { unit: 'mm', format: [80, 160], orientation: 'portrait' } 
                                                     };
 
                                                     html2pdf().set(options).from(ticketContent).toPdf().get('pdf').then(function (pdf) {

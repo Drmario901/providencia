@@ -30,21 +30,32 @@
     ?> 
     
     <style>
-      .center-table {
-        display: flex;
-        justify-content: center;
-        width: 100%;
+      .table-container {
         overflow-x: auto;
+        max-width: 100%;
+      }
+      table {
+        width: 100%;
+        min-width: 1000px;
+      }
+      @media (max-width: 640px) {
+        .responsive-table {
+          font-size: 12px;
+        }
+        .responsive-table th,
+        .responsive-table td {
+          padding: 0.5rem;
+        }
       }
     </style>
   </head>
   
   <body class="bg-gray-100">
     <?php require __DIR__. '/../widgets/navbar.php'; ?>
-    <div class="flex pt-16 overflow-hidden">
+    <div class="flex flex-col lg:flex-row pt-16 overflow-hidden">
         <?php require __DIR__. '/../widgets/aside.php'; ?>
         
-        <div id="main-content" class="relative w-full h-full p-6 bg-white shadow-md rounded-lg dark:bg-gray-900 lg:ml-64">
+        <div id="main-content" class="relative w-full h-full p-4 lg:p-6 bg-white shadow-md rounded-lg dark:bg-gray-900 lg:ml-64">
             <main>
                 <nav class="flex mb-5" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
@@ -65,10 +76,10 @@
                 <div class="bg-white shadow-lg rounded-lg p-4 dark:bg-gray-800">
                     <div class="container mx-auto px-4 py-8">
                         <header class="text-center mb-8">
-                            <h1 class="text-3xl font-bold text-gray-800 dark:text-white">Registro de Entrada de Vehículos</h1>
+                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Registro de Entrada de Vehículos</h1>
                         </header>
 
-                        <div class="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow mb-8">
+                        <div class="bg-gray-50 dark:bg-gray-700 p-4 lg:p-6 rounded-lg shadow mb-8">
                             <form id="entryForm" class="space-y-4">
                                 <div class="relative">
                                     <label for="plate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placa</label>
@@ -143,7 +154,7 @@
                                     </div>
                                 </div>
                                 <div>
-                                <label for="product" id="productLabel" class="hidden block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Producto</label>
+                                <label for="product" id="productLabel" class="hidden block text-sm  font-medium  text-gray-700 dark:text-gray-300 mb-1">Producto</label>
                                 <select name="product" id="productSelect" class="hidden w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </select>
                                 <label for="multipleProductSelect" id="multipleProductLabel" class="hidden block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccione  productos</label>
@@ -151,7 +162,6 @@
                                 </select>
                                 </div>
                                 <div class="relative">
-            
                                     <label for="entryWeight" class="hidden block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Peso de Entrada</label>
                                     <div class="flex">
                                         <input type="text" name="entryWeight" id="entryWeight" class="hidden rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
@@ -168,34 +178,35 @@
                             </form>
                         </div>
                         
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-    <div class="mb-4 flex items-end space-x-4">
-        <div class="flex-grow">
-            <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
-            <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
-        </div>
-        <button type="button" id="generateTicket" class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            <i data-lucide="ticket" class="w-5 h-5 mr-2"></i>
-            Generar ticket
-        </button>
-    </div>
-                            <div class="overflow-x-auto">
-                                <table id="default-table" class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-lg shadow">
+                            <div class="mb-4 flex flex-col lg:flex-row lg:items-end space-y-4 lg:space-y-0 lg:space-x-4">
+                                <div class="flex-grow">
+                                    <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
+                                    <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                </div>
+                                <button type="button" id="generateTicket" class="inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <i data-lucide="ticket" class="w-5 h-5 mr-2"></i>
+                                    Generar ticket
+                                </button>
+                            </div>
+                            <div class="table-container">
+                                <table id="default-table" class="responsive-table min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm lg:text-base">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <tr>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso - Tara</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Peso Tara</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo Producto</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto ingresado</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehiculo Activo</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Bruto</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Neto</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Entrada</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Salida</th>
-                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso - Tara</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Peso Tara</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo Producto</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto ingresado</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehiculo Activo</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Bruto</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Neto</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Entrada</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Salida</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Caso</th>
                                         </tr>
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700">

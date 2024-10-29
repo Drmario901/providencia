@@ -10,7 +10,7 @@ $silo = $_POST['silo'] ?? NULL;
 $destino = $_POST['destino'] ?? NULL;
 
 if ($id_entrada) {
-    $query = "SELECT conductor, cedula, placa, producto_ingresado, peso_tara, peso_bruto FROM vehiculos WHERE id = ?";
+    $query = "SELECT conductor, cedula, placa, producto_ingresado, peso_tara, peso_bruto, nota  FROM vehiculos WHERE id = ?";
     $stmt = $conexion->prepare($query);
     $stmt->bind_param("i", $id_entrada);
     $stmt->execute();
@@ -24,11 +24,13 @@ if ($id_entrada) {
         $producto = $row['producto_ingresado'];
         $peso_tara = $row['peso_tara'];
         $peso_bruto = $row['peso_bruto'];
-        $peso_neto = $peso_bruto - $peso_tara;
+        $peso_neto = round($peso_bruto - $peso_tara, 2);
+        $nota = $row['nota'];
 
         $response = [
             'chofer' => $chofer,
             'cedula' => $cedula,
+            'nota' => $nota,
             'placa' => $placa,
             'producto' => $producto,
             'peso_tara' => $peso_tara,
