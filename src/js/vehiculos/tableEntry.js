@@ -190,6 +190,7 @@ jQuery(document).ready(function($) {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            confirmButtonColor: '#053684',
             showClass: {
                 popup: `animate__animated animate__fadeInUp animate__faster`
             },
@@ -324,6 +325,7 @@ jQuery(document).ready(function($) {
                                 icon: 'error',
                                 title: 'Error',
                                 text: 'Ocurrió un error al registrar la salida.',
+                                confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
                         }
@@ -405,6 +407,7 @@ jQuery(document).ready(function($) {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            confirmButtonColor: '#053684',
             showClass: {
                 popup: `animate__animated animate__fadeInUp animate__faster`
             },
@@ -537,6 +540,7 @@ jQuery(document).ready(function($) {
                                 icon: 'error',
                                 title: 'Error',
                                 text: 'Ocurrió un error al registrar la salida.',
+                                confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
                         }
@@ -654,6 +658,7 @@ jQuery(document).ready(function($) {
                                 icon: 'success',
                                 title: 'Salida registrada',
                                 text: 'El vehículo ha salido exitosamente.',
+                                confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
                             cargarRegistros($('#fecha-table').val()); 
@@ -663,6 +668,7 @@ jQuery(document).ready(function($) {
                                 icon: 'error',
                                 title: 'Error',
                                 text: 'Ocurrió un error al registrar la salida.',
+                                confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
                         }
@@ -682,7 +688,22 @@ jQuery(document).ready(function($) {
 
     $('#entryForm').on('submit', function(e) {
         e.preventDefault();
+    
+        let caso = $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2);
 
+        if (!$('#plate').val() || !$('#driverName').val() || !$('#driver').val() || !$('#plateType').val() ||
+            !$('#entryWeight').val() || !$('#fecha-form').val() || 
+            (!$('#product-entry').is(':checked') && !$('#multiple-products').is(':checked') && caso !== 2)) {
+            
+            Swal.fire({
+                icon: 'warning',
+                title: 'Por favor completa todos los campos obligatorios',
+                confirmButtonColor: '#053684',
+                showConfirmButton: true
+            });
+            return;
+        }
+    
         let data = {
             placa: $('#plate').val(),
             conductor: $('#driverName').val(),
@@ -692,9 +713,9 @@ jQuery(document).ready(function($) {
             fecha_peso_bruto: $('#fecha-form').val(),
             hora_entrada: $('#hiddenTimeInput').val(),
             vehiculo_activo: 'Sí',
-            caso: $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2)  
+            caso: caso 
         };
-
+    
         if (data.caso === 0) {
             data.codigo_productos = $('#productSelect').val();
             data.producto_ingresado = $('#productSelect option:selected').text();
@@ -704,10 +725,10 @@ jQuery(document).ready(function($) {
                 return $(this).text();
             }).get().join(',');
         } else {
-            data.codigo_productos = 'Vacío';
-            data.producto_ingresado = 'Vacío';
+            data.codigo_productos = 'Vacío'; 
+            data.producto_ingresado = 'Vacío'; 
         }
-
+    
         $.ajax({
             url: wb_subdir + '/php/vehiculos/registerVehicleTable.php',
             method: 'POST',
@@ -719,6 +740,9 @@ jQuery(document).ready(function($) {
                     confirmButtonColor: '#053684',
                     showConfirmButton: true
                 });
+                $('#entryForm')[0].reset(); 
+                $('#product-entry, #multiple-products').prop('checked', false); 
+                $('#fecha-form').val(''); 
                 cargarRegistros($('#fecha-table').val());
             },
             error: function(xhr, status, error) {
@@ -727,4 +751,6 @@ jQuery(document).ready(function($) {
             }
         });
     });
+    
+    
 });

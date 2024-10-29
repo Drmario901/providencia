@@ -14,7 +14,7 @@ $vehiculoId = $_POST['vehiculoId'];
 $pesoBruto = $_POST['pesoBruto'];
 $exitHour = date('H:i:s');
 
-$querySalida = "UPDATE vehiculos SET estatus = 'Finalizado', peso_bruto = '$pesoBruto', peso_tara = '$pesoBruto', peso_neto = '$pesoBruto', hora_salida = '$exitHour' WHERE id = '$vehiculoId'";
+$querySalida = "UPDATE vehiculos SET estatus = 'Finalizado', peso_tara = '$pesoBruto', peso_neto = '$pesoBruto', hora_salida = '$exitHour' WHERE id = '$vehiculoId'";
 
 if (mysqli_query($conexion, $querySalida)) {
     echo json_encode(['status' => 'finalizado']);
