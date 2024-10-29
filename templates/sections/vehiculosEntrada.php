@@ -68,7 +68,7 @@
                       <li>
                         <div class="flex items-center">
                           <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                          <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-primary-500">Entrada</a>
+                          <a href="#" class="ml-1 text-gray-700 hover:text-primary-600 md:ml-2 dark:text-gray-300 dark:hover:text-primary-500">Entrada y Salida</a>
                         </div>
                       </li>
                     </ol>
@@ -76,7 +76,7 @@
                 <div class="bg-white shadow-lg rounded-lg p-4 dark:bg-gray-800">
                     <div class="container mx-auto px-4 py-8">
                         <header class="text-center mb-8">
-                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Registro de Entrada de Vehículos</h1>
+                            <h1 class="text-2xl lg:text-3xl font-bold text-gray-800 dark:text-white">Registro de Entrada y Salida de Vehículos</h1>
                         </header>
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 lg:p-6 rounded-lg shadow mb-8">
