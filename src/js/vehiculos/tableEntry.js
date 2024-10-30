@@ -686,11 +686,187 @@ jQuery(document).ready(function($) {
     let fechaInicial = $('#fecha-table').val();
     cargarRegistros(fechaInicial);
 
+    //CHECKBOXES BEHAVIOR
+    const $productSelect = $("#productSelect"); 
+    const $multipleProductSelect = $("#multipleProductSelect"); 
+    const $productLabel = $("#productLabel");
+    const $multipleProductLabel = $("#multipleProductLabel");
+    const $productRegister = $("#registerForm");
+    const $productWeight = $("#entryWeight");
+    const $productRead = $("#readWeight");
+    const $productEntryCheckbox = $("#product-entry"); 
+    const $multipleProductsCheckbox = $("#multiple-products"); 
+    const $noProductEntryCheckbox = $("#no-product-entry"); 
+
+    function initializeSelect2() {
+        $productSelect.select2({
+            placeholder: "Buscar producto...",
+            width: '100%',
+            allowClear: true
+        });
+    }
+
+    function initializeMultipleSelect2() {
+        $multipleProductSelect.select2({
+            placeholder: "Selecciona varios productos...",
+            width: '100%',
+            allowClear: true
+        });
+    }
+
+    function destroySelect2() {
+        if ($productSelect.hasClass("select2-hidden-accessible")) {
+            $productSelect.select2('destroy').hide(); 
+        }
+    }
+
+    function destroyMultipleSelect2() {
+        if ($multipleProductSelect.hasClass("select2-hidden-accessible")) {
+            $multipleProductSelect.select2('destroy').hide(); 
+        }
+    }
+
+    destroySelect2();
+    destroyMultipleSelect2();
+    $productRegister.addClass('hidden');
+    $productLabel.addClass('hidden');
+    $multipleProductLabel.addClass('hidden');
+    $productWeight.addClass('hidden');
+    $productRead.addClass('hidden');
+    $multipleProductSelect.addClass('hidden');
+
+    // Caso 1
+    $productEntryCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+            $productSelect.show();
+            initializeSelect2();
+            $productRegister.removeClass('hidden');
+            $productLabel.removeClass('hidden');
+            $productWeight.removeClass('hidden');
+            $productRead.removeClass('hidden');
+
+            $multipleProductsCheckbox.prop('disabled', true);
+            $noProductEntryCheckbox.prop('disabled', true);
+
+            $productSelect.empty();
+            $productSelect.append($("<option>", {
+                value: '',
+                text: ''
+            }));
+
+            $.ajax({
+                url: wb_subdir + '/php/inventario/productsCode.php',
+                method: 'POST',
+                dataType: 'JSON',
+                success: function(data) {
+                    const productos = data.data;
+
+                    $.each(productos, function(index, producto) {
+                        $productSelect.append($("<option>", {
+                            value: producto.codigo,
+                            text: producto.nombre
+                        }));
+                    });
+
+                    $productSelect.trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al cargar los datos:', error);
+                }
+            });
+        } else {
+            destroySelect2();
+            $productRegister.addClass('hidden');
+            $productLabel.addClass('hidden');
+            $productWeight.addClass('hidden');
+            $productRead.addClass('hidden');
+
+            $multipleProductsCheckbox.prop('disabled', false);
+            $noProductEntryCheckbox.prop('disabled', false);
+        }
+    });
+
+    // Caso 2
+    $multipleProductsCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+            $multipleProductSelect.removeClass('hidden');
+            $multipleProductLabel.removeClass('hidden'); 
+            initializeMultipleSelect2();
+            $productRegister.removeClass('hidden');
+            $productWeight.removeClass('hidden');
+            $productRead.removeClass('hidden');
+
+            $productEntryCheckbox.prop('disabled', true);
+            $noProductEntryCheckbox.prop('disabled', true);
+
+            $multipleProductSelect.empty();
+
+            $.ajax({
+                url: wb_subdir + '/php/inventario/productsCode.php',
+                method: 'POST',
+                dataType: 'JSON',
+                success: function(data) {
+                    const productos = data.data;
+
+                    $.each(productos, function(index, producto) {
+                        $multipleProductSelect.append($("<option>", {
+                            value: producto.codigo,
+                            text: producto.nombre
+                        }));
+                    });
+
+                    $multipleProductSelect.trigger('change');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al cargar los datos:', error);
+                }
+            });
+        } else {
+            destroyMultipleSelect2();
+            $productRegister.addClass('hidden');
+            $multipleProductLabel.addClass('hidden'); 
+            $productWeight.addClass('hidden');
+            $productRead.addClass('hidden');
+
+            $productEntryCheckbox.prop('disabled', false);
+            $noProductEntryCheckbox.prop('disabled', false);
+        }
+    });
+
+    // Caso 3
+    $noProductEntryCheckbox.change(function () {
+        if ($(this).is(':checked')) {
+            $productRegister.removeClass('hidden');
+            $productWeight.removeClass('hidden');
+            $productRead.removeClass('hidden');
+            $productSelect.empty();
+            $productSelect.append($("<option>", {
+                value: 'Vacio',
+                text: 'Vacío'
+            }));
+
+            $productEntryCheckbox.prop('disabled', true);
+            $multipleProductsCheckbox.prop('disabled', true);
+
+            destroySelect2();
+            destroyMultipleSelect2();
+            $productLabel.addClass('hidden');
+            $multipleProductLabel.addClass('hidden');
+            $multipleProductSelect.addClass('hidden');
+        } else {
+            $productRegister.addClass('hidden');
+            $productWeight.addClass('hidden');
+            $productRead.addClass('hidden');
+            $productEntryCheckbox.prop('disabled', false);
+            $multipleProductsCheckbox.prop('disabled', false);
+        }
+    });
+
     $('#entryForm').on('submit', function(e) {
         e.preventDefault();
-    
-        let caso = $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2);
 
+        let caso = $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2);
+    
         if (!$('#plate').val() || !$('#driverName').val() || !$('#driver').val() || !$('#plateType').val() ||
             !$('#entryWeight').val() || !$('#fecha-form').val() || 
             (!$('#product-entry').is(':checked') && !$('#multiple-products').is(':checked') && caso !== 2)) {
@@ -728,21 +904,38 @@ jQuery(document).ready(function($) {
             data.codigo_productos = 'Vacío'; 
             data.producto_ingresado = 'Vacío'; 
         }
-    
+
         $.ajax({
             url: wb_subdir + '/php/vehiculos/registerVehicleTable.php',
             method: 'POST',
             data: data,
             success: function() {
+                console.log(data);
                 Swal.fire({
                     icon: 'success',
                     title: 'Registro agregado',
                     confirmButtonColor: '#053684',
                     showConfirmButton: true
                 });
-                $('#entryForm')[0].reset(); 
-                $('#product-entry, #multiple-products').prop('checked', false); 
-                $('#fecha-form').val(''); 
+    
+                $('#entryForm')[0].reset();
+    
+                const today = new Date().toISOString().split('T')[0];
+                $('#fecha-form').val(today);
+    
+                $('#product-entry, #multiple-products, #no-product-entry').prop('checked', false);
+                destroySelect2();
+                destroyMultipleSelect2();
+            
+                $productEntryCheckbox.prop('disabled', false);
+                $multipleProductsCheckbox.prop('disabled', false);
+                $noProductEntryCheckbox.prop('disabled', false);
+                $productLabel.addClass('hidden');
+                $multipleProductLabel.addClass('hidden');
+                $productRegister.addClass('hidden');
+                $productWeight.addClass('hidden');
+                $productRead.addClass('hidden');
+                $multipleProductSelect.addClass('hidden');
                 cargarRegistros($('#fecha-table').val());
             },
             error: function(xhr, status, error) {
@@ -750,7 +943,5 @@ jQuery(document).ready(function($) {
                 Swal.fire('Error al registrar el vehículo', '', 'error');
             }
         });
-    });
-    
-    
+    });  
 });

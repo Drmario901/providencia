@@ -32,187 +32,7 @@ jQuery(document).ready(function($) {
             }
         });
     });
-
-
-    //CHECKBOXES BEHAVIOR
-    const $productSelect = $("#productSelect"); 
-    const $multipleProductSelect = $("#multipleProductSelect"); 
-    const $productLabel = $("#productLabel");
-    const $multipleProductLabel = $("#multipleProductLabel");
-    const $productRegister = $("#registerForm");
-    const $productWeight = $("#entryWeight");
-    const $productRead = $("#readWeight");
-    const $productEntryCheckbox = $("#product-entry"); 
-    const $multipleProductsCheckbox = $("#multiple-products"); 
-    const $noProductEntryCheckbox = $("#no-product-entry"); 
-
-    function initializeSelect2() {
-        $productSelect.select2({
-            placeholder: "Buscar producto...",
-            width: '100%',
-            allowClear: true
-        });
-    }
-
-    function initializeMultipleSelect2() {
-        $multipleProductSelect.select2({
-            placeholder: "Selecciona varios productos...",
-            width: '100%',
-            allowClear: true
-        });
-    }
-
-    function destroySelect2() {
-        if ($productSelect.hasClass("select2-hidden-accessible")) {
-            $productSelect.select2('destroy').hide(); 
-        }
-    }
-
-    function destroyMultipleSelect2() {
-        if ($multipleProductSelect.hasClass("select2-hidden-accessible")) {
-            $multipleProductSelect.select2('destroy').hide(); 
-        }
-    }
-
-    destroySelect2();
-    destroyMultipleSelect2();
-    $productRegister.addClass('hidden');
-    $productLabel.addClass('hidden');
-    $multipleProductLabel.addClass('hidden');
-    $productWeight.addClass('hidden');
-    $productRead.addClass('hidden');
-    $multipleProductSelect.addClass('hidden');
-
-    // Caso 1
-    $productEntryCheckbox.change(function () {
-        if ($(this).is(':checked')) {
-            $productSelect.show();
-            initializeSelect2();
-            $productRegister.removeClass('hidden');
-            $productLabel.removeClass('hidden');
-            $productWeight.removeClass('hidden');
-            $productRead.removeClass('hidden');
-
-            $multipleProductsCheckbox.prop('disabled', true);
-            $noProductEntryCheckbox.prop('disabled', true);
-
-            $productSelect.empty();
-            $productSelect.append($("<option>", {
-                value: '',
-                text: ''
-            }));
-
-            $.ajax({
-                url: wb_subdir + '/php/inventario/productsCode.php',
-                method: 'POST',
-                dataType: 'JSON',
-                success: function(data) {
-                    const productos = data.data;
-
-                    $.each(productos, function(index, producto) {
-                        $productSelect.append($("<option>", {
-                            value: producto.codigo,
-                            text: producto.nombre
-                        }));
-                    });
-
-                    $productSelect.trigger('change');
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al cargar los datos:', error);
-                }
-            });
-        } else {
-            destroySelect2();
-            $productRegister.addClass('hidden');
-            $productLabel.addClass('hidden');
-            $productWeight.addClass('hidden');
-            $productRead.addClass('hidden');
-
-            $multipleProductsCheckbox.prop('disabled', false);
-            $noProductEntryCheckbox.prop('disabled', false);
-        }
-    });
-
-    // Caso 2
-    $multipleProductsCheckbox.change(function () {
-        if ($(this).is(':checked')) {
-            $multipleProductSelect.removeClass('hidden');
-            $multipleProductLabel.removeClass('hidden'); 
-            initializeMultipleSelect2();
-            $productRegister.removeClass('hidden');
-            $productWeight.removeClass('hidden');
-            $productRead.removeClass('hidden');
-
-            $productEntryCheckbox.prop('disabled', true);
-            $noProductEntryCheckbox.prop('disabled', true);
-
-            $multipleProductSelect.empty();
-
-            $.ajax({
-                url: wb_subdir + '/php/inventario/productsCode.php',
-                method: 'POST',
-                dataType: 'JSON',
-                success: function(data) {
-                    const productos = data.data;
-
-                    $.each(productos, function(index, producto) {
-                        $multipleProductSelect.append($("<option>", {
-                            value: producto.codigo,
-                            text: producto.nombre
-                        }));
-                    });
-
-                    $multipleProductSelect.trigger('change');
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error al cargar los datos:', error);
-                }
-            });
-        } else {
-            destroyMultipleSelect2();
-            $productRegister.addClass('hidden');
-            $multipleProductLabel.addClass('hidden'); 
-            $productWeight.addClass('hidden');
-            $productRead.addClass('hidden');
-
-            $productEntryCheckbox.prop('disabled', false);
-            $noProductEntryCheckbox.prop('disabled', false);
-        }
-    });
-
-    // Caso 3
-    $noProductEntryCheckbox.change(function () {
-        if ($(this).is(':checked')) {
-            $productRegister.removeClass('hidden');
-            $productWeight.removeClass('hidden');
-            $productRead.removeClass('hidden');
-            $productSelect.empty();
-            $productSelect.append($("<option>", {
-                value: 'Vacio',
-                text: 'Vacío'
-            }));
-
-            $productEntryCheckbox.prop('disabled', true);
-            $multipleProductsCheckbox.prop('disabled', true);
-
-            destroySelect2();
-            destroyMultipleSelect2();
-            $productLabel.addClass('hidden');
-            $multipleProductLabel.addClass('hidden');
-            $multipleProductSelect.addClass('hidden');
-        } else {
-            $productRegister.addClass('hidden');
-            $productWeight.addClass('hidden');
-            $productRead.addClass('hidden');
-            $productEntryCheckbox.prop('disabled', false);
-            $multipleProductsCheckbox.prop('disabled', false);
-        }
-    });
-
-
-
-
+    
     //REGISTER PLATE MODAL
     $('#registerPlate').on('click', function() {
         Swal.fire({
@@ -469,6 +289,8 @@ jQuery(document).ready(function($) {
                     }
     
                     const fullIdCard = `${idType}${idCard}`;
+                    const name = `${driverName}`;
+                    const type = `${idType}`;
                     formData.set('idCard', fullIdCard); 
     
                     $.ajax({
@@ -487,6 +309,8 @@ jQuery(document).ready(function($) {
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     $("#driver").val(fullIdCard);
+                                    $("#driverName").val(name);
+                                    $("#plateType").val(type);
                                     Swal.close();  
                                 });
                             } else {

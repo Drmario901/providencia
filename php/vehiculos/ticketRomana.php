@@ -1,5 +1,5 @@
 <?php
-require __DIR__. '/../conexion.php'; 
+require __DIR__ . '/../conexion.php'; 
 $bd = "serviaves_web";
 mysqli_select_db($conexion, $bd);
 
@@ -8,9 +8,12 @@ date_default_timezone_set('America/Caracas');
 $id_entrada = $_POST['id_entrada'] ?? NULL;
 $silo = $_POST['silo'] ?? NULL;
 $destino = $_POST['destino'] ?? NULL;
+$fecha_seleccionada = $_POST['fecha'] ?? date('Y-m-d'); 
 
 if ($id_entrada) {
-    $query = "SELECT conductor, cedula, placa, producto_ingresado, peso_tara, peso_bruto, nota  FROM vehiculos WHERE id = ?";
+    $query = "SELECT conductor, cedula, placa, producto_ingresado, peso_tara, peso_bruto, nota 
+              FROM vehiculos 
+              WHERE id = ? AND estatus = 'Finalizado'";
     $stmt = $conexion->prepare($query);
     $stmt->bind_param("i", $id_entrada);
     $stmt->execute();
@@ -49,9 +52,13 @@ if ($id_entrada) {
 
     $stmt->close();
 } else {
-    $fecha_hoy = date('Y-m-d');
-    $query = "SELECT id, conductor, placa FROM vehiculos WHERE DATE(fecha_peso_bruto) = '$fecha_hoy'";
-    $result = $conexion->query($query);
+    $query = "SELECT id, conductor, placa 
+              FROM vehiculos 
+              WHERE DATE(fecha_peso_bruto) = ? AND estatus = 'Finalizado'";
+    $stmt = $conexion->prepare($query);
+    $stmt->bind_param("s", $fecha_seleccionada);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     $entradas = [];
     if ($result->num_rows > 0) {
@@ -61,6 +68,7 @@ if ($id_entrada) {
     }
 
     echo json_encode($entradas);
+    $stmt->close();
 }
 
 $conexion->close();
