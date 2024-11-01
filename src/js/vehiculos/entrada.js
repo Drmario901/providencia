@@ -162,6 +162,7 @@ jQuery(document).ready(function($) {
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     $("#plate").val(plate); 
+                                    $("#plateType").val(vehicleType);
                                     Swal.close();  
                                 });
                             } else {
@@ -310,7 +311,6 @@ jQuery(document).ready(function($) {
                                 }).then(() => {
                                     $("#driver").val(fullIdCard);
                                     $("#driverName").val(name);
-                                    $("#plateType").val(type);
                                     Swal.close();  
                                 });
                             } else {
@@ -446,6 +446,7 @@ jQuery(document).ready(function($) {
         });
     });    
     
+    //VIEW PLATES
     $('#viewPlates').on('click', function() {
         Swal.fire({
             title: 'Placas registradas',

@@ -3,110 +3,107 @@ jQuery(document).ready(function($) {
     let table;
 
     function cargarRegistros(fecha) {
-        $.ajax({
-            url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
-            method: 'POST',
-            data: { fecha: fecha },
-            dataType: 'JSON',
-            success: function(response) {
-                console.log(response);
-                let tbody = $('#default-table tbody');
-                tbody.empty();
+    $.ajax({
+        url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
+        method: 'POST',
+        data: { fecha: fecha },
+        dataType: 'JSON',
+        success: function(response) {
+            console.log(response);
+            let tbody = $('#default-table tbody');
+            tbody.empty();
 
-                if (response.length > 0) {
-                    response.forEach(function(registro) {
-                        let row = `
-                        <tr data-id="${registro.id}" data-caso="${registro.caso}">
-                            <td>${registro.id}</td>
-                            <td>${registro.placa}</td>
-                            <td>${registro.conductor}</td>
-                            <td>${registro.peso_tara}</td>
-                            <td>${registro.fecha_peso_tara}</td>
-                            <td>${registro.hora_entrada}</td>
-                            <td>${registro.codigo_productos}</td>
-                            <td>${registro.producto_ingresado}</td>
-                            <td>${registro.vehiculo_activo}</td>
-                            <td>${registro.peso_bruto || '-'}</td>
-                            <td>${registro.peso_neto || '-'}</td>
-                            <td>${registro.hora_salida || '-'}</td>
-                            <td>${registro.estatus}</td>
-                            <td>${registro.caso}</td>
-                        </tr>
-                    `;
+            if (response.length > 0) {
+                response.forEach(function(registro) {
+                    let row = `
+                    <tr data-id="${registro.id}" data-caso="${registro.caso}">
+                        <td>${registro.id}</td>
+                        <td>${registro.VHP_PLACA}</td>
+                        <td>${registro.conductor_nombre}</td>
+                        <td>${registro.peso_bruto || '-'}</td>
+                        <td>${registro.VHP_FECHA}</td>
+                        <td>${registro.VHP_HORA}</td>
+                        <td>${registro.codigo_productos} || 'Vacio'</td>
+                        <td>${registro.producto_ingresado} || 'Vacio'</td>
+                        <td>${registro.peso_tara || '-'}</td>
+                        <td>${registro.peso_neto || '-'}</td>
+                        <td>${registro.hora_salida || '-'}</td>
+                        <td>${registro.estatus}</td>
+                        <td>${registro.caso}</td>
+                    </tr>
+                `;
 
-                        tbody.append(row);
-                    });
-                } else {
-                    tbody.append(`
-                        <tr>
-                            <td colspan="12" class="text-center text-gray-500">No hay registros</td>
-                        </tr>
-                    `);
-                }
-
-                if (table) {
-                    table.destroy();  
-                }
-
-                table = new simpleDatatables.DataTable("#default-table", {
-                    perPage: 10,
-                    perPageSelect: [10, 20, 30, 40, 50],
-                    data: {
-                        headings: ["Numero", "Placa", "Conductor", "Peso Bruto", "Fecha", "Hora Entrada", "Código Producto", "Producto Ingresado", "Vehículo Activo", "Peso Tara", "Peso Neto", "Hora Salida", "Estado", "Caso"],//"Tipo", 
-                        data: response.map(function(registro) {
-                            let estatusClass = '';
-                            if (registro.estatus === 'Pendiente') {
-                                estatusClass = 'row-pendiente';
-                            } else if (registro.estatus === 'Finalizado') {
-                                estatusClass = 'row-finalizado';
-                            }
-                
-                            let casoText = '';
-                            if (registro.caso === 0) {
-                                casoText = 'Producto';
-                            } else if (registro.caso === 1) {
-                                casoText = 'Multiple';
-                            } else if (registro.caso === 2) {
-                                casoText = 'Vacío';
-                            } else {
-                                casoText = '-';
-                            }
-                
-                            return [
-                                `<span>${registro.id}</span>`,
-                                `<span class="font-bold">${registro.placa}</span>`,
-                                `<span class="font-bold">${registro.conductor}</span>`,
-                                //`<span class="font-bold">${registro.tipo}</span>`,
-                                `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
-                                `<span class="font-bold">${registro.fecha_peso_bruto}</span>`,
-                                `<span class="font-bold">${registro.hora_entrada}</span>`,
-                                `<span class="font-bold">${registro.codigo_productos}</span>`,
-                                `<span class="font-bold">${registro.producto_ingresado}</span>`,
-                                `<span class="font-bold">${registro.vehiculo_activo}</span>`,
-                                `<span class="font-bold">${registro.peso_tara}</span>`,
-                                `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
-                                `<span class="font-bold">${registro.hora_salida || '-'}</span>`,
-                                `<span class="${estatusClass}">${registro.estatus}</span>`,
-                                `<span class="font-bold">${casoText}</span>`
-                            ];
-                        })
-                    }
+                    tbody.append(row);
                 });
-
-                $('#default-table tbody').on('click', 'tr', function() {
-                    var cells = $(this).find('td');
-                    var id = $(cells[0]).text().trim(); 
-                    var caso = $(cells[13]).text().trim(); 
-                
-                    console.log('ID:', id, 'Caso:', caso);
-                    abrirModal(id, caso);
-                });
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al cargar los registros:', error);
+            } else {
+                tbody.append(`
+                    <tr>
+                        <td colspan="13" class="text-center text-gray-500">No hay registros</td>
+                    </tr>
+                `);
             }
-        });
-    }
+
+            if (table) {
+                table.destroy();  
+            }
+
+            table = new simpleDatatables.DataTable("#default-table", {
+                perPage: 10,
+                perPageSelect: [10, 20, 30, 40, 50],
+                data: {
+                    headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha", "Hora Entrada", "Código Producto", "Producto Ingresado", "Hora Salida", "Estado", "Caso"],
+                    data: response.map(function(registro) {
+                        let estatusClass = '';
+                        if (registro.estatus === 'Pendiente') {
+                            estatusClass = 'row-pendiente';
+                        } else if (registro.estatus === 'Finalizado') {
+                            estatusClass = 'row-finalizado';
+                        }
+
+                        let casoText = '';
+                        if (registro.caso == '0') {
+                            casoText = 'Producto';
+                        } else if (registro.caso == '1') {
+                            casoText = 'Múltiple';
+                        } else if (registro.caso == '2') {
+                            casoText = 'Vacío';
+                        } else {
+                            casoText = '-';
+                        }
+
+                        return [
+                            `<span>${registro.id}</span>`,
+                            `<span class="font-bold">${registro.VHP_PLACA}</span>`,
+                            `<span class="font-bold">${registro.conductor_nombre}</span>`,
+                            `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+                            `<span class="font-bold">${registro.peso_tara || '-'}</span>`,
+                            `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
+                            `<span class="font-bold">${registro.VHP_FECHA}</span>`,
+                            `<span class="font-bold">${registro.VHP_HORA}</span>`,
+                            `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
+                            `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+                            `<span class="font-bold">${registro.hora_salida || '-'}</span>`,
+                            `<span class="${estatusClass}">${registro.estatus}</span>`,
+                            `<span class="font-bold">${casoText}</span>`
+                        ];
+                    })
+                }
+            });
+
+            $('#default-table tbody').on('click', 'tr', function() {
+                var cells = $(this).find('td');
+                var id = $(cells[0]).text().trim(); 
+                var caso = $(cells[13]).text().trim(); 
+            
+                console.log('ID:', id, 'Caso:', caso);
+                abrirModal(id, caso);
+            });
+        },
+        error: function(xhr, status, error) {
+            console.error('Error al cargar los registros:', error);
+        }
+    });
+}
 
     function abrirModal(id, caso) {
         console.log('Abriendo modal para el caso:', caso); 
