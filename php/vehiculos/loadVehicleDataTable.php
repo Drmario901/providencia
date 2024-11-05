@@ -12,34 +12,49 @@ mysqli_select_db($conexion, $bd);
 $fecha_filtro = isset($_POST['fecha']) ? $_POST['fecha'] : '';
 
 $sql = "SELECT 
-            dp.VHP_CODCON AS id, 
-            dp.VHP_FECHA, 
-            dp.VHP_PLACA, 
-            dp.VHP_HORA, 
-            dp.VHP_NUMASO AS estatus, 
-            dp.VHP_PC AS caso,
-            dp.VHP_PESO AS peso_bruto, 
-            GROUP_CONCAT(inv.INV_CODIGO ORDER BY inv.INV_DESCRI SEPARATOR ', ') AS codigo_productos,
-            GROUP_CONCAT(inv.INV_DESCRI ORDER BY inv.INV_DESCRI SEPARATOR ', ') AS productos,
+            entrada.VHP_CODCON AS id, 
+            entrada.VHP_FECHA, 
+            entrada.VHP_PLACA, 
+            entrada.VHP_HORA AS hora_entrada, 
+            salida.VHP_HORA AS hora_salida, 
+            COALESCE(salida.VHP_NUMASO, entrada.VHP_NUMASO) AS estatus, 
+            entrada.VHP_PC AS caso,
+            COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) AS peso_bruto, 
+            salida.VHP_PESO AS peso_salida,
+            (COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) - COALESCE(salida.VHP_PESO, 0)) AS peso_neto,
+            (SELECT GROUP_CONCAT(DISTINCT inv.INV_CODIGO ORDER BY inv.INV_DESCRI SEPARATOR ', ') 
+             FROM dpinv inv 
+             INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO 
+             WHERE dom.MOV_DOCUME = entrada.VHP_CODCON
+            ) AS codigo_productos,
+            (SELECT GROUP_CONCAT(DISTINCT inv.INV_DESCRI ORDER BY inv.INV_DESCRI SEPARATOR ', ') 
+             FROM dpinv inv 
+             INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO 
+             WHERE dom.MOV_DOCUME = entrada.VHP_CODCON
+            ) AS productos,
             cond.CDT_NOMBRE AS conductor_nombre
         FROM 
-            dpvehiculospesaje dp
+            dpvehiculospesaje entrada
         LEFT JOIN 
-            dpmovinv dom ON dp.VHP_CODCON = dom.MOV_DOCUME
+            dpvehiculospesaje salida ON entrada.VHP_CODCON = salida.VHP_CODCON 
+            AND salida.VHP_NUMASO = 'Finalizado'
+            AND entrada.VHP_FECHA = salida.VHP_FECHA
         LEFT JOIN 
-            dpinv inv ON dom.MOV_CODIGO = inv.INV_CODIGO
+            dpvehiculospesaje entrada_pendiente ON entrada.VHP_CODCON = entrada_pendiente.VHP_CODCON 
+            AND entrada_pendiente.VHP_NUMASO = 'Pendiente'
+            AND entrada.VHP_FECHA = entrada_pendiente.VHP_FECHA
         LEFT JOIN 
-            dpconductores cond ON dp.VHP_CODINV = cond.CDT_CI_RIF";
+            dpconductores cond ON entrada.VHP_CODINV = cond.CDT_CI_RIF";
 
 if (!empty($fecha_filtro)) {
-    $sql .= " WHERE dp.VHP_FECHA = ?";
-    $sql .= " GROUP BY dp.VHP_CODCON";
+    $sql .= " WHERE entrada.VHP_FECHA = ?";
+    $sql .= " GROUP BY entrada.VHP_CODCON, entrada.VHP_FECHA";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("s", $fecha_filtro);
     $stmt->execute();
     $result = $stmt->get_result();
 } else {
-    $sql .= " GROUP BY dp.VHP_CODCON";
+    $sql .= " GROUP BY entrada.VHP_CODCON, entrada.VHP_FECHA";
     $result = $conexion->query($sql);
 }
 

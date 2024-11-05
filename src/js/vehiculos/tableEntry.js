@@ -51,7 +51,7 @@ jQuery(document).ready(function($) {
                 perPage: 10,
                 perPageSelect: [10, 20, 30, 40, 50],
                 data: {
-                    headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha", "Hora Entrada", "Código Producto", "Producto Ingresado", "Hora Salida", "Estado", "Caso"],
+                    headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha", "Hora Entrada", "Hora Salida", "Código Producto", "Producto Ingresado",  "Estado", "Caso"],
                     data: response.map(function(registro) {
                         let estatusClass = '';
                         if (registro.estatus === 'Pendiente') {
@@ -76,13 +76,13 @@ jQuery(document).ready(function($) {
                             `<span class="font-bold">${registro.VHP_PLACA}</span>`,
                             `<span class="font-bold">${registro.conductor_nombre}</span>`,
                             `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
-                            `<span class="font-bold">${registro.peso_tara || '-'}</span>`,
+                            `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
                             `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
                             `<span class="font-bold">${registro.VHP_FECHA}</span>`,
-                            `<span class="font-bold">${registro.VHP_HORA}</span>`,
+                            `<span class="font-bold">${registro.hora_entrada}</span>`,
+                            `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
                             `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
                             `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
-                            `<span class="font-bold">${registro.hora_salida || '-'}</span>`,
                             `<span class="${estatusClass}">${registro.estatus}</span>`,
                             `<span class="font-bold">${casoText}</span>`
                         ];
@@ -93,7 +93,7 @@ jQuery(document).ready(function($) {
             $('#default-table tbody').on('click', 'tr', function() {
                 var cells = $(this).find('td');
                 var id = $(cells[0]).text().trim(); 
-                var caso = $(cells[13]).text().trim(); 
+                var caso = $(cells[12]).text().trim(); 
             
                 console.log('ID:', id, 'Caso:', caso);
                 abrirModal(id, caso);
@@ -109,7 +109,7 @@ jQuery(document).ready(function($) {
         console.log('Abriendo modal para el caso:', caso); 
         if (caso === 'Producto') {
             abrirModalCaso0(id);
-        } else if (caso === 'Multiple') {
+        } else if (caso === 'Múltiple') {
             abrirModalCaso1(id);
         } else if (caso === 'Vacío') {
             abrirModalCaso2(id);
@@ -204,10 +204,24 @@ jQuery(document).ready(function($) {
                     method: 'POST',
                     data: { vehiculoId: id },
                     success: function(response) {
+                        console.log(response); 
+                        $('#producto').empty(); 
+                        
+                        if (response.error) {
+                            console.error('Error al obtener productos:', response.error);
+                            $('#producto').append(new Option('Error al cargar productos', ''));
+                            return;
+                        } else if (response.mensaje) {
+                            console.warn(response.mensaje);
+                            $('#producto').append(new Option('No se encontraron productos', ''));
+                            return;
+                        }
+                
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
-                                if (producto.nombre) {
-                                    $('#producto').append(new Option(producto.nombre, producto.nombre));
+                                console.log('Producto:', producto); 
+                                if (producto.codigo && producto.descripcion) {
+                                    $('#producto').append(new Option(producto.descripcion, producto.codigo));
                                 }
                             });
                         } else {
@@ -302,10 +316,10 @@ jQuery(document).ready(function($) {
                         data: {
                             vehiculoId: id,
                             producto: productoSeleccionado,
-                            pesoTara: pesoTara,
-                            pesoNeto: pesoNeto
+                            pesoTara: pesoNeto
                         },
                         success: function(response) {
+                            console.log(response)
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Proceso completado',
@@ -339,6 +353,7 @@ jQuery(document).ready(function($) {
             data: { vehiculoId: id },
             success: function(response) {
                 if (response.estatus === 'Finalizado') {
+                    console.log(response.estatus)
                     Swal.fire({
                         icon: 'info',
                         title: 'Este vehículo ya ha finalizado su proceso de descarga.',
@@ -357,9 +372,17 @@ jQuery(document).ready(function($) {
     }
     
     function iniciarModalCaso1(id) {
-        let pesoBrutoInicial = null; 
+        let pesoBrutoInicial = null;
         let pesoActual = null;
-        let pesoDescargadoTotal = 0; 
+        let pesoDescargadoTotal = 0;
+        const storageKey = `vehiculo_${id}_descarga`; 
+    
+        const storedData = sessionStorage.getItem(storageKey);
+        if (storedData) {
+            const { pesoDescargadoTotal: storedPesoDescargadoTotal, pesoBrutoInicial: storedPesoBrutoInicial } = JSON.parse(storedData);
+            pesoDescargadoTotal = storedPesoDescargadoTotal;
+            pesoBrutoInicial = storedPesoBrutoInicial;
+        }
     
         Swal.fire({
             title: 'Salida de Vehículo - Múltiples Productos',
@@ -377,6 +400,12 @@ jQuery(document).ready(function($) {
                                 <select id="producto" name="producto" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">Seleccione un producto</option>
                                 </select>
+                                
+                                <label for="unidadMedida" class="block text-sm font-medium text-gray-700 mb-1 mt-2">Unidad de Medida</label>
+                                <select id="unidadMedida" name="unidadMedida" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="">Seleccione una unidad de medida</option>
+                                </select>
+    
                                 <div class="mt-2">
                                     <label for="pesoBruto" class="block text-sm font-medium text-gray-700 mb-1">Peso Bruto Actual</label>
                                     <div class="flex items-center space-x-2">
@@ -391,7 +420,7 @@ jQuery(document).ready(function($) {
                                 </div>
                             </div>
                         </div>
-                        <div id="notification" style="display:none;" class="mt-4 alert alert-success"></div>
+                        <div id="notification" class="mt-4 alert" style="display:none;"></div>
                         <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
                         <div class="mt-6">
                             <button type="button" id="registrarSalida" class="w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
@@ -415,16 +444,26 @@ jQuery(document).ready(function($) {
                 $("#close-modal").on("click", function() {
                     Swal.close();
                 });
-
+    
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getProductsCase1.php',
                     method: 'POST',
                     data: { vehiculoId: id },
                     success: function(response) {
+                        $('#producto').empty();
+                        
+                        if (response.error) {
+                            $('#notification').html('<div class="alert alert-danger">Error al obtener productos</div>').fadeIn();
+                            return;
+                        } else if (response.mensaje) {
+                            $('#notification').html('<div class="alert alert-warning">No se encontraron productos</div>').fadeIn();
+                            return;
+                        }
+                    
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
-                                if (producto.nombre) {
-                                    $('#producto').append(new Option(producto.nombre, producto.nombre));
+                                if (producto.codigo && producto.descripcion) {
+                                    $('#producto').append(new Option(producto.descripcion, producto.codigo));
                                 }
                             });
                         } else {
@@ -432,22 +471,52 @@ jQuery(document).ready(function($) {
                         }
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error al obtener productos:', error);
+                        $('#notification').html('<div class="alert alert-danger">Error al obtener productos</div>').fadeIn();
                     }
                 });
     
                 $.ajax({
-                    url: wb_subdir + '/php/vehiculos/getTaraCase1.php',
+                    url: wb_subdir + '/php/vehiculos/getUnd.php',
                     method: 'POST',
                     data: { vehiculoId: id },
                     success: function(response) {
-                        pesoBrutoInicial = parseFloat(response.pesoBruto);
-                        pesoActual = pesoBrutoInicial;
+                        $('#unidadMedida').empty();
+                        
+                        if (response.data && Array.isArray(response.data)) {
+                            response.data.forEach(unidad => {
+                                if (unidad.unidad) {
+                                    $('#unidadMedida').append(new Option(unidad.unidad, unidad.unidad));
+                                }
+                            });
+                        } else {
+                            console.error('Formato inesperado en la respuesta:', response);
+                            $('#notification').html('<div class="alert alert-danger">Error en el formato de respuesta al obtener unidades de medida</div>').fadeIn();
+                        }
                     },
                     error: function(xhr, status, error) {
-                        console.error('Error al obtener el peso bruto inicial:', error);
+                        $('#notification').html('<div class="alert alert-danger">Error al obtener unidades de medida</div>').fadeIn();
                     }
                 });
+    
+                if (!pesoBrutoInicial) {
+                    $.ajax({
+                        url: wb_subdir + '/php/vehiculos/getTaraCase1.php',
+                        method: 'POST',
+                        data: { vehiculoId: id },
+                        success: function(response) {
+                            pesoBrutoInicial = parseFloat(response.pesoBruto);
+                            pesoActual = pesoBrutoInicial;
+    
+                            sessionStorage.setItem(storageKey, JSON.stringify({
+                                pesoBrutoInicial,
+                                pesoDescargadoTotal
+                            }));
+                        },
+                        error: function(xhr, status, error) {
+                            $('#notification').html('<div class="alert alert-danger">Error al obtener el peso bruto inicial</div>').fadeIn();
+                        }
+                    });
+                }
     
                 $("#leerPesoVehiculoCaso1").on("click", function() {
                     let $button = $(this);
@@ -466,13 +535,7 @@ jQuery(document).ready(function($) {
                             }
                         },
                         error: function(xhr, status, error) {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Hubo un problema al obtener el peso.',
-                                confirmButtonColor: '#053684',
-                                confirmButtonText: 'OK'
-                            });
+                            $('#notification').html('<div class="alert alert-danger">Hubo un problema al obtener el peso</div>').fadeIn();
                         },
                         complete: function() {
                             $button.html(originalButtonText).prop('disabled', false);
@@ -485,23 +548,22 @@ jQuery(document).ready(function($) {
                     e.preventDefault();
     
                     const productoSeleccionado = $('#producto').val();
+                    const unidadMedidaSeleccionada = $('#unidadMedida').val();
                     const pesoBrutoActual = parseFloat($('#pesoBrutoCaso1').val());
                     const pesoDescargado = pesoBrutoInicial - pesoBrutoActual;
     
-                    if (!productoSeleccionado || isNaN(pesoDescargado) || pesoDescargado <= 0) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Debe seleccionar un producto y leer un peso válido.',
-                            confirmButtonColor: '#053684',
-                            confirmButtonText: 'OK'
-                        });
+                    if (!productoSeleccionado || !unidadMedidaSeleccionada || isNaN(pesoDescargado) || pesoDescargado <= 0) {
+                        $('#notification').html('<div class="alert alert-warning">Debe seleccionar un producto, una unidad de medida y leer un peso válido.</div>').fadeIn();
                         return;
                     }
     
                     pesoDescargadoTotal += pesoDescargado;
-                    pesoBrutoInicial = pesoBrutoActual;
-                    pesoTara = pesoActual - pesoDescargadoTotal;
+                    pesoBrutoInicial = pesoBrutoActual; 
+    
+                    sessionStorage.setItem(storageKey, JSON.stringify({
+                        pesoBrutoInicial,
+                        pesoDescargadoTotal
+                    }));
     
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/saveVehicleExitCase1.php',
@@ -509,21 +571,21 @@ jQuery(document).ready(function($) {
                         data: {
                             vehiculoId: id,
                             producto: productoSeleccionado,
-                            pesoTara: pesoTara, 
-                            pesoNeto: pesoActual - pesoTara 
+                            unidadMedida: unidadMedidaSeleccionada,
+                            pesoProducto: pesoDescargado 
                         },
                         success: function(response) {
                             $('#producto option:selected').remove();
                             $('#pesoBrutoCaso1').val('');
     
-                            if ($('#producto option').length > 1) {
-                                $("#notification").html(`<div class="alert alert-success">Producto ${productoSeleccionado} registrado correctamente.</div>`)
-                                    .fadeIn().delay(1500).fadeOut();
-                            } else {
+                            if (response.status === 'pendiente') {
+                                $('#notification').html(`<div class="alert alert-success">Producto ${productoSeleccionado} registrado correctamente. Quedan productos por descargar.</div>`).fadeIn().delay(1500).fadeOut();
+                            } else if (response.status === 'finalizado') {
+                                sessionStorage.removeItem(storageKey);
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Proceso completado',
-                                    text: 'Todos los productos han sido descargados. El proceso ha finalizado.',
+                                    text: `Todos los productos han sido descargados. Peso Tara: ${response.tara}`,
                                     confirmButtonColor: '#053684',
                                     confirmButtonText: 'OK'
                                 }).then(() => {
@@ -533,19 +595,13 @@ jQuery(document).ready(function($) {
                             }
                         },
                         error: function() {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: 'Ocurrió un error al registrar la salida.',
-                                confirmButtonColor: '#053684',
-                                confirmButtonText: 'OK'
-                            });
+                            $('#notification').html('<div class="alert alert-danger">Ocurrió un error al registrar la salida</div>').fadeIn();
                         }
                     });
                 });
             }
         });
-    }
+    }       
 
     function abrirModalCaso2(id) {
         $.ajax({

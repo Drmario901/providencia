@@ -6,30 +6,48 @@ error_reporting(E_ALL);
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
 
-$bd = "serviaves_web";
+$bd = "serviaves";
 mysqli_select_db($conexion, $bd);
 date_default_timezone_set('America/Caracas'); 
 
 $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoTara'];
-$pesoNeto = $_POST['pesoNeto'];
+//$pesoNeto = $_POST['pesoNeto'];
 $producto = $_POST['producto'];
 $exitHour = date('H:i:s');
 
-$queryPeso = "SELECT peso_bruto FROM vehiculos WHERE id = '$vehiculoId'";
+$queryMainEntry = "SELECT * FROM dpvehiculospesaje WHERE VHP_CODCON = '$vehiculoId' AND VHP_NUMASO = 'Pendiente'";
+$resultMainEntry = mysqli_query($conexion, $queryMainEntry);
+
+if (mysqli_num_rows($resultMainEntry) > 0) {
+    while ($row = mysqli_fetch_assoc($resultMainEntry)) {
+        $caso = $row['VHP_PC'];
+        $placa = $row['VHP_PLACA'];
+        $cedula = $row['VHP_CODINV'];
+    }
+}
+
+$queryPeso = "SELECT VHP_FECHA, VHP_PLACA, VHP_PESO AS peso_bruto, VHP_PC, VHP_CODINV 
+              FROM dpvehiculospesaje 
+              WHERE VHP_CODCON = '$vehiculoId' AND VHP_NUMASO = 'Pendiente' 
+              LIMIT 1";
 $resultPeso = mysqli_query($conexion, $queryPeso);
 
 if ($resultPeso) {
     $data = mysqli_fetch_assoc($resultPeso);
     $pesoBrutoInicial = $data['peso_bruto'];
-
     $pesoTara = $pesoActual;
 
-    $finalizarQuery = "UPDATE vehiculos SET estatus = 'Finalizado', peso_tara = '$pesoTara', peso_neto = '$pesoNeto', hora_salida = '$exitHour' WHERE id = '$vehiculoId'";
-    mysqli_query($conexion, $finalizarQuery);
-    echo json_encode(['status' => 'finalizado', 'tara' => $pesoTara]);
+    $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula')";
+
+    if (mysqli_query($conexion, $insertSalidaQuery)) {
+        echo json_encode(['status' => 'finalizado', 'tara' => $pesoTara]);
+    } else {
+        echo json_encode(['error' => 'No se pudo registrar la salida']);
+    }
 } else {
     echo json_encode(['error' => 'No se pudo obtener el peso bruto inicial']);
 }
 
 mysqli_close($conexion);
+?>

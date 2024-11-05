@@ -6,15 +6,15 @@ error_reporting(E_ALL);
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
 
-$bd = "serviaves_web";
+$bd = "serviaves";
 mysqli_select_db($conexion, $bd);
 
 $vehiculoId = $_POST['vehiculoId'];
-$query = "SELECT peso_bruto FROM vehiculos WHERE id = '$vehiculoId'";
+$query = "SELECT VHP_PESO FROM dpvehiculospesaje WHERE VHP_CODCON = '$vehiculoId'";
 $result = mysqli_query($conexion, $query);
 
 if ($result) {
-    $pesoTara = mysqli_fetch_assoc($result)['peso_bruto'];
+    $pesoTara = mysqli_fetch_assoc($result)['VHP_PESO'];
     echo json_encode(['pesoBruto' => $pesoTara]);
 } else {
     echo json_encode(['error' => 'No se pudo obtener el peso bruto']);
