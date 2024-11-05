@@ -12,7 +12,7 @@ date_default_timezone_set('America/Caracas');
 
 $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoBruto'];
-$exitHour = date('H:i:s');
+$exitHour = date('h:i:s');
 
 $queryMainEntry = "SELECT VHP_FECHA, VHP_PLACA, VHP_PC, VHP_CODINV 
                    FROM dpvehiculospesaje 

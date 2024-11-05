@@ -14,7 +14,7 @@ $vehiculoId = $_POST['vehiculoId'];
 $pesoProducto = $_POST['pesoProducto'] ?? NULL;
 $producto = $_POST['producto'];
 $unidadMedida = $_POST['unidadMedida'] ?? NULL;
-$exitHour = date('H:i:s');
+$exitHour = date('h:i:s');
 
 if (is_null($pesoProducto) || $pesoProducto <= 0) {
     echo json_encode(['error' => 'El peso del producto descargado no es válido']);

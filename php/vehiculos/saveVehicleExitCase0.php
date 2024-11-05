@@ -14,7 +14,7 @@ $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoTara'];
 //$pesoNeto = $_POST['pesoNeto'];
 $producto = $_POST['producto'];
-$exitHour = date('H:i:s');
+$exitHour = date('h:i:s');
 
 $queryMainEntry = "SELECT * FROM dpvehiculospesaje WHERE VHP_CODCON = '$vehiculoId' AND VHP_NUMASO = 'Pendiente'";
 $resultMainEntry = mysqli_query($conexion, $queryMainEntry);
