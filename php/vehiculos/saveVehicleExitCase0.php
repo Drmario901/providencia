@@ -12,8 +12,10 @@ date_default_timezone_set('America/Caracas');
 
 $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoTara'];
-//$pesoNeto = $_POST['pesoNeto'];
 $producto = $_POST['producto'];
+$silo = $_POST['silo'];
+$cantidad = $_POST['cantidad'];
+$unidadMedida = $_POST['unidadMedida'];
 $exitHour = date('h:i:s');
 
 $queryMainEntry = "SELECT * FROM dpvehiculospesaje WHERE VHP_CODCON = '$vehiculoId' AND VHP_NUMASO = 'Pendiente'";
@@ -39,6 +41,9 @@ if ($resultPeso) {
     $pesoTara = $pesoActual;
 
     $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula')";
+
+    $updatePesoProductoQuery = "UPDATE dpmovinv SET MOV_FECHA = NOW(), MOV_UNDMED = '$unidadMedida', MOV_CANTID = '$cantidad', MOV_CODALM = '$silo' WHERE MOV_CODIGO = '$producto' AND MOV_DOCUME = '$vehiculoId'";
+    mysqli_query($conexion, $updatePesoProductoQuery);
 
     if (mysqli_query($conexion, $insertSalidaQuery)) {
         echo json_encode(['status' => 'finalizado', 'tara' => $pesoTara]);

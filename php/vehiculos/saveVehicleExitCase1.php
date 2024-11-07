@@ -14,6 +14,8 @@ $vehiculoId = $_POST['vehiculoId'];
 $pesoProducto = $_POST['pesoProducto'] ?? NULL;
 $producto = $_POST['producto'];
 $unidadMedida = $_POST['unidadMedida'] ?? NULL;
+$silo = $_POST['silo'];
+$cantidad = $_POST['cantidad'];
 $exitHour = date('h:i:s');
 
 if (is_null($pesoProducto) || $pesoProducto <= 0) {
@@ -50,7 +52,7 @@ if ($resultPeso) {
         }
     }
 
-    $updatePesoProductoQuery = "UPDATE dpmovinv SET MOV_FECHA = NOW(), MOV_PESO = '$pesoProducto', MOV_UNDMED = '$unidadMedida' WHERE MOV_CODIGO = '$producto' AND MOV_DOCUME = '$vehiculoId'";
+    $updatePesoProductoQuery = "UPDATE dpmovinv SET MOV_FECHA = NOW(), MOV_PESO = '$pesoProducto', MOV_UNDMED = '$unidadMedida', MOV_CANTID = '$cantidad', MOV_CODALM = '$silo' WHERE MOV_CODIGO = '$producto' AND MOV_DOCUME = '$vehiculoId'";
     mysqli_query($conexion, $updatePesoProductoQuery);
 
     $productosRestantes = array_diff($productosRestantes, [$producto]);

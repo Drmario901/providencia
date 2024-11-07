@@ -141,7 +141,7 @@ jQuery(document).ready(function($) {
     }
 
     function iniciarModalCaso0(id) {
-        let pesoBrutoInicial = null; 
+        let pesoBrutoInicial = null;
         let pesoActual = null;
     
         Swal.fire({
@@ -160,6 +160,22 @@ jQuery(document).ready(function($) {
                                 <select id="producto" name="producto" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">Seleccione un producto</option>
                                 </select>
+    
+                                <label for="unidadMedida" class="block text-sm font-medium text-gray-700 mb-1 mt-2">Unidad de Medida</label>
+                                <select id="unidadMedida" name="unidadMedida" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="">Seleccione una unidad de medida</option>
+                                </select>
+    
+                                <label for="silo" class="block text-sm font-medium text-gray-700 mb-1 mt-2">Silo</label>
+                                <select id="silo" name="silo" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="">Seleccione un silo</option>
+                                </select>
+    
+                                <div class="mt-2">
+                                    <label for="cantidad" class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+                                    <input type="number" id="cantidad" name="cantidad" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ingrese la cantidad" required>
+                                </div>
+    
                                 <div class="mt-2">
                                     <label for="pesoBruto" class="block text-sm font-medium text-gray-700 mb-1">Peso Bruto Actual</label>
                                     <div class="flex items-center space-x-2">
@@ -204,22 +220,17 @@ jQuery(document).ready(function($) {
                     method: 'POST',
                     data: { vehiculoId: id },
                     success: function(response) {
-                        console.log(response); 
-                        $('#producto').empty(); 
-                        
+                        $('#producto').empty();
                         if (response.error) {
-                            console.error('Error al obtener productos:', response.error);
                             $('#producto').append(new Option('Error al cargar productos', ''));
                             return;
                         } else if (response.mensaje) {
-                            console.warn(response.mensaje);
                             $('#producto').append(new Option('No se encontraron productos', ''));
                             return;
                         }
-                
+    
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
-                                console.log('Producto:', producto); 
                                 if (producto.codigo && producto.descripcion) {
                                     $('#producto').append(new Option(producto.descripcion, producto.codigo));
                                 }
@@ -230,6 +241,46 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener productos:', error);
+                    }
+                });
+    
+                $.ajax({
+                    url: wb_subdir + '/php/vehiculos/getUnd.php',
+                    method: 'POST',
+                    success: function(response) {
+                        $('#unidadMedida').empty();
+                        if (response.data && Array.isArray(response.data)) {
+                            response.data.forEach(unidad => {
+                                if (unidad.unidad) {
+                                    $('#unidadMedida').append(new Option(unidad.unidad, unidad.unidad));
+                                }
+                            });
+                        } else {
+                            console.error('Formato inesperado en la respuesta:', response);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener unidades de medida:', error);
+                    }
+                });
+    
+                $.ajax({
+                    url: wb_subdir + '/php/vehiculos/getSilos.php',
+                    method: 'POST',
+                    success: function(response) {
+                        $('#silo').empty();
+                        if (response.data && Array.isArray(response.data)) {
+                            response.data.forEach(silo => {
+                                if (silo.silo) {
+                                    $('#silo').append(new Option(silo.silo, silo.silo));
+                                }
+                            });
+                        } else {
+                            console.error('Formato inesperado en la respuesta:', response);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener silos:', error);
                     }
                 });
     
@@ -256,7 +307,7 @@ jQuery(document).ready(function($) {
                         url: 'http://localhost:81/index',
                         method: 'POST',
                         success: function(response) {
-                            const match = response.match(/[-+]?\d*\.?\d+/);
+                            const match = response.match(/[-+]?\\d*\\.?\\d+/);
                             if (match) {
                                 pesoActual = parseFloat(match[0]);
                                 $('#pesoBrutoCaso0').val(pesoActual);
@@ -282,48 +333,40 @@ jQuery(document).ready(function($) {
                     e.preventDefault();
     
                     const productoSeleccionado = $('#producto').val();
+                    const unidadMedidaSeleccionada = $('#unidadMedida').val();
+                    const siloSeleccionado = $('#silo').val();
+                    const cantidadIngresada = $('#cantidad').val();
                     const pesoBrutoActual = parseFloat($('#pesoBrutoCaso0').val());
     
-                    if (!productoSeleccionado || isNaN(pesoBrutoActual) || pesoBrutoActual <= 0) {
+                    if (!productoSeleccionado || !unidadMedidaSeleccionada || !siloSeleccionado || !cantidadIngresada || isNaN(pesoBrutoActual) || pesoBrutoActual <= 0) {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Debe seleccionar un producto y leer un peso válido.',
+                            text: 'Debe completar todos los campos y leer un peso válido.',
                             confirmButtonColor: '#053684',
                             confirmButtonText: 'OK'
                         });
                         return;
                     }
     
-                    const pesoDescargado = pesoBrutoInicial - pesoBrutoActual;
-                    if (pesoDescargado <= 0) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'El peso actual debe ser menor que el peso bruto inicial para calcular correctamente el peso descargado.',
-                            confirmButtonColor: '#053684',
-                            confirmButtonText: 'OK'
-                        });
-                        return;
-                    }
+                    const pesoTara = pesoActual- pesoBrutoActual;
     
-                    const pesoTara = pesoBrutoActual;
-                    const pesoNeto = pesoDescargado; 
-                    
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/saveVehicleExitCase0.php',
                         method: 'POST',
                         data: {
                             vehiculoId: id,
                             producto: productoSeleccionado,
-                            pesoTara: pesoNeto
+                            unidadMedida: unidadMedidaSeleccionada,
+                            silo: siloSeleccionado,
+                            cantidad: cantidadIngresada,
+                            pesoTara: pesoTara
                         },
                         success: function(response) {
-                            console.log(response)
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Proceso completado',
-                                text: `El producto (${productoSeleccionado}) de ${pesoNeto} kg ha sido descargado y el proceso ha finalizado.`,
+                                text: `El producto (${productoSeleccionado}) de ${pesoTara} kg ha sido descargado y el proceso ha finalizado.`,
                                 confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             }).then(() => {
@@ -344,7 +387,7 @@ jQuery(document).ready(function($) {
                 });
             }
         });
-    }    
+    }
     
     function abrirModalCaso1(id) {
         $.ajax({
@@ -375,7 +418,7 @@ jQuery(document).ready(function($) {
         let pesoBrutoInicial = null;
         let pesoActual = null;
         let pesoDescargadoTotal = 0;
-        const storageKey = `vehiculo_${id}_descarga`; 
+        const storageKey = `vehiculo_${id}_descarga`;
     
         const storedData = sessionStorage.getItem(storageKey);
         if (storedData) {
@@ -386,8 +429,8 @@ jQuery(document).ready(function($) {
     
         Swal.fire({
             title: 'Salida de Vehículo - Múltiples Productos',
-            html: `
-                <div class="relative bg-white shadow-lg rounded-lg p-6" style="width: 100%; max-width: 500px; margin: 0 auto;">
+            html: 
+                `<div class="relative bg-white shadow-lg rounded-lg p-6" style="width: 100%; max-width: 500px; margin: 0 auto;">
                     <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -400,11 +443,21 @@ jQuery(document).ready(function($) {
                                 <select id="producto" name="producto" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">Seleccione un producto</option>
                                 </select>
-                                
+    
                                 <label for="unidadMedida" class="block text-sm font-medium text-gray-700 mb-1 mt-2">Unidad de Medida</label>
                                 <select id="unidadMedida" name="unidadMedida" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">Seleccione una unidad de medida</option>
                                 </select>
+    
+                                <label for="silo" class="block text-sm font-medium text-gray-700 mb-1 mt-2">Silo</label>
+                                <select id="silo" name="silo" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" required>
+                                    <option value="">Seleccione un silo</option>
+                                </select>
+    
+                                <div class="mt-2">
+                                    <label for="cantidad" class="block text-sm font-medium text-gray-700 mb-1">Cantidad</label>
+                                    <input type="number" id="cantidad" name="cantidad" class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="Ingrese la cantidad" required>
+                                </div>
     
                                 <div class="mt-2">
                                     <label for="pesoBruto" class="block text-sm font-medium text-gray-700 mb-1">Peso Bruto Actual</label>
@@ -428,17 +481,16 @@ jQuery(document).ready(function($) {
                             </button>
                         </div>
                     </form>
-                </div>
-            `,
+                </div>`,
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
             confirmButtonColor: '#053684',
             showClass: {
-                popup: `animate__animated animate__fadeInUp animate__faster`
+                popup: 'animate__animated animate__fadeInUp animate__faster'
             },
             hideClass: {
-                popup: `animate__animated animate__fadeOutDown animate__faster`
+                popup: 'animate__animated animate__fadeOutDown animate__faster'
             },
             didOpen: () => {
                 $("#close-modal").on("click", function() {
@@ -451,7 +503,6 @@ jQuery(document).ready(function($) {
                     data: { vehiculoId: id },
                     success: function(response) {
                         $('#producto').empty();
-                        
                         if (response.error) {
                             $('#notification').html('<div class="alert alert-danger">Error al obtener productos</div>').fadeIn();
                             return;
@@ -459,7 +510,7 @@ jQuery(document).ready(function($) {
                             $('#notification').html('<div class="alert alert-warning">No se encontraron productos</div>').fadeIn();
                             return;
                         }
-                    
+                        
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
                                 if (producto.codigo && producto.descripcion) {
@@ -481,7 +532,6 @@ jQuery(document).ready(function($) {
                     data: { vehiculoId: id },
                     success: function(response) {
                         $('#unidadMedida').empty();
-                        
                         if (response.data && Array.isArray(response.data)) {
                             response.data.forEach(unidad => {
                                 if (unidad.unidad) {
@@ -495,6 +545,27 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         $('#notification').html('<div class="alert alert-danger">Error al obtener unidades de medida</div>').fadeIn();
+                    }
+                });
+    
+                $.ajax({
+                    url: wb_subdir + '/php/vehiculos/getSilos.php',
+                    method: 'POST',
+                    success: function(response) {
+                        $('#silo').empty();
+                        if (response.data && Array.isArray(response.data)) {
+                            response.data.forEach(silo => {
+                                if (silo.silo) {
+                                    $('#silo').append(new Option(silo.silo, silo.silo));
+                                }
+                            });
+                        } else {
+                            console.error('Formato inesperado en la respuesta:', response);
+                            $('#notification').html('<div class="alert alert-danger">Error al obtener silos</div>').fadeIn();
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#notification').html('<div class="alert alert-danger">Error al obtener silos</div>').fadeIn();
                     }
                 });
     
@@ -528,7 +599,7 @@ jQuery(document).ready(function($) {
                         url: 'http://localhost:81/index',
                         method: 'POST',
                         success: function(response) {
-                            const match = response.match(/[-+]?\d*\.?\d+/);
+                            const match = response.match(/[-+]?\\d*\\.?\\d+/);
                             if (match) {
                                 pesoActual = parseFloat(match[0]);
                                 $('#pesoBrutoCaso1').val(pesoActual);
@@ -546,25 +617,27 @@ jQuery(document).ready(function($) {
     
                 $('#registrarSalida').on('click', function(e) {
                     e.preventDefault();
-    
+                
                     const productoSeleccionado = $('#producto').val();
                     const unidadMedidaSeleccionada = $('#unidadMedida').val();
+                    const siloSeleccionado = $('#silo').val();
+                    const cantidadIngresada = $('#cantidad').val();
                     const pesoBrutoActual = parseFloat($('#pesoBrutoCaso1').val());
                     const pesoDescargado = pesoBrutoInicial - pesoBrutoActual;
-    
-                    if (!productoSeleccionado || !unidadMedidaSeleccionada || isNaN(pesoDescargado) || pesoDescargado <= 0) {
-                        $('#notification').html('<div class="alert alert-warning">Debe seleccionar un producto, una unidad de medida y leer un peso válido.</div>').fadeIn();
+                
+                    if (!productoSeleccionado || !unidadMedidaSeleccionada || !siloSeleccionado || !cantidadIngresada || isNaN(pesoDescargado) || pesoDescargado <= 0) {
+                        $('#notification').html('<div class="alert alert-warning">Debe completar todos los campos y leer un peso válido.</div>').fadeIn();
                         return;
                     }
-    
+                
                     pesoDescargadoTotal += pesoDescargado;
                     pesoBrutoInicial = pesoBrutoActual; 
-    
+                
                     sessionStorage.setItem(storageKey, JSON.stringify({
                         pesoBrutoInicial,
                         pesoDescargadoTotal
                     }));
-    
+                
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/saveVehicleExitCase1.php',
                         method: 'POST',
@@ -572,10 +645,13 @@ jQuery(document).ready(function($) {
                             vehiculoId: id,
                             producto: productoSeleccionado,
                             unidadMedida: unidadMedidaSeleccionada,
-                            pesoProducto: pesoDescargado 
+                            pesoProducto: pesoDescargado,
+                            silo: siloSeleccionado,
+                            cantidad: cantidadIngresada
                         },
                         success: function(response) {
                             $('#producto option:selected').remove();
+                            $('#cantidad').val('');
                             $('#pesoBrutoCaso1').val('');
     
                             if (response.status === 'pendiente') {
@@ -592,17 +668,63 @@ jQuery(document).ready(function($) {
                                     Swal.close();
                                     cargarRegistros($('#fecha-table').val());
                                 });
+    
+                                $.ajax({
+                                    url: wb_subdir + '/php/vehiculos/exitTicketData.php',  
+                                    method: 'POST',
+                                    data: { vehiculoId: id },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.status === 'success') {
+                                            const data = response.data;
+                                            
+                                            $.ajax({
+                                                url: 'http://127.0.0.1:81/exit',  
+                                                method: 'POST',
+                                                contentType: 'application/json',
+                                                data: JSON.stringify({
+                                                    placa: data.VHP_PLACA,
+                                                    chofer: data.conductor_nombre,
+                                                    cedula: data.cedula,  
+                                                    //tipo: data.tipo,  
+                                                    destino: data.destino,  
+                                                    silo_origen: data.silo_origen,  
+                                                    peso_bruto: data.peso_bruto,
+                                                    peso_neto: data.peso_neto,
+                                                    codigo_productos: data.codigo_productos,
+                                                    producto_ingresado: data.productos,
+                                                    productos_con_silos: data.productos_con_silos,
+                                                }),
+                                                success: function(response) {
+                                                    console.log("Respuesta de salida:", response);
+                                                    $('#notification').html('<div class="alert alert-success">Salida registrada correctamente.</div>').fadeIn();
+                                                },
+                                                error: function(xhr, status, error) {
+                                                    console.error('Error al enviar los datos de salida:', error);
+                                                    $('#notification').html('<div class="alert alert-danger">Error al registrar la salida.</div>').fadeIn();
+                                                }
+                                            });
+                                        } else {
+                                            console.error('Error al obtener los datos:', response.message);
+                                            $('#notification').html('<div class="alert alert-danger">Error al obtener datos del vehículo.</div>').fadeIn();
+                                        }
+                                    },
+                                    error: function(xhr, status, error) {
+                                        console.error('Error en la solicitud AJAX:', error);
+                                        $('#notification').html('<div class="alert alert-danger">Hubo un problema al obtener los datos de salida.</div>').fadeIn();
+                                    }
+                                });
                             }
                         },
                         error: function() {
                             $('#notification').html('<div class="alert alert-danger">Ocurrió un error al registrar la salida</div>').fadeIn();
                         }
                     });
-                });
+                });                  
             }
         });
-    }       
-
+    }
+         
     function abrirModalCaso2(id) {
         $.ajax({
             url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
@@ -917,7 +1039,6 @@ jQuery(document).ready(function($) {
 
     $('#entryForm').on('submit', function(e) {
         e.preventDefault();
-
         let caso = $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2);
     
         if (!$('#plate').val() || !$('#driverName').val() || !$('#driver').val() || !$('#plateType').val() ||
@@ -944,7 +1065,7 @@ jQuery(document).ready(function($) {
             vehiculo_activo: 'Sí',
             caso: caso 
         };
-    
+        
         if (data.caso === 0) {
             data.codigo_productos = $('#productSelect').val();
             data.producto_ingresado = $('#productSelect option:selected').text();
@@ -957,7 +1078,7 @@ jQuery(document).ready(function($) {
             data.codigo_productos = 'Vacío'; 
             data.producto_ingresado = 'Vacío'; 
         }
-
+    
         $.ajax({
             url: wb_subdir + '/php/vehiculos/registerVehicleTable.php',
             method: 'POST',
@@ -970,12 +1091,41 @@ jQuery(document).ready(function($) {
                     confirmButtonColor: '#053684',
                     showConfirmButton: true
                 });
+
+                $.ajax({
+                    url: 'http://127.0.0.1:81/entry',  
+                    method: 'POST',
+                    contentType: 'application/json',  
+                    data: JSON.stringify({  
+                        placa: data.placa,
+                        chofer: data.conductor,
+                        cedula: data.cedula,
+                        tipo: data.tipo,
+                        peso_bruto: data.peso_bruto,
+                        fecha_peso_bruto: data.fecha_peso_bruto,
+                        hora_entrada: data.hora_entrada,
+                        codigo_productos: data.codigo_productos,
+                        producto_ingresado: data.producto_ingresado
+                    }),
+                    success: function(response) {
+                        console.log(response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                ,
+                    success: function() {
+                        console.log("Ticket de entrada generado exitosamente.");
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al generar el ticket de entrada:', error);
+                        Swal.fire('Error al generar el ticket de entrada', '', 'error');
+                    }
+                });
     
                 $('#entryForm')[0].reset();
-    
                 const today = new Date().toISOString().split('T')[0];
                 $('#fecha-form').val(today);
-    
                 $('#product-entry, #multiple-products, #no-product-entry').prop('checked', false);
                 destroySelect2();
                 destroyMultipleSelect2();
@@ -996,5 +1146,5 @@ jQuery(document).ready(function($) {
                 Swal.fire('Error al registrar el vehículo', '', 'error');
             }
         });
-    });  
+    });    
 });
