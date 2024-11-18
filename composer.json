@@ -1,6 +1,9 @@
 {
     "require": {
         "vlucas/phpdotenv": "^5.6",
-        "spipu/html2pdf": "^5.2"
+        "illuminate/database": "^11.30",
+        "react/event-loop": "^1.5",
+        "react/mysql": "^0.6.0",
+        "dompdf/dompdf": "^3.0"
     }
 }

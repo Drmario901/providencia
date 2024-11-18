@@ -23,17 +23,17 @@ $query = "
     (SELECT GROUP_CONCAT(DISTINCT inv.INV_CODIGO ORDER BY inv.INV_DESCRI SEPARATOR ', ') 
      FROM dpinv inv 
      INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO 
-     WHERE dom.MOV_DOCUME = entrada.VHP_CODCON
+     WHERE dom.MOV_CODCOM = entrada.VHP_CODCON
     ) AS codigo_productos,
     (SELECT GROUP_CONCAT(DISTINCT inv.INV_DESCRI ORDER BY inv.INV_DESCRI SEPARATOR ', ') 
      FROM dpinv inv 
      INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO 
-     WHERE dom.MOV_DOCUME = entrada.VHP_CODCON
+     WHERE dom.MOV_CODCOM = entrada.VHP_CODCON
     ) AS productos,
     (SELECT GROUP_CONCAT(DISTINCT CONCAT(inv.INV_DESCRI, ' (Silo: ', dom.MOV_CODALM, ')') ORDER BY inv.INV_DESCRI SEPARATOR ', ')
      FROM dpinv inv
      INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO
-     WHERE dom.MOV_DOCUME = entrada.VHP_CODCON
+     WHERE dom.MOV_CODCOM = entrada.VHP_CODCON
     ) AS productos_con_silos, 
     cond.CDT_NOMBRE AS conductor_nombre
 FROM 

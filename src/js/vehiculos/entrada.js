@@ -127,6 +127,8 @@ jQuery(document).ready(function($) {
                             title: 'Error',
                             text: 'Los campos Placa y Tipo de Vehículo son obligatorios.',
                             confirmButtonColor: '#053684',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
                             confirmButtonText: 'OK'
                         });
                         return;
@@ -144,6 +146,8 @@ jQuery(document).ready(function($) {
                                     icon: 'success',
                                     title: 'Vehículo registrado',
                                     text: 'El vehículo ha sido registrado exitosamente.',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
                                     confirmButtonColor: '#053684',
                                     showClass: {
                                         popup: `
@@ -182,6 +186,8 @@ jQuery(document).ready(function($) {
                                 title: 'Error',
                                 text: 'Hubo un problema al registrar el vehículo. Intente nuevamente.',
                                 confirmButtonColor: '#053684',
+                                allowOutsideClick: false,
+                                allowEscapeKey: false,
                                 confirmButtonText: 'OK'
                             });
                         }
@@ -245,6 +251,7 @@ jQuery(document).ready(function($) {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            allowEscapeKey: false,
             showClass: {
                 popup: `
                   animate__animated
@@ -284,6 +291,8 @@ jQuery(document).ready(function($) {
                             title: 'Error',
                             text: 'Los campos Nombre del Conductor, Cédula y Tipo de Licencia son obligatorios.',
                             confirmButtonColor: '#053684',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false,
                             confirmButtonText: 'OK'
                         });
                         return;
@@ -307,6 +316,8 @@ jQuery(document).ready(function($) {
                                     title: 'Conductor registrado',
                                     text: 'El conductor ha sido registrado exitosamente.',
                                     confirmButtonColor: '#053684',
+                                    allowOutsideClick: false,
+                                    allowEscapeKey: false,
                                     confirmButtonText: 'OK'
                                 }).then(() => {
                                     $("#driver").val(fullIdCard);
@@ -363,44 +374,74 @@ jQuery(document).ready(function($) {
     });
     
     //VIEW DRIVERS DATA
-    $('#viewDrivers').on('click', function() {
+    $('#viewDrivers').on('click', function () {
         Swal.fire({
             title: 'Conductores Registrados',
-            html:
-                `<div class="relative bg-white shadow-lg rounded-lg p-6">
+            html: `
+                <div class="relative bg-white shadow-lg rounded-lg p-6">
                     <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none">
                         &times;
                     </button>
-                    <div id="modal-drivers-table" class="min-w-full"></div>
+                    <div id="modal-drivers-table" class="min-w-full">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
                 </div>`,
-            width: '80%', 
+            width: '80%',
             showConfirmButton: false,
             allowOutsideClick: false,
             showClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeInUp
-                  animate__faster
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
                 `
-              },
-              hideClass: {
+            },
+            hideClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeOutDown
-                  animate__faster
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
                 `
-              },
+            },
             backdrop: true,
             didOpen: () => {
-                $("#close-modal").on("click", function() {
+                $('<style>')
+                    .prop('type', 'text/css')
+                    .html(`
+                        .spinner-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                        }
+                        .spinner {
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid #1e3a8a;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 1s linear infinite;
+                            margin-bottom: 10px;
+                        }
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `)
+                    .appendTo('head');
+
+                $("#close-modal").on("click", function () {
                     Swal.close();
                 });
-    
+
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/drivers.php',
                     method: 'POST',
                     dataType: 'JSON',
-                    success: function(response) {
+                    success: function (response) {
                         const drivers = response.data;
                         const driverData = drivers.map(driver => [
                             driver.nombre,
@@ -421,8 +462,9 @@ jQuery(document).ready(function($) {
                             perPageSelect: [10, 20]
                         });
     
-                        $('#modal-drivers-table').on('click', 'tbody tr', function() {
-                            const selectedDriver = $(this).children('td').map(function() {
+                        $('.spinner-container').remove();
+                        $('#modal-drivers-table').on('click', 'tbody tr', function () {
+                            const selectedDriver = $(this).children('td').map(function () {
                                 return $(this).text();
                             }).get();
     
@@ -440,6 +482,15 @@ jQuery(document).ready(function($) {
                                 Swal.close();
                             });
                         });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudieron cargar los datos de los conductores.',
+                            confirmButtonColor: '#d33',
+                            showConfirmButton: true
+                        });
                     }
                 });
             }
@@ -447,55 +498,86 @@ jQuery(document).ready(function($) {
     });    
     
     //VIEW PLATES
-    $('#viewPlates').on('click', function() {
+    $('#viewPlates').on('click', function () {
         Swal.fire({
             title: 'Placas registradas',
-            html:
-                `<div class="relative bg-white shadow-lg rounded-lg p-6">
+            html: `
+                <div class="relative bg-white shadow-lg rounded-lg p-6">
                     <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none">
                         &times;
                     </button>
-                    <div id="modal-plates-table" class="min-w-full"></div>
+                    <div id="modal-plates-table" class="min-w-full">
+                        <div class="spinner-container">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
                 </div>`,
-            width: '80%', 
+            width: '80%',
             showConfirmButton: false,
             allowOutsideClick: false,
+            allowEscapeKey: false,
             showClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeInUp
-                  animate__faster
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
                 `
-              },
-              hideClass: {
+            },
+            hideClass: {
                 popup: `
-                  animate__animated
-                  animate__fadeOutDown
-                  animate__faster
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
                 `
-              },
+            },
             backdrop: true,
             didOpen: () => {
-                $("#close-modal").on("click", function() {
+                // Estilos para el spinner
+                $('<style>')
+                    .prop('type', 'text/css')
+                    .html(`
+                        .spinner-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            padding: 20px;
+                        }
+                        .spinner {
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid #1e3a8a;
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 1s linear infinite;
+                            margin-bottom: 10px;
+                        }
+                        @keyframes spin {
+                            0% { transform: rotate(0deg); }
+                            100% { transform: rotate(360deg); }
+                        }
+                    `)
+                    .appendTo('head');
+                    
+                $("#close-modal").on("click", function () {
                     Swal.close();
                 });
-    
+
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/plates.php',
                     method: 'POST',
                     dataType: 'JSON',
-                    success: function(response) {
+                    success: function (response) {
                         const plate = response.data;
                         const plateData = plate.map(plate => [
                             plate.placa,
-                            plate.tipo,
-                            //plate.peso
+                            plate.tipo
                         ]);
     
                         if (window.platesTable) {
                             window.platesTable.destroy();
                         }
-    
+                        
                         window.platesTable = new simpleDatatables.DataTable("#modal-plates-table", {
                             data: {
                                 headings: ["Placa", "Tipo"],
@@ -504,33 +586,45 @@ jQuery(document).ready(function($) {
                             perPage: 10,
                             perPageSelect: [10, 20]
                         });
-    
-                        $('#modal-plates-table').on('click', 'tbody tr', function() {
-                            const selectedPlate = $(this).children('td').map(function() {
+
+                        $('.spinner-container').remove();
+                        $('#modal-plates-table').on('click', 'tbody tr', function () {
+                            const selectedPlate = $(this).children('td').map(function () {
                                 return $(this).text();
                             }).get();
-
+    
                             $('#plate').val(selectedPlate[0]);
                             $('#plateType').val(selectedPlate[1]);
     
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Placa agregada',
-                                text: `La placa ${selectedPlate[0]} ha sido agregado correctamente.`,
+                                text: `La placa ${selectedPlate[0]} ha sido agregada correctamente.`,
                                 timer: 2000,
                                 showConfirmButton: false
                             }).then(() => {
                                 Swal.close();
                             });
                         });
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudieron cargar las placas registradas.',
+                            confirmButtonColor: '#d33',
+                            showConfirmButton: true
+                        });
                     }
                 });
             }
         });
-    });    
-    
-    
-    const today = new Date().toISOString().split('T')[0];
-    $("#fecha-form").val(today);
-    $("#fecha-table").val(today);
+    });
+
+    let today = new Date();
+    let formattedToday = today.toISOString().split('T')[0]; 
+
+    $("#fecha-form").val(formattedToday);
+    $("#fecha-form").attr('readonly', true);
+    $("#fecha-table").val(formattedToday);
 });

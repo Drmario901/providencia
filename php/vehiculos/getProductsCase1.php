@@ -20,7 +20,7 @@ $query = "
     SELECT m.MOV_CODIGO, i.INV_DESCRI 
     FROM dpmovinv m 
     JOIN dpinv i ON m.MOV_CODIGO = i.INV_CODIGO 
-    WHERE m.MOV_DOCUME = '$vehiculoId'
+    WHERE m.MOV_CODCOM = '$vehiculoId'
     AND (m.MOV_PESO IS NULL OR m.MOV_PESO = 0)
 ";
 

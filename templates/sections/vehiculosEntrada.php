@@ -5,7 +5,7 @@
 ?>
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="es" class="dark">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -38,6 +38,15 @@
         width: 100%;
         min-width: 1000px;
       }
+      @media (max-width: 1024px) {
+        .responsive-table {
+          font-size: 14px;
+        }
+        .responsive-table th,
+        .responsive-table td {
+          padding: 0.75rem;
+        }
+      }
       @media (max-width: 640px) {
         .responsive-table {
           font-size: 12px;
@@ -47,16 +56,15 @@
           padding: 0.5rem;
         }
       }
-
     </style>
   </head>
   
-  <body class="bg-gray-100">
+  <body class="bg-gray-100 dark:bg-gray-900">
     <?php require __DIR__. '/../widgets/navbar.php'; ?>
     <div class="flex flex-col lg:flex-row pt-16 overflow-hidden">
         <?php require __DIR__. '/../widgets/aside.php'; ?>
         
-        <div id="main-content" class="relative w-full h-full p-4 lg:p-6 bg-white shadow-md rounded-lg dark:bg-gray-900 lg:ml-64">
+        <div id="main-content" class="relative w-full h-full p-4 lg:p-6 bg-white shadow-md rounded-lg dark:bg-gray-800 lg:ml-64">
             <main>
                 <nav class="flex mb-5" aria-label="Breadcrumb">
                     <ol class="inline-flex items-center space-x-1 text-sm font-medium md:space-x-2">
@@ -81,8 +89,8 @@
                         </header>
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 lg:p-6 rounded-lg shadow mb-8">
-                            <form id="entryForm" class="space-y-4">
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <form id="entryForm" class="space-y-6">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     <div class="relative">
                                         <label for="plate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placa</label>
                                         <div class="flex">
@@ -95,17 +103,8 @@
                                                     <div class="tooltip-arrow" data-popper-arrow></div>
                                                 </div>
                                             </span>
-                                            <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                            <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
                                             <input type="text" id="plateType" hidden>
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-truck" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar vehículo" id="registerPlate">
-                                                    <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-truck" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Registrar Vehículo
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
                                         </div>
                                     </div>
                                     <div class="relative">
@@ -120,21 +119,12 @@
                                                     <div class="tooltip-arrow" data-popper-arrow></div>
                                                 </div>
                                             </span>
-                                            <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                            <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
                                             <input type="text" name="driverName" id="driverName" placeholder="Conductor" class="hidden rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-id" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Registrar conductor" id="registerDriver">
-                                                    <i data-lucide="user-plus" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-id" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Registrar Conductor
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     <div class="relative">
                                         <label for="entryDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
                                         <div class="flex items-center">
@@ -182,35 +172,61 @@
                         </div>
                         
                         <div class="bg-white dark:bg-gray-800 p-4 lg:p-6 rounded-lg shadow">
-                            <div class="mb-4 flex flex-col sm:flex-row sm:items-end space-y-4 sm:space-y-0 sm:space-x-4">
+                            <div class="mb-4 flex flex-col lg:flex-row lg:items-end space-y-4 lg:space-y-0 lg:space-x-4">
                                 <div class="flex-grow">
                                     <label for="tableDate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Seleccionar fecha:</label>
                                     <input type="date" id="fecha-table" name="tableDate" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                 </div>
-                                <button type="button" id="generateTicket" class="w-full sm:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                                    <i data-lucide="ticket" class="w-5 h-5 mr-2"></i>
-                                    Generar ticket
-                                </button>
+                                <div class="flex-grow">
+                                    <label for="period" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Periodo:</label>
+                                    <select id="period" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="" disabled selected>Seleccionar periodo</option>
+                                        <option value="diario">Diario</option>
+                                        <option value="semanal">Semanal</option>
+                                        <option value="quincenal">Quincenal</option>
+                                        <option value="mensual">Mensual</option>
+                                        <option value="bimestral">Bimestral</option>
+                                        <option value="trimestral">Trimestral</option>
+                                        <option value="semestral">Semestral</option>
+                                        <option value="anual">Anual</option>
+                                        <option value="indicada">Indicada</option>
+                                    </select>
+                                </div>
+                                <div class="flex-grow">
+                                    <label for="dateRange" id="dateRange" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rango de fechas:</label>
+                                    <div class="flex space-x-2">
+                                        <input 
+                                            type="date" 
+                                            id="startDate" 
+                                            name="startDate" 
+                                            class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
+                                        <input 
+                                            type="date" 
+                                            id="endDate" 
+                                            name="endDate" 
+                                            class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                                        >
+                                    </div>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <button type="button" id="reprintTicket" class="w-full lg:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        <i data-lucide="ticket" class="w-5 h-5 mr-2"></i>
+                                        Reimprimir ticket
+                                    </button>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <label class="inline-flex items-center cursor-pointer">
+                                        <input id="print" checked type="checkbox" value="" class="sr-only peer">
+                                        <div class="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-900 peer-checked:bg-blue-900"></div>
+                                        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">Imprimir tickets</span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="overflow-x-auto">
-                                <table id="default-table" class="w-full text-sm lg:text-base">
+                                <table id="default-table" class="w-full text-sm lg:text-base responsive-table">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
-                                        <tr>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Placa</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso - Tara</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha de Peso Tara</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Codigo Producto</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Producto ingresado</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vehiculo Activo</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Bruto</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Peso Neto</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Entrada</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Salida</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Caso</th>
-                                        </tr>
+                                        <!-- HEADINGS -->
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700">
                                         <!-- ELEMENTS -->

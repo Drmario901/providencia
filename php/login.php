@@ -34,6 +34,7 @@
         if ($found) {
             $_SESSION['CUENTA_ID'] = $id_usuario;
             $_SESSION['acceso'] = $nivel_acceso_admin;
+            //$_SESSION['ipOrigen'] = getPublicIP();
             //$resp['success'] = 'OK';
         } else {
             $resp['err_msg'] = 'Usuario o contraseña incorrectos.';

@@ -1,203 +1,232 @@
 jQuery(document).ready(function($) {
-    $('#generateTicket').on('click', function() {
-        Swal.fire({
-            title: 'Seleccione una fecha para ver tickets',
-            html: `<input type="date" id="select-date" class="swal2-input" value="${new Date().toISOString().slice(0, 10)}">`,
-            confirmButtonText: 'Buscar Entradas',
-            confirmButtonColor: '#053684',
-            preConfirm: () => {
-                const selectedDate = document.getElementById('select-date').value;
-                if (!selectedDate) {
-                    Swal.showValidationMessage('Debe seleccionar una fecha');
+    $('#reprintTicket').on('click', function() {
+        const openSelectTicketType = () => {
+            Swal.fire({
+                title: 'Seleccione el tipo de ticket a reimprimir',
+                input: 'select',
+                inputOptions: {
+                    entrada: 'Ticket de Entrada',
+                    salida: 'Ticket de Salida'
+                },
+                preConfirm: (value) => {
+                    if (!value) {
+                      Swal.showValidationMessage('<i class="fa fa-info-circle"></i> Necesario seleccionar una opción.')
+                    }
+                  }, 
+                inputPlaceholder: 'Seleccione una opción',
+                showCancelButton: true,
+                confirmButtonText: 'Siguiente',
+                confirmButtonColor: '#053684',
+                cancelButtonText: 'Cerrar',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const ticketType = result.value;
+                    openSelectDate(ticketType);
                 }
-                return selectedDate;
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const selectedDate = result.value;
+            });
+        };
 
-                $.ajax({
-                    url: wb_subdir + '/php/vehiculos/ticketRomana.php',
-                    method: 'POST',
-                    data: { fecha: selectedDate }, 
-                    success: function(response) {
-                        const entradas = JSON.parse(response);
+        const openSelectDate = (ticketType) => {
+            Swal.fire({
+                title: `Seleccione una fecha para ver tickets de ${ticketType}`,
+                html: `<input type="date" id="select-date-${ticketType}" class="swal2-input" value="${new Date().toISOString().slice(0, 10)}">`,
+                confirmButtonText: 'Buscar',
+                confirmButtonColor: '#053684',
+                cancelButtonText: 'Volver',
+                showCancelButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                preConfirm: () => {
+                    const selectedDate = document.getElementById(`select-date-${ticketType}`).value;
+                    if (!selectedDate) {
+                        Swal.showValidationMessage('Debe seleccionar una fecha');
+                    }
+                    return { ticketType, selectedDate };
+                }
+            }).then((dateResult) => {
+                if (dateResult.isConfirmed) {
+                    const { ticketType, selectedDate } = dateResult.value;
+                    fetchTickets(ticketType, selectedDate);
+                } else if (dateResult.dismiss === Swal.DismissReason.cancel) {
+                    openSelectTicketType();
+                }
+            });
+        };
 
-                        if (entradas.length > 0) {
-                            let selectOptions = '<select id="select-entrada" class="swal2-input">';
-                            entradas.forEach((entrada) => {
-                                selectOptions += `<option value="${entrada.id}">${entrada.conductor} - ${entrada.placa}</option>`;
-                            });
-                            selectOptions += '</select>';
+        const fetchTickets = (ticketType, selectedDate) => {
+            $.ajax({
+                url: wb_subdir + '/php/vehiculos/ticketRomana.php',  
+                method: 'POST',
+                data: { fecha: selectedDate },
+                success: function(response) {
+                    const tickets = JSON.parse(response);
 
-                            Swal.fire({
-                                title: 'Generar Ticket Romana',
-                                html: `
-                                    <div class="relative bg-white shadow-lg rounded-lg p-6">
-                                        <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none text-lg font-bold">
-                                            &times;
-                                        </button>
-                                        <form id="ticketForm" class="space-y-4">
-                                            <div>
-                                                <label for="select-entrada" class="block text-sm font-medium text-gray-700">Entrada</label>
-                                                ${selectOptions}
-                                            </div>
-                                            <div>
-                                                <label for="silo" class="block text-sm font-medium text-gray-700">Silo de Carga</label>
-                                                <input type="text" id="silo" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" placeholder="Ingrese el silo de carga" required>
-                                            </div>
-                                            <div>
-                                                <label for="destino" class="block text-sm font-medium text-gray-700">Destino</label>
-                                                <input type="text" id="destino" class="border-gray-300 rounded-lg p-2 w-full bg-gray-100" placeholder="Ingrese el destino" required>
-                                            </div>
-                                            <div class="text-center mt-4">
-                                                <button type="submit" id="generate-ticket-btn" class="bg-blue-900 text-white rounded-lg px-4 py-2 hover:bg-blue-600">Generar/Reimprimir Ticket</button>
-                                            </div>
-                                        </form>
-                                    </div>`,
-                                width: 800,
-                                showConfirmButton: false,
-                                allowOutsideClick: false,
-                                showClass: {
-                                    popup: `animate__animated animate__fadeInUp animate__faster`
-                                },
-                                hideClass: {
-                                    popup: `animate__animated animate__fadeOutDown animate__faster`
-                                },
-                                didOpen: () => {
-                                    $("#close-modal").on("click", function() {
-                                        Swal.close();
-                                    });
-
-                                    $("#ticketForm").on("submit", function(e) {
-                                        e.preventDefault(); 
-                                        
-                                        const idEntrada = $('#select-entrada').val();
-                                        const silo = $('#silo').val();
-                                        const destino = $('#destino').val();
-                                        
-                                        if (!idEntrada || !silo || !destino) {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Error',
-                                                text: 'Todos los campos son obligatorios.',
-                                                confirmButtonColor: '#053684',
-                                                confirmButtonText: 'OK'
-                                            });
-                                            return;
-                                        }
-
-                                        $.ajax({
-                                            url: wb_subdir + '/php/vehiculos/ticketRomana.php',
-                                            method: 'POST',
-                                            data: { id_entrada: idEntrada, silo: silo, destino: destino },
-                                            success: function(response) {
-                                                const data = JSON.parse(response);
-        
-                                                if (data.error) {
-                                                    Swal.fire('Error', data.error, 'error');
-                                                } else {
-                                                    Swal.fire({
-                                                        title: 'Ticket Generado',
-                                                        html: `
-                                                            <div style="width: 80mm; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000; background-color: #fff;">
-                                                                <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">Avícola La Providencia</div>
-                                                                <div style="text-align: center; margin-bottom: 10px;">Ticket Romana</div>
-                                                                <hr style="border-top: 1px dashed #000; margin: 10px 0;">
-                                                                <div style="margin-bottom: 5px;">Fecha: ${data.fecha}</div>
-                                                                <div style="margin-bottom: 5px;">Nota: ${data.nota}</div>
-                                                                <div style="margin-bottom: 5px;">Chofer: ${data.chofer}</div>
-                                                                <div style="margin-bottom: 5px;">Cédula: ${data.cedula}</div>
-                                                                <div style="margin-bottom: 5px;">Placa: ${data.placa}</div>
-                                                                <div style="margin-bottom: 5px;">Destino: ${data.destino}</div>
-                                                                <div style="margin-bottom: 5px;">Producto: ${data.producto}</div>
-                                                                <div style="margin-bottom: 5px;">Peso Tara: ${data.peso_tara}</div>
-                                                                <div style="margin-bottom: 5px;">Peso Bruto: ${data.peso_bruto}</div>
-                                                                <div style="margin-bottom: 5px;">Peso Neto: ${data.peso_neto}</div>
-                                                                <div style="border: 1px solid #000; text-align: center; padding: 5px; font-weight: bold; margin: 10px 0;">Silo de Carga: ${data.silo}</div>
-                                                                <div style="margin-top: 10px;">Hora: ${data.hora}</div>
-                                                                <hr style="border-top: 1px dashed #000; margin-top: 10px;">
-                                                            </div>
-                                                        `,
-                                                        confirmButtonText: 'Ver',
-                                                        confirmButtonColor: '#053684',
-                                                        showCancelButton: true,
-                                                        cancelButtonText: 'Cerrar'
-                                                    }).then((result) => {
-                                                        if (result.isConfirmed) {
-                                                            const ticketContent = document.createElement('div');
-                                                            ticketContent.innerHTML = `
-                                                                <div style="width: 80mm; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000; background-color: #fff;">
-                                                                    <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">Avícola La Providencia</div>
-                                                                    <div style="text-align: center; margin-bottom: 10px;">Ticket Romana</div>
-                                                                    <hr style="border-top: 1px dashed #000; margin: 10px 0;">
-                                                                    <div style="margin-bottom: 5px;">Fecha: ${data.fecha}</div>
-                                                                    <div style="margin-bottom: 5px;">Nota: ${data.nota}</div>
-                                                                    <div style="margin-bottom: 5px;">Chofer: ${data.chofer}</div>
-                                                                    <div style="margin-bottom: 5px;">Cédula: ${data.cedula}</div>
-                                                                    <div style="margin-bottom: 5px;">Placa: ${data.placa}</div>
-                                                                    <div style="margin-bottom: 5px;">Destino: ${data.destino}</div>
-                                                                    <div style="margin-bottom: 5px;">Producto: ${data.producto}</div>
-                                                                    <div style="margin-bottom: 5px;">Peso Tara: ${data.peso_tara}</div>
-                                                                    <div style="margin-bottom: 5px;">Peso Bruto: ${data.peso_bruto}</div>
-                                                                    <div style="margin-bottom: 5px;">Peso Neto: ${data.peso_neto}</div>
-                                                                    <div style="border: 1px solid #000; text-align: center; padding: 5px; font-weight: bold; margin: 10px 0;">Silo de Carga: ${data.silo}</div>
-                                                                    <div style="margin-top: 10px;">Hora: ${data.hora}</div>
-                                                                    <hr style="border-top: 1px dashed #000; margin-top: 10px;">
-                                                                </div>
-                                                            `;
-                                                            
-                                                            const options = {
-                                                                margin: [5, 0, 5, 0],
-                                                                filename: 'ticket_romana.pdf',
-                                                                image: { type: 'jpeg', quality: 0.98 },
-                                                                html2canvas: { scale: 2 },
-                                                                jsPDF: { unit: 'mm', format: [80, 160], orientation: 'portrait' } 
-                                                            };
-        
-                                                            html2pdf().set(options).from(ticketContent).toPdf().get('pdf').then(function (pdf) {
-                                                                const blob = pdf.output('blob');
-                                                                const blobUrl = URL.createObjectURL(blob);
-                                                                window.open(blobUrl);  
-                                                            });
-                                                        }
-                                                    });
-                                                }
-                                            },
-                                            error: function() {
-                                                Swal.fire({
-                                                    icon: 'error',
-                                                    title: 'Error',
-                                                    text: 'Hubo un problema al generar el ticket.',
-                                                    confirmButtonColor: '#053684',
-                                                    confirmButtonText: 'OK'
-                                                });
-                                            }
-                                        });
-                                    });
-                                }
-                            });
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error',
-                                text: `No se encontraron entradas para la fecha ${selectedDate}.`,
-                                confirmButtonColor: '#053684',
-                                confirmButtonText: 'OK'
-                            });
-                        }
-                    },
-                    error: function() {
+                    if (tickets.length > 0) {
+                        let selectOptions = `<select id="select-${ticketType}" class="swal2-input">`;
+                        tickets.forEach((ticket) => {
+                            selectOptions += `<option value="${ticket.id}">${ticket.conductor_nombre} - ${ticket.placa}</option>`;
+                        });
+                        selectOptions += '</select>';
+                        openSelectTicket(ticketType, selectedDate, selectOptions);
+                    } else {
                         Swal.fire({
                             icon: 'error',
                             title: 'Error',
-                            text: 'Problema para obtener las entradas.',
+                            text: `No se encontraron tickets para la fecha ${selectedDate}.`,
                             confirmButtonColor: '#053684',
-                            confirmButtonText: 'OK'
-                        });
+                            confirmButtonText: 'Volver'
+                        }).then(() => openSelectDate(ticketType));
                     }
-                });
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Problema para obtener los tickets.',
+                        confirmButtonColor: '#053684',
+                        confirmButtonText: 'Volver'
+                    }).then(() => openSelectDate(ticketType));
+                }
+            });
+        };
+
+        const openSelectTicket = (ticketType, selectedDate, selectOptions) => {
+            Swal.fire({
+                title: `Seleccione un ticket de ${ticketType}`,
+                html: selectOptions,
+                confirmButtonText: 'Ver Ticket',
+                confirmButtonColor: '#053684',
+                cancelButtonText: 'Volver',
+                showCancelButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                preConfirm: () => {
+                    const selectedTicketId = $(`#select-${ticketType}`).val();
+                    if (!selectedTicketId) {
+                        Swal.showValidationMessage(`Debe seleccionar un ${ticketType}.`);
+                    }
+                    return selectedTicketId;
+                }
+            }).then((ticketResult) => {
+                if (ticketResult.isConfirmed) {
+                    const selectedTicketId = ticketResult.value;
+                    fetchTicketDetails(ticketType, selectedTicketId);
+                } else if (ticketResult.dismiss === Swal.DismissReason.cancel) {
+                    openSelectDate(ticketType);
+                }
+            });
+        };
+
+        const fetchTicketDetails = (ticketType, selectedTicketId) => {
+            $.ajax({
+                url: wb_subdir + '/php/vehiculos/ticketRomana.php',
+                method: 'POST',
+                data: { tipo: ticketType, id_entrada: selectedTicketId },
+                success: function(response) {
+                    const ticketData = JSON.parse(response);
+
+                    if (ticketData.error) {
+                        Swal.fire('Error', ticketData.error, 'error').then(() => openSelectTicket(ticketType, selectedDate, selectOptions));
+                    } else {
+                        showTicketPreview(ticketType, ticketData);
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: `Hubo un problema al reimprimir el ticket de ${ticketType}.`,
+                        confirmButtonColor: '#053684',
+                        confirmButtonText: 'OK'
+                    }).then(() => openSelectTicket(ticketType, selectedDate, selectOptions));
+                }
+            });
+        };
+
+        const showTicketPreview = (ticketType, ticketData) => {
+            let ticketHTML = `
+                <div style="width: 80mm; font-family: Arial, sans-serif; padding: 10px; margin: 0 auto; border: 1px solid #000; background-color: #fff;">
+                    <div style="text-align: center; font-weight: bold; margin-bottom: 5px;">Avícola La Providencia</div>
+                    <div style="text-align: center; margin-bottom: 10px;">Ticket Romana - ${ticketType.charAt(0).toUpperCase() + ticketType.slice(1)}</div>
+                    <hr style="border-top: 1px dashed #000; margin: 10px 0;">
+                    <div style="margin-bottom: 5px;">Fecha: ${ticketData.VHP_FECHA}</div>
+                    <div style="margin-bottom: 5px;">Chofer: ${ticketData.conductor_nombre}</div>
+                    <div style="margin-bottom: 5px;">Cédula: ${ticketData.cedula}</div>
+                    <div style="margin-bottom: 5px;">Placa: ${ticketData.VHP_PLACA}</div>
+                    <div style="margin-bottom: 5px;">Producto: ${ticketData.productos}</div>
+                    <div style="margin-bottom: 5px;">Peso Bruto: ${ticketData.peso_bruto} KG</div>`;
+
+            if (ticketType === 'salida') {
+                ticketHTML += `
+                    <div style="margin-bottom: 5px;">Peso Neto: ${ticketData.peso_neto} KG</div>
+                    <div style="margin-bottom: 5px;">Peso Tara: ${ticketData.peso_salida} KG</div>
+                    <div style="margin-bottom: 5px;">Productos con Silos: ${ticketData.productos_con_silos}</div>`;
             }
-        });
+
+            ticketHTML += `
+                    <div style="margin-top: 10px;">Hora de Entrada: ${ticketData.hora_entrada}</div>
+                    <div style="margin-top: 5px;">Hora de Salida: ${ticketData.hora_salida}</div>
+                    <hr style="border-top: 1px dashed #000; margin-top: 10px;">
+                </div>`;
+
+            Swal.fire({
+                title: 'Prevista',
+                html: ticketHTML,
+                confirmButtonText: 'Reimprimir Ticket',
+                confirmButtonColor: '#053684',
+                cancelButtonText: 'Volver',
+                showCancelButton: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    reprintTicket(ticketType, ticketData);
+                } else {
+                    openSelectTicket(ticketType, selectedDate, selectOptions);
+                }
+            });
+        };
+
+        const reprintTicket = (ticketType, ticketData) => {
+            const endpoint = ticketType === 'entrada' ? '/r-entry' : '/r-exit';
+
+            $.ajax({
+                url: 'http://127.0.0.1:81' + endpoint,
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    VHP_FECHA: ticketData.VHP_FECHA,
+                    hora_entrada: ticketData.hora_entrada,
+                    hora_salida: ticketData.hora_salida,
+                    chofer: ticketData.conductor_nombre,
+                    cedula: ticketData.cedula,
+                    placa: ticketData.VHP_PLACA,
+                    producto_ingresado: ticketData.productos,
+                    peso_bruto: ticketData.peso_bruto,
+                    peso_neto: ticketData.peso_neto,
+                    peso_salida: ticketData.peso_salida,
+                    productos_con_silos: ticketData.productos_con_silos
+                }),
+                success: function(response) {
+                    if (response.message === "200") {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Ticket Reimpreso Exitosamente',
+                            confirmButtonText: 'OK',
+                            confirmButtonColor: '#053684'
+                        });
+                    } else {
+                        Swal.fire('Error', response.error || 'Ocurrió un error al reimprimir.', 'error');
+                    }
+                },
+                error: function() {
+                    Swal.fire('Error', 'No se pudo conectar con el servidor.', 'error');
+                }
+            });
+        };
+
+        openSelectTicketType();
     });
 });

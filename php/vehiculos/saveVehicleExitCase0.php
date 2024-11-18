@@ -5,11 +5,13 @@ error_reporting(E_ALL);
 
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
+require __DIR__ . '/../global.php';
 
 $bd = "serviaves";
 mysqli_select_db($conexion, $bd);
 date_default_timezone_set('America/Caracas'); 
 
+$userID = $_SESSION['CUENTA_ID'];
 $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoTara'];
 $producto = $_POST['producto'];
@@ -17,6 +19,8 @@ $silo = $_POST['silo'];
 $cantidad = $_POST['cantidad'];
 $unidadMedida = $_POST['unidadMedida'];
 $exitHour = date('h:i:s');
+$numDoc = $userID . $vehiculoId; 
+$numDoc = str_pad($numDoc, 10, '0', STR_PAD_LEFT);
 
 $queryMainEntry = "SELECT * FROM dpvehiculospesaje WHERE VHP_CODCON = '$vehiculoId' AND VHP_NUMASO = 'Pendiente'";
 $resultMainEntry = mysqli_query($conexion, $queryMainEntry);
@@ -46,6 +50,8 @@ if ($resultPeso) {
     mysqli_query($conexion, $updatePesoProductoQuery);
 
     if (mysqli_query($conexion, $insertSalidaQuery)) {
+        $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";
+        mysqli_query($conexion, $insertDocumento);
         echo json_encode(['status' => 'finalizado', 'tara' => $pesoTara]);
     } else {
         echo json_encode(['error' => 'No se pudo registrar la salida']);

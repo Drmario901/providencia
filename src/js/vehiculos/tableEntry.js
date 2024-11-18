@@ -2,109 +2,156 @@ jQuery(document).ready(function($) {
 
     let table;
 
-    function cargarRegistros(fecha) {
-    $.ajax({
-        url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
-        method: 'POST',
-        data: { fecha: fecha },
-        dataType: 'JSON',
-        success: function(response) {
-            console.log(response);
-            let tbody = $('#default-table tbody');
-            tbody.empty();
+    $('#fecha-table').on('change', function() {
+        let fechaSeleccionada = $(this).val();
+        let fechaInicio = $('#startDate').val();
+        let fechaFin = $('#endDate').val();
 
-            if (response.length > 0) {
-                response.forEach(function(registro) {
-                    let row = `
-                    <tr data-id="${registro.id}" data-caso="${registro.caso}">
-                        <td>${registro.id}</td>
-                        <td>${registro.VHP_PLACA}</td>
-                        <td>${registro.conductor_nombre}</td>
-                        <td>${registro.peso_bruto || '-'}</td>
-                        <td>${registro.VHP_FECHA}</td>
-                        <td>${registro.VHP_HORA}</td>
-                        <td>${registro.codigo_productos} || 'Vacio'</td>
-                        <td>${registro.producto_ingresado} || 'Vacio'</td>
-                        <td>${registro.peso_tara || '-'}</td>
-                        <td>${registro.peso_neto || '-'}</td>
-                        <td>${registro.hora_salida || '-'}</td>
-                        <td>${registro.estatus}</td>
-                        <td>${registro.caso}</td>
-                    </tr>
-                `;
+        if (!fechaInicio || !fechaFin) {
+            cargarRegistros(fechaSeleccionada);
+        }
+    });
 
-                    tbody.append(row);
+    function cargarRegistros(fecha, fechaInicio, fechaFin) {
+        let data = {};
+    
+        if (fechaInicio && fechaFin) {
+            data = { startDate: fechaInicio, endDate: fechaFin };
+        } else if (fecha) {
+            data = { fecha: fecha };
+        }
+    
+        let tbody = $('#default-table tbody');
+        tbody.empty().append(`
+            <tr>
+                <td colspan="13" class="text-center">
+                    <div class="spinner-container">
+                        <div class="spinner"></div>
+                    </div>
+                </td>
+            </tr>
+        `);
+    
+        $('<style>')
+            .prop('type', 'text/css')
+            .html(`
+                .spinner-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                }
+                .spinner {
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #1e3a8a;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 10px;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `)
+            .appendTo('head');
+    
+        $.ajax({
+            url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
+            method: 'POST',
+            data: data,
+            dataType: 'JSON',
+            success: function(response) {
+                if (table) {
+                    table.destroy();
+                }
+    
+                table = new simpleDatatables.DataTable("#default-table", {
+                    perPage: 30,
+                    perPageSelect: [5,10,20,30,40,50,60],
+                    data: {
+                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha", "Hora Entrada", "Hora Salida", "Código Producto", "Producto Ingresado", "Estado", "Caso"],
+                        data: response.map(function(registro) {
+                            let estatusClass = '';
+                            if (registro.estatus === 'Pendiente') {
+                                estatusClass = 'row-pendiente';
+                            } else if (registro.estatus === 'Finalizado') {
+                                estatusClass = 'row-finalizado';
+                            }
+    
+                            let casoText = '';
+                            if (registro.caso == '0') {
+                                casoText = 'Producto';
+                            } else if (registro.caso == '1') {
+                                casoText = 'Múltiple';
+                            } else if (registro.caso == '2') {
+                                casoText = 'Vacío';
+                            } else {
+                                casoText = '-';
+                            }
+    
+                            return [
+                                `<span>${registro.id}</span>`,
+                                `<span class="font-bold">${registro.VHP_PLACA}</span>`,
+                                `<span class="font-bold">${registro.conductor_nombre}</span>`,
+                                `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+                                `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
+                                `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
+                                `<span class="font-bold">${registro.VHP_FECHA}</span>`,
+                                `<span class="font-bold">${registro.hora_entrada}</span>`,
+                                `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
+                                `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
+                                `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+                                `<span class="${estatusClass}">${registro.estatus}</span>`,
+                                `<span class="font-bold">${casoText}</span>`
+                            ];
+                        })
+                    }
                 });
-            } else {
-                tbody.append(`
+    
+                $(document).on('click', '#default-table tbody tr', function() {
+                    let cells = $(this).find('td');
+                    let id = $(cells[0]).text().trim();
+                    function checkCase(id, callback) {
+                        $.ajax({
+                            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
+                            method: 'POST',
+                            data: { vehiculoId: id },
+                            success: function(response) {
+                                if (response && response.case) {
+                                    callback(response.case);
+                                } else {
+                                    callback(undefined);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error(error);
+                            }
+                        });
+                    }
+                    if (id) {
+                        checkCase(id, function(caso) {
+                            console.log('ID:', id, 'Caso:', caso);
+                            abrirModal(id, caso);
+                        });
+                    } else {
+                        console.error('El ID no fue encontrado en la fila seleccionada.');
+                    }
+                });                
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al cargar los registros:', error);
+                tbody.empty().append(`
                     <tr>
-                        <td colspan="13" class="text-center text-gray-500">No hay registros</td>
+                        <td colspan="13" class="text-center text-red-500">Error al cargar los registros</td>
                     </tr>
                 `);
             }
-
-            if (table) {
-                table.destroy();  
-            }
-
-            table = new simpleDatatables.DataTable("#default-table", {
-                perPage: 10,
-                perPageSelect: [10, 20, 30, 40, 50],
-                data: {
-                    headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha", "Hora Entrada", "Hora Salida", "Código Producto", "Producto Ingresado",  "Estado", "Caso"],
-                    data: response.map(function(registro) {
-                        let estatusClass = '';
-                        if (registro.estatus === 'Pendiente') {
-                            estatusClass = 'row-pendiente';
-                        } else if (registro.estatus === 'Finalizado') {
-                            estatusClass = 'row-finalizado';
-                        }
-
-                        let casoText = '';
-                        if (registro.caso == '0') {
-                            casoText = 'Producto';
-                        } else if (registro.caso == '1') {
-                            casoText = 'Múltiple';
-                        } else if (registro.caso == '2') {
-                            casoText = 'Vacío';
-                        } else {
-                            casoText = '-';
-                        }
-
-                        return [
-                            `<span>${registro.id}</span>`,
-                            `<span class="font-bold">${registro.VHP_PLACA}</span>`,
-                            `<span class="font-bold">${registro.conductor_nombre}</span>`,
-                            `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
-                            `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
-                            `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
-                            `<span class="font-bold">${registro.VHP_FECHA}</span>`,
-                            `<span class="font-bold">${registro.hora_entrada}</span>`,
-                            `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
-                            `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
-                            `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
-                            `<span class="${estatusClass}">${registro.estatus}</span>`,
-                            `<span class="font-bold">${casoText}</span>`
-                        ];
-                    })
-                }
-            });
-
-            $('#default-table tbody').on('click', 'tr', function() {
-                var cells = $(this).find('td');
-                var id = $(cells[0]).text().trim(); 
-                var caso = $(cells[12]).text().trim(); 
-            
-                console.log('ID:', id, 'Caso:', caso);
-                abrirModal(id, caso);
-            });
-        },
-        error: function(xhr, status, error) {
-            console.error('Error al cargar los registros:', error);
-        }
-    });
-}
-
+        });
+    }
+    
     function abrirModal(id, caso) {
         console.log('Abriendo modal para el caso:', caso); 
         if (caso === 'Producto') {
@@ -127,6 +174,8 @@ jQuery(document).ready(function($) {
                         icon: 'info',
                         title: 'Este vehículo ya ha finalizado su proceso de descarga.',
                         confirmButtonText: 'OK',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
                         confirmButtonColor: '#053684'
                     });
                     return; 
@@ -203,6 +252,7 @@ jQuery(document).ready(function($) {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            allowEscapeKey: false,
             confirmButtonColor: '#053684',
             showClass: {
                 popup: `animate__animated animate__fadeInUp animate__faster`
@@ -669,6 +719,7 @@ jQuery(document).ready(function($) {
                                     cargarRegistros($('#fecha-table').val());
                                 });
     
+                            if ($('#print').is(':checked')) {
                                 $.ajax({
                                     url: wb_subdir + '/php/vehiculos/exitTicketData.php',  
                                     method: 'POST',
@@ -714,6 +765,7 @@ jQuery(document).ready(function($) {
                                         $('#notification').html('<div class="alert alert-danger">Hubo un problema al obtener los datos de salida.</div>').fadeIn();
                                     }
                                 });
+                            }
                             }
                         },
                         error: function() {
@@ -853,11 +905,100 @@ jQuery(document).ready(function($) {
         });
     }    
     
-    $('#fecha-table').on('change', function() {
-        let fechaSeleccionada = $(this).val();
-        cargarRegistros(fechaSeleccionada);
-    });
+    $('#period').on('change', function () {
+        let selectedPeriod = $(this).val();
+        let today = new Date();
+        let startDate = '';
+        let endDate = '';
+    
+        function formatDate(date) {
+            let d = date.getDate().toString().padStart(2, '0');
+            let m = (date.getMonth() + 1).toString().padStart(2, '0');
+            let y = date.getFullYear();
+            return `${y}-${m}-${d}`;
+        }
+    
+        if (selectedPeriod) {
+            $('#dateRange').show();
+            $('#fecha-table').prop('disabled', selectedPeriod !== 'diario');
+        } else {
+            $('#dateRange').hide();
+            $('#startDate').prop('disabled', false).val('');
+            $('#endDate').prop('disabled', false).val('');
+            $('#fecha-table').prop('disabled', true);
+            return;
+        }
+    
+        switch (selectedPeriod) {
+            case 'diario':
+                startDate = formatDate(today);
+                endDate = formatDate(today);
+                $('#startDate, #endDate').prop('disabled', true);
+                $('#fecha-table').on('change', function() {
+                    let fechaSeleccionada = $(this).val();
+                        cargarRegistros(fechaSeleccionada);
+                });
+                break;
+            case 'semanal':
+                startDate = formatDate(new Date(today.setDate(today.getDate() - today.getDay())));
+                endDate = formatDate(new Date(today.setDate(today.getDate() + 6)));
+                break;
+            case 'quincenal':
+                startDate = formatDate(new Date(today.setDate(today.getDate() - 14)));
+                endDate = formatDate(new Date());
+                break;
+            case 'mensual':
+                startDate = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+                endDate = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+                break;
+            case 'bimestral':
+                startDate = formatDate(new Date(today.getFullYear(), today.getMonth() - 1, 1));
+                endDate = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+                break;
+            case 'trimestral':
+                startDate = formatDate(new Date(today.getFullYear(), today.getMonth() - 2, 1));
+                endDate = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+                break;
+            case 'semestral':
+                startDate = formatDate(new Date(today.getFullYear(), today.getMonth() - 5, 1));
+                endDate = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+                break;
+            case 'anual':
+                startDate = formatDate(new Date(today.getFullYear(), 0, 1));
+                endDate = formatDate(new Date(today.getFullYear(), 11, 31));
+                break;
+            case 'indicada':
+                $('#dateRange').show();
+                $('#startDate').prop('disabled', false).val('');
+                $('#endDate').prop('disabled', false).val('');
+                return; 
+            default:
+                startDate = '';
+                endDate = '';
+                $('#startDate, #endDate').prop('disabled', true);
+                $('#fecha-table').prop('disabled', true);
+                return;
+        }
 
+        $('#startDate').val(startDate).prop('disabled', true);
+        $('#endDate').val(endDate).prop('disabled', true);
+    
+        if (startDate && endDate) {
+            cargarRegistros(null, startDate, endDate);
+        }
+    });
+    
+    $('#startDate, #endDate').on('change', function () {
+        if ($('#period').val() === 'indicada') {
+            let fechaInicio = $('#startDate').val();
+            let fechaFin = $('#endDate').val();
+    
+            if (fechaInicio && fechaFin) {
+                cargarRegistros(null, fechaInicio, fechaFin);
+            }
+        }
+    });
+     
     let fechaInicial = $('#fecha-table').val();
     cargarRegistros(fechaInicial);
 
@@ -872,6 +1013,13 @@ jQuery(document).ready(function($) {
     const $productEntryCheckbox = $("#product-entry"); 
     const $multipleProductsCheckbox = $("#multiple-products"); 
     const $noProductEntryCheckbox = $("#no-product-entry"); 
+    
+    //DATE INPUTS
+    $('#dateRange').hide();
+    $('#startDate').prop('disabled', true).val('');
+    $('#endDate').prop('disabled', true).val('');
+    $('#fecha-table').show(); 
+    $('#fecha-table').prev('label').show(); 
 
     function initializeSelect2() {
         $productSelect.select2({
@@ -1062,7 +1210,7 @@ jQuery(document).ready(function($) {
             peso_bruto: $('#entryWeight').val(),
             fecha_peso_bruto: $('#fecha-form').val(),
             hora_entrada: $('#hiddenTimeInput').val(),
-            vehiculo_activo: 'Sí',
+            //vehiculo_activo: 'Sí',
             caso: caso 
         };
         
@@ -1092,6 +1240,7 @@ jQuery(document).ready(function($) {
                     showConfirmButton: true
                 });
 
+            if ($('#print').is(':checked')) {
                 $.ajax({
                     url: 'http://127.0.0.1:81/entry',  
                     method: 'POST',
@@ -1122,6 +1271,7 @@ jQuery(document).ready(function($) {
                         Swal.fire('Error al generar el ticket de entrada', '', 'error');
                     }
                 });
+            }
     
                 $('#entryForm')[0].reset();
                 const today = new Date().toISOString().split('T')[0];

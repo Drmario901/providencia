@@ -4,7 +4,7 @@ ini_set('display_errors', 1);
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
 
-$bd = "serviaves_web";
+$bd = "serviaves";
 if (!mysqli_select_db($conexion, $bd)) {
     echo json_encode(["success" => false, "message" => "Error seleccionando la base de datos: " . mysqli_error($conexion)]);
     exit;

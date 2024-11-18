@@ -6,7 +6,7 @@ error_reporting(E_ALL);
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
 
-$bd = "serviaves_web";
+$bd = "serviaves";
 mysqli_select_db($conexion, $bd);
 
 if (isset($_POST['driverName'], $_POST['idCard'], $_POST['licenseType'])) {
