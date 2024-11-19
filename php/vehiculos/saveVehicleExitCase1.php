@@ -17,6 +17,7 @@ $pesoProducto = $_POST['pesoProducto'] ?? NULL;
 $producto = $_POST['producto'];
 $unidadMedida = $_POST['unidadMedida'] ?? NULL;
 $silo = $_POST['silo'];
+$observaciones = $_POST['observaciones'];
 $cantidad = $_POST['cantidad'];
 $exitHour = date('h:i:s');
 $numDoc = $userID . $vehiculoId; 
@@ -70,7 +71,7 @@ if ($resultPeso) {
             $pesoNeto = $dataPesoNeto['pesoNeto'];
             $pesoTara = $pesoBrutoInicial - $pesoNeto;
 
-            $finalizarQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula')";
+            $finalizarQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$observaciones')";
             mysqli_query($conexion, $finalizarQuery);
 
             $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";

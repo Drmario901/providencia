@@ -72,7 +72,7 @@ jQuery(document).ready(function($) {
                     perPage: 30,
                     perPageSelect: [5,10,20,30,40,50,60],
                     data: {
-                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha", "Hora Entrada", "Hora Salida", "Código Producto", "Producto Ingresado", "Estado", "Caso"],
+                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Código Producto", "Producto Ingresado", "Estado", "Caso"],
                         data: response.map(function(registro) {
                             let estatusClass = '';
                             if (registro.estatus === 'Pendiente') {
@@ -99,7 +99,8 @@ jQuery(document).ready(function($) {
                                 `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
                                 `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
                                 `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
-                                `<span class="font-bold">${registro.VHP_FECHA}</span>`,
+                                `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
+                                `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
                                 `<span class="font-bold">${registro.hora_entrada}</span>`,
                                 `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
                                 `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
@@ -236,6 +237,12 @@ jQuery(document).ready(function($) {
                                             Leer Peso
                                         </button>
                                     </div>
+                                    <div class="mt-2">
+                                    <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+                                    <input type="text" id="observaciones" name="observaciones" 
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                        placeholder="Ingrese su observacion" maxlength="14">
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -387,6 +394,7 @@ jQuery(document).ready(function($) {
                     const siloSeleccionado = $('#silo').val();
                     const cantidadIngresada = $('#cantidad').val();
                     const pesoBrutoActual = parseFloat($('#pesoBrutoCaso0').val());
+                    const observaciones = $('#observaciones').val();
     
                     if (!productoSeleccionado || !unidadMedidaSeleccionada || !siloSeleccionado || !cantidadIngresada || isNaN(pesoBrutoActual) || pesoBrutoActual <= 0) {
                         Swal.fire({
@@ -410,6 +418,7 @@ jQuery(document).ready(function($) {
                             unidadMedida: unidadMedidaSeleccionada,
                             silo: siloSeleccionado,
                             cantidad: cantidadIngresada,
+                            observaciones: observaciones,
                             pesoTara: pesoTara
                         },
                         success: function(response) {
@@ -520,6 +529,13 @@ jQuery(document).ready(function($) {
                                             Leer Peso
                                         </button>
                                     </div>
+                                </div>
+    
+                                <div class="mt-2">
+                                    <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+                                    <input type="text" id="observaciones" name="observaciones" 
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                        placeholder="Ingrese su observacion" maxlength="14">
                                 </div>
                             </div>
                         </div>
@@ -674,6 +690,8 @@ jQuery(document).ready(function($) {
                     const cantidadIngresada = $('#cantidad').val();
                     const pesoBrutoActual = parseFloat($('#pesoBrutoCaso1').val());
                     const pesoDescargado = pesoBrutoInicial - pesoBrutoActual;
+                    const observaciones = $('#observaciones').val();
+                    console.log(observaciones) 
                 
                     if (!productoSeleccionado || !unidadMedidaSeleccionada || !siloSeleccionado || !cantidadIngresada || isNaN(pesoDescargado) || pesoDescargado <= 0) {
                         $('#notification').html('<div class="alert alert-warning">Debe completar todos los campos y leer un peso válido.</div>').fadeIn();
@@ -697,7 +715,8 @@ jQuery(document).ready(function($) {
                             unidadMedida: unidadMedidaSeleccionada,
                             pesoProducto: pesoDescargado,
                             silo: siloSeleccionado,
-                            cantidad: cantidadIngresada
+                            cantidad: cantidadIngresada,
+                            observaciones: observaciones
                         },
                         success: function(response) {
                             $('#producto option:selected').remove();
@@ -824,6 +843,12 @@ jQuery(document).ready(function($) {
                                 </button>
                             </div>
                         </div>
+                         <div class="mt-2">
+                                    <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
+                                    <input type="text" id="observaciones" name="observaciones" 
+                                        class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                        placeholder="Ingrese su observacion" maxlength="14">
+                                </div>
                         <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
                         <div class="mt-6">
                             <button type="submit" class="w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">

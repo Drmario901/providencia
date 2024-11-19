@@ -58,15 +58,19 @@ $fecha_fin = isset($_POST['endDate']) && !empty($_POST['endDate']) ? $_POST['end
 $query = "
     SELECT 
         entrada.VHP_CODCON as id,
-        entrada.VHP_FECHA,
+        entrada.VHP_FECHA as fecha_entrada,
         entrada.VHP_PLACA,
         entrada.VHP_HORA as hora_entrada,
-        salida.VHP_HORA as hora_salida,
-        COALESCE(salida.VHP_NUMASO, entrada.VHP_NUMASO) as estatus,
+        MAX(salida.VHP_FECHA) as fecha_salida,
+        MAX(salida.VHP_HORA) as hora_salida,
+        CASE 
+            WHEN MAX(salida.VHP_NUMASO) = 'Finalizado' THEN 'Finalizado'
+            ELSE 'Pendiente'
+        END as estatus,
         entrada.VHP_PC as caso,
-        COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) as peso_bruto,
-        salida.VHP_PESO as peso_salida,
-        (COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) - COALESCE(salida.VHP_PESO, 0)) as peso_neto,
+        entrada.VHP_PESO as peso_bruto,
+        COALESCE(MAX(salida.VHP_PESO), 0) as peso_salida,
+        (entrada.VHP_PESO - COALESCE(MAX(salida.VHP_PESO), 0)) as peso_neto,
         (SELECT GROUP_CONCAT(DISTINCT inv.INV_CODIGO ORDER BY inv.INV_DESCRI SEPARATOR ', ') 
          FROM dpinv inv 
          INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO 
@@ -77,29 +81,29 @@ $query = "
          WHERE dom.MOV_CODCOM = entrada.VHP_CODCON) as productos,
         cond.CDT_NOMBRE as conductor_nombre
     FROM dpvehiculospesaje as entrada
-    LEFT JOIN dpvehiculospesaje as salida ON entrada.VHP_CODCON = salida.VHP_CODCON 
-        AND salida.VHP_NUMASO = 'Finalizado' 
+    LEFT JOIN dpvehiculospesaje as salida 
+        ON entrada.VHP_CODCON = salida.VHP_CODCON 
+        AND salida.VHP_NUMASO = 'Finalizado'
         AND salida.VHP_FECHA >= entrada.VHP_FECHA
-    LEFT JOIN dpvehiculospesaje as entrada_pendiente ON entrada.VHP_CODCON = entrada_pendiente.VHP_CODCON 
-        AND entrada_pendiente.VHP_NUMASO = 'Pendiente' 
-        AND entrada.VHP_FECHA = entrada_pendiente.VHP_FECHA
-    LEFT JOIN dpconductores as cond ON entrada.VHP_CODINV = cond.CDT_CI_RIF
-    WHERE NOT EXISTS (
-        SELECT 1
-        FROM dpvehiculospesaje as sub_salida
-        WHERE sub_salida.VHP_CODCON = entrada.VHP_CODCON
-          AND sub_salida.VHP_NUMASO = 'Finalizado'
-          AND sub_salida.VHP_FECHA > entrada.VHP_FECHA
+    LEFT JOIN dpconductores as cond 
+        ON entrada.VHP_CODINV = cond.CDT_CI_RIF
+    WHERE entrada.VHP_HORA = (
+        SELECT MIN(sub_entrada.VHP_HORA)
+        FROM dpvehiculospesaje as sub_entrada
+        WHERE sub_entrada.VHP_CODCON = entrada.VHP_CODCON
+          AND sub_entrada.VHP_FECHA = entrada.VHP_FECHA
     )
 ";
 
 if ($fecha) {
-    $query .= " AND entrada.VHP_FECHA = '$fecha'";
+    $query .= " AND (entrada.VHP_FECHA = '$fecha' OR salida.VHP_FECHA = '$fecha')";
 } elseif ($fecha_inicio && $fecha_fin) {
-    $query .= " AND entrada.VHP_FECHA BETWEEN '$fecha_inicio' AND '$fecha_fin'";
+    $query .= " AND (entrada.VHP_FECHA BETWEEN '$fecha_inicio' AND '$fecha_fin'
+                OR salida.VHP_FECHA BETWEEN '$fecha_inicio' AND '$fecha_fin')";
 }
 
-$query .= " GROUP BY entrada.VHP_CODCON, entrada.VHP_FECHA;";
+$query .= " GROUP BY entrada.VHP_CODCON
+             ORDER BY entrada.VHP_FECHA ASC;";
 
 $mysql->query($query)->then(
     function (\React\MySQL\QueryResult $result) use ($loop) {
@@ -136,3 +140,8 @@ $mysql->query($query)->then(
 
 $loop->run();
 ?>
+
+
+
+
+

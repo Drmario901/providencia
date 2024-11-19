@@ -56,6 +56,49 @@
           padding: 0.5rem;
         }
       }
+    table#default-table th, 
+    table#default-table td {
+        padding: 0.3rem; 
+        font-size: 0.75rem; 
+    }
+
+    table#default-table {
+        border-collapse: collapse; 
+    }
+
+    table#default-table th {
+        white-space: nowrap;
+    }
+
+    table#default-table td {
+        white-space: normal; 
+        text-overflow: ellipsis; 
+        overflow: hidden;
+    }
+
+    table#default-table td.codigo-producto, 
+    table#default-table td.producto-ingresado {
+        max-width: 250px; 
+        word-wrap: break-word; 
+    }
+
+    div.overflow-x-auto {
+        max-width: 100%; 
+    }
+
+    table#default-table td {
+        cursor: pointer; 
+        transition: background-color 0.2s ease; 
+    }
+
+    table#default-table td:hover {
+        background-color: #f0f8ff; 
+    }
+
+    table#default-table td:active {
+        background-color: #add8e6; 
+    }
+
     </style>
   </head>
   
@@ -224,7 +267,7 @@
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
-                                <table id="default-table" class="w-full text-sm lg:text-base responsive-table">
+                                <table id="default-table" class="w-full text-xs responsive-table">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <!-- HEADINGS -->
                                     </thead>

@@ -16,6 +16,7 @@ $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoTara'];
 $producto = $_POST['producto'];
 $silo = $_POST['silo'];
+$observaciones = $_POST['observaciones'];
 $cantidad = $_POST['cantidad'];
 $unidadMedida = $_POST['unidadMedida'];
 $exitHour = date('h:i:s');
@@ -44,7 +45,7 @@ if ($resultPeso) {
     $pesoBrutoInicial = $data['peso_bruto'];
     $pesoTara = $pesoActual;
 
-    $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula')";
+    $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$observaciones')";
 
     $updatePesoProductoQuery = "UPDATE dpmovinv SET MOV_FECHA = NOW(), MOV_UNDMED = '$unidadMedida', MOV_CANTID = '$cantidad', MOV_CODALM = '$silo' WHERE MOV_CODIGO = '$producto' AND MOV_DOCUME = '$vehiculoId'";
     mysqli_query($conexion, $updatePesoProductoQuery);
