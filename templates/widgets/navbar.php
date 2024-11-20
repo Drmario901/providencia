@@ -10,7 +10,7 @@
 
     $nombre = $row['OPE_NOMSIS'];
     $nombre_perfil = $row['OPE_USUSIS'];
-
+    $_SESSION['nUsuario'] = $nombre_perfil; 
     $profile_img = "/$wb_subdir/src/img/Default-user.jpg";
 
 ?>

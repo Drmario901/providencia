@@ -386,16 +386,19 @@ jQuery(document).ready(function($) {
                     });
                 });
     
-                $('#registrarSalida').on('click', function(e) {
+                $('#registrarSalida').off('click').on('click', function(e) {
                     e.preventDefault();
-    
+                    const $button = $(this);
+                    $button.prop('disabled', true).text('Procesando...');
+                
                     const productoSeleccionado = $('#producto').val();
                     const unidadMedidaSeleccionada = $('#unidadMedida').val();
                     const siloSeleccionado = $('#silo').val();
                     const cantidadIngresada = $('#cantidad').val();
                     const pesoBrutoActual = parseFloat($('#pesoBrutoCaso0').val());
                     const observaciones = $('#observaciones').val();
-    
+                    console.log(siloSeleccionado)
+                
                     if (!productoSeleccionado || !unidadMedidaSeleccionada || !siloSeleccionado || !cantidadIngresada || isNaN(pesoBrutoActual) || pesoBrutoActual <= 0) {
                         Swal.fire({
                             icon: 'error',
@@ -404,11 +407,12 @@ jQuery(document).ready(function($) {
                             confirmButtonColor: '#053684',
                             confirmButtonText: 'OK'
                         });
+                        $button.prop('disabled', false).text('Registrar Salida'); 
                         return;
                     }
-    
-                    const pesoTara = pesoActual- pesoBrutoActual;
-    
+                
+                    const pesoTara = pesoActual - pesoBrutoActual;
+                
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/saveVehicleExitCase0.php',
                         method: 'POST',
@@ -429,6 +433,51 @@ jQuery(document).ready(function($) {
                                 confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             }).then(() => {
+                                if ($('#print').is(':checked')) {
+                                    $.ajax({
+                                        url: wb_subdir + '/php/vehiculos/exitTicketData.php',
+                                        method: 'POST',
+                                        data: { vehiculoId: id },
+                                        dataType: 'json',
+                                        success: function(response) {
+                                            if (response.status === 'success') {
+                                                const data = response.data;
+                
+                                                $.ajax({
+                                                    url: 'http://127.0.0.1:81/exit',
+                                                    method: 'POST',
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify({
+                                                        placa: data.VHP_PLACA,
+                                                        chofer: data.conductor_nombre,
+                                                        cedula: data.cedula,
+                                                        destino: data.destino,
+                                                        silo_origen: data.silo_origen,
+                                                        peso_bruto: data.peso_bruto,
+                                                        peso_neto: data.peso_neto,
+                                                        codigo_productos: data.codigo_productos,
+                                                        producto_ingresado: data.productos,
+                                                        productos_con_silos: data.productos_con_silos
+                                                    }),
+                                                    success: function(printResponse) {
+                                                        console.log("Respuesta de impresión:", printResponse);
+                                                        $('#notification').html('<div class="alert alert-success">Salida registrada e impresión realizada correctamente.</div>').fadeIn();
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        console.error('Error al enviar los datos de impresión:', error);
+                                                        $('#notification').html('<div class="alert alert-danger">Error al realizar la impresión.</div>').fadeIn();
+                                                    }
+                                                });
+                                            } else {
+                                                console.error('Error al obtener datos del ticket:', response);
+                                            }
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error al obtener datos para impresión:', error);
+                                        }
+                                    });
+                                }
+                
                                 Swal.close();
                                 cargarRegistros($('#fecha-table').val());
                             });
@@ -441,9 +490,12 @@ jQuery(document).ready(function($) {
                                 confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
+                        },
+                        complete: function() {
+                            $button.prop('disabled', false).text('Registrar Salida'); 
                         }
                     });
-                });
+                });                               
             }
         });
     }
@@ -860,6 +912,12 @@ jQuery(document).ready(function($) {
             width: 800,
             showConfirmButton: false,
             allowOutsideClick: false,
+            showClass: {
+                popup: 'animate__animated animate__fadeInUp animate__faster'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutDown animate__faster'
+            },
             didOpen: () => {
                 $("#close-modal").on("click", function() {
                     Swal.close();
@@ -896,26 +954,77 @@ jQuery(document).ready(function($) {
                     });
                 });
     
-                $('#formSalidaCaso2').on('submit', function(e) {
+                $('#formSalidaCaso2').off('submit').on('submit', function (e) {
                     e.preventDefault();
+                    
+                    const $form = $(this);
+                    const $submitButton = $form.find('button[type="submit"]');
+                    $submitButton.prop('disabled', true).text('Procesando...');
+                
                     let formData = new FormData(this);
+                
                     $.ajax({
-                        url: wb_subdir + '/php/vehiculos/saveVehicleExitCase2.php', 
+                        url: wb_subdir + '/php/vehiculos/saveVehicleExitCase2.php',
                         method: 'POST',
                         data: formData,
                         processData: false,
                         contentType: false,
-                        success: function(response) {
+                        success: function (response) {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Salida registrada',
                                 text: 'El vehículo ha salido exitosamente.',
                                 confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
+                            }).then(() => {
+                                if ($('#print').is(':checked')) {
+                                    $.ajax({
+                                        url: wb_subdir + '/php/vehiculos/exitTicketData.php',
+                                        method: 'POST',
+                                        data: { vehiculoId: id },
+                                        dataType: 'json',
+                                        success: function (response) {
+                                            if (response.status === 'success') {
+                                                const data = response.data;
+                
+                                                $.ajax({
+                                                    url: 'http://127.0.0.1:81/exit',
+                                                    method: 'POST',
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify({
+                                                        placa: data.VHP_PLACA,
+                                                        chofer: data.conductor_nombre,
+                                                        cedula: data.cedula,
+                                                        destino: data.destino,
+                                                        silo_origen: data.silo_origen,
+                                                        peso_bruto: data.peso_bruto,
+                                                        peso_neto: data.peso_neto,
+                                                        codigo_productos: data.codigo_productos,
+                                                        producto_ingresado: data.productos,
+                                                        productos_con_silos: data.productos_con_silos,
+                                                    }),
+                                                    success: function (printResponse) {
+                                                        console.log("Respuesta de impresión:", printResponse);
+                                                        $('#notification').html('<div class="alert alert-success">Salida registrada e impresión realizada correctamente.</div>').fadeIn();
+                                                    },
+                                                    error: function (xhr, status, error) {
+                                                        console.error('Error al enviar los datos de impresión:', error);
+                                                        $('#notification').html('<div class="alert alert-danger">Error al realizar la impresión.</div>').fadeIn();
+                                                    }
+                                                });
+                                            } else {
+                                                console.error('Error al obtener datos del ticket:', response);
+                                            }
+                                        },
+                                        error: function (xhr, status, error) {
+                                            console.error('Error al obtener datos para impresión:', error);
+                                        }
+                                    });
+                                }
+                                cargarRegistros($('#fecha-table').val());
                             });
-                            cargarRegistros($('#fecha-table').val()); 
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
@@ -923,9 +1032,12 @@ jQuery(document).ready(function($) {
                                 confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             });
+                        },
+                        complete: function () {
+                            $submitButton.prop('disabled', false).text('Registrar Salida');
                         }
                     });
-                });
+                });                                
             }
         });
     }    

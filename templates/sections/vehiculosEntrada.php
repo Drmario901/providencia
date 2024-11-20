@@ -25,6 +25,7 @@
         require_js('vehiculos/entrada.js');
         require_js('vehiculos/tableEntry.js');
         require_js('vehiculos/generate.romana.ticket.js');
+        require_js('vehiculos/notas/generate.notes.js');
         echo $favicon;
         echo $disable; 
     ?> 
@@ -96,7 +97,7 @@
     }
 
     table#default-table td:active {
-        background-color: #add8e6; 
+        background-color: #f0f8ff; 
     }
 
     </style>
@@ -256,6 +257,12 @@
                                     <button type="button" id="reprintTicket" class="w-full lg:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                         <i data-lucide="ticket" class="w-5 h-5 mr-2"></i>
                                         Reimprimir ticket
+                                    </button>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    <button type="button" id="generateNote" class="w-full lg:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                        <i data-lucide="clipboard-check" class="w-5 h-5 mr-2"></i>
+                                        Notas
                                     </button>
                                 </div>
                                 <div class="flex-shrink-0">
