@@ -129,9 +129,9 @@
                 </nav>
                 <div class="bg-white shadow-lg rounded-lg p-4 dark:bg-gray-800">
                     <div class="container mx-auto px-4 py-8">
-                        <header class="text-center mb-8">
+                        <!-- <header class="text-center mb-8">
                             <h1 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 dark:text-white">Registro de Entrada y Salida de Vehículos</h1>
-                        </header>
+                        </header> -->
 
                         <div class="bg-gray-50 dark:bg-gray-700 p-4 lg:p-6 rounded-lg shadow mb-8">
                             <form id="entryForm" class="space-y-6">

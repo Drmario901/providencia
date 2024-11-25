@@ -566,15 +566,7 @@ jQuery(document).ready(function($) {
         let pesoBrutoInicial = null;
         let pesoActual = null;
         let pesoDescargadoTotal = 0;
-        const storageKey = `vehiculo_${id}_descarga`;
-    
-        const storedData = sessionStorage.getItem(storageKey);
-        if (storedData) {
-            const { pesoDescargadoTotal: storedPesoDescargadoTotal, pesoBrutoInicial: storedPesoBrutoInicial } = JSON.parse(storedData);
-            pesoDescargadoTotal = storedPesoDescargadoTotal;
-            pesoBrutoInicial = storedPesoBrutoInicial;
-        }
-    
+
         Swal.fire({
             title: 'Salida de Vehículo - Múltiples Productos',
             html: 
@@ -732,11 +724,6 @@ jQuery(document).ready(function($) {
                         success: function(response) {
                             pesoBrutoInicial = parseFloat(response.pesoBruto);
                             pesoActual = pesoBrutoInicial;
-    
-                            sessionStorage.setItem(storageKey, JSON.stringify({
-                                pesoBrutoInicial,
-                                pesoDescargadoTotal
-                            }));
                         },
                         error: function(xhr, status, error) {
                             $('#notification').html('<div class="alert alert-danger">Error al obtener el peso bruto inicial</div>').fadeIn();
@@ -790,11 +777,6 @@ jQuery(document).ready(function($) {
                     pesoDescargadoTotal += pesoDescargado;
                     pesoBrutoInicial = pesoBrutoActual; 
                 
-                    sessionStorage.setItem(storageKey, JSON.stringify({
-                        pesoBrutoInicial,
-                        pesoDescargadoTotal
-                    }));
-                
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/saveVehicleExitCase1.php',
                         method: 'POST',
@@ -815,7 +797,6 @@ jQuery(document).ready(function($) {
                             if (response.status === 'pendiente') {
                                 $('#notification').html(`<div class="alert alert-success">Producto ${productoSeleccionado} registrado correctamente. Quedan productos por descargar.</div>`).fadeIn().delay(1500).fadeOut();
                             } else if (response.status === 'finalizado') {
-                                sessionStorage.removeItem(storageKey);
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Proceso completado',
