@@ -10,6 +10,6 @@ function storeObservationInFile($hash, $text, $directory = __DIR__ . '/storage/'
 
 function retrieveObservationFromFile($hash, $directory = __DIR__ . '/storage/') {
     $filePath = $directory . $hash . '.txt';
-    return file_exists($filePath) ? file_get_contents($filePath) : "Error: Archivo no encontrado.";
+    return file_exists($filePath) ? file_get_contents($filePath) : "Error";
 }
 ?>
