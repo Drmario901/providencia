@@ -9,7 +9,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Vehículos - Entrada</title>
+    <title>Vehículos - Entrada y Salida</title>
     <?php
         require_lib_js('tailwind/tailwind.js');
         require_lib_js('sweetalert2/sweetalert2.all.min.js');
@@ -21,6 +21,7 @@
         require_lib_js('select2/select2.min.js');
         require_lib_css('select2/select2.min.css');
         require_lib_js('html2pdfjs/html2pdf.js');
+        require_lib_js('pdfjs/pdfjs.js');
         require_js('global.js');
         require_js('vehiculos/entrada.js');
         require_js('vehiculos/tableEntry.js');
@@ -28,8 +29,7 @@
         require_js('vehiculos/notas/generate.notes.js');
         echo $favicon;
         echo $disable; 
-    ?> 
-    
+    ?>
     <style>
       .table-container {
         overflow-x: auto;
@@ -107,6 +107,7 @@
     <?php require __DIR__. '/../widgets/navbar.php'; ?>
     <div class="flex flex-col lg:flex-row pt-16 overflow-hidden">
         <?php require __DIR__. '/../widgets/aside.php'; ?>
+        <?php require 'notesModal.php'; ?>
         
         <div id="main-content" class="relative w-full h-full p-4 lg:p-6 bg-white shadow-md rounded-lg dark:bg-gray-800 lg:ml-64">
             <main>
@@ -138,33 +139,43 @@
                                     <div class="relative">
                                         <label for="plate" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Placa</label>
                                         <div class="flex">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-plate" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por placa" id="viewPlates">
-                                                    <i data-lucide="search" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-plate" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Buscar Placa
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
-                                            <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                            <input type="text" name="plate" id="plate" placeholder="Placa" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                            <button data-tooltip-target="tooltip-plate" type="button" class="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-200 border border-l-0 border-gray-300 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700" aria-label="Buscar por placa" id="viewPlates">
+                                                <i data-lucide="search" class="w-5 h-5"></i>
+                                            </button>
+                                            <button data-tooltip-target="tooltip-registerPlate" type="button" class="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700" aria-label="Registrar placa" id="registerPlate">
+                                                <i data-lucide="notebook-pen" class="w-5 h-5"></i>
+                                            </button>
                                             <input type="text" id="plateType" hidden>
+                                        </div>
+                                        <div id="tooltip-plate" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                            Buscar Placa
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
+                                        <div id="tooltip-registerPlate" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                            Registrar Placa
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
                                         </div>
                                     </div>
                                     <div class="relative">
                                         <label for="driver" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Conductor</label>
                                         <div class="flex">
-                                            <span class="inline-flex items-center px-3 text-sm text-gray-900 bg-gray-200 border border-r-0 border-gray-300 rounded-l-md dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600">
-                                                <button data-tooltip-target="tooltip-driver" type="button" class="focus:outline-none hover:text-blue-500" aria-label="Buscar por conductor" id="viewDrivers">
-                                                    <i data-lucide="search" class="w-5 h-5"></i>
-                                                </button>
-                                                <div id="tooltip-driver" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
-                                                    Buscar Conductor
-                                                    <div class="tooltip-arrow" data-popper-arrow></div>
-                                                </div>
-                                            </span>
-                                            <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-none rounded-r-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                            <input type="text" name="driver" id="driver" placeholder="Conductor" class="rounded-l-lg bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required readonly>
+                                            <button data-tooltip-target="tooltip-driver" type="button" class="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-200 border border-l-0 border-gray-300 hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700" aria-label="Buscar por conductor" id="viewDrivers">
+                                                <i data-lucide="user-search" class="w-5 h-5"></i>
+                                            </button>
+                                            <button data-tooltip-target="tooltip-driver-register" type="button" class="inline-flex items-center px-3 text-sm text-gray-500 bg-gray-200 border border-l-0 border-gray-300 rounded-r-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-400 dark:border-gray-600 dark:hover:bg-gray-700" aria-label="Registrar conductor" id="registerDriver">
+                                                <i data-lucide="user-round-pen" class="w-5 h-5"></i>
+                                            </button>
                                             <input type="text" name="driverName" id="driverName" placeholder="Conductor" class="hidden rounded-none bg-gray-50 border border-gray-300 text-gray-900 focus:ring-blue-500 focus:border-blue-500 block flex-1 min-w-0 w-full text-sm p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        </div>
+                                        <div id="tooltip-driver" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                            Buscar Conductor
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
+                                        </div>
+                                        <div id="tooltip-driver-register" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 tooltip">
+                                            Registrar Conductor
+                                            <div class="tooltip-arrow" data-popper-arrow></div>
                                         </div>
                                     </div>
                                 </div>
@@ -181,7 +192,7 @@
                                             <label for="product-entry" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Ingreso de producto</label>
                                         </div>
                                         <div class="flex items-center">
-                                            <input id="multiple-products" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
+                                <input id="multiple-products" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600">
                                             <label for="multiple-products" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Múltiples productos</label>
                                         </div>
                                         <div class="flex items-center">
@@ -260,7 +271,7 @@
                                     </button>
                                 </div>
                                 <div class="flex-shrink-0">
-                                    <button type="button" id="generateNote" class="w-full lg:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                                    <button data-modal-target="pdfModal" data-modal-toggle="pdfModal" type="button" class="w-full lg:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                         <i data-lucide="clipboard-check" class="w-5 h-5 mr-2"></i>
                                         Notas
                                     </button>

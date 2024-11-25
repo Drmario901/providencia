@@ -10,7 +10,11 @@ RewriteRule ^dashboard/?$ templates/admin/dashboard.php [L]
 #inventario 
 RewriteRule ^almacenes/inventario?$ templates/sections/almacenes.php [L]
 RewriteRule ^almacenes/productos?$ templates/sections/almacenes.php [L]
+
 #vehiculos
-RewriteRule ^vehiculos/registro?$ templates/sections/vehiculosEntrada.php [L] ##Entrada y salida (name change pending)##
+RewriteRule ^vehiculos/registro?$ templates/sections/vehiculosEntrada.php [L] ##Entrada y salida 
 ##RewriteRule ^vehiculos/salida?$ templates/sections/vehiculosSalida.php [L] ##salida# descartado#
 ##RewriteRule ^vehiculos/consulta?$ templates/sections/vehiculosConsulta.php [L] ##consulta descartado##
+
+##DOCUMENTOS
+RewriteRule ^vehiculos/documentos/recepcion?$ php/documentos/recepcion.php [L] ##recepcion

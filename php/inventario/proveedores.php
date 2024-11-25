@@ -1,0 +1,29 @@
+<?php
+    header("Content-Type: application/json; charset=UTF-8");
+    require __DIR__ . '/../conexion.php';
+    
+    $bd = "serviaves";
+    mysqli_select_db($conexion, $bd);
+
+    $salida = array("data" => array());
+
+    $consulta = "SELECT * FROM dpproveedor";
+    $resultado = $conexion->query($consulta);
+    $proveedores = array();
+
+    while ($rows = $resultado->fetch_assoc()) {
+        $datos = $rows['PRO_NOMBRE'];
+        if (!empty($datos)) { 
+            $proveedores[] = $datos;
+        }
+    }
+
+    $proveedores = array_unique($proveedores);
+
+    foreach ($proveedores as $proveedores) {
+        $salida["data"][] = array("proveedores" => $proveedores);
+    }
+
+    echo json_encode($salida);
+    $conexion->close();
+?>

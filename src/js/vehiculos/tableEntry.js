@@ -72,7 +72,7 @@ jQuery(document).ready(function($) {
                     perPage: 30,
                     perPageSelect: [5,10,20,30,40,50,60],
                     data: {
-                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Código Producto", "Producto Ingresado", "Estado", "Caso"],
+                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida"/*, "Código Producto",*/ ,"Producto Ingresado", "Estado", "Caso"],
                         data: response.map(function(registro) {
                             let estatusClass = '';
                             if (registro.estatus === 'Pendiente') {
@@ -103,7 +103,7 @@ jQuery(document).ready(function($) {
                                 `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
                                 `<span class="font-bold">${registro.hora_entrada}</span>`,
                                 `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
-                                `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
+                               // `<span class="font-bold">${registro.codigo_productos || 'Vacío'}</span>`,
                                 `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
                                 `<span class="${estatusClass}">${registro.estatus}</span>`,
                                 `<span class="font-bold">${casoText}</span>`
@@ -115,32 +115,69 @@ jQuery(document).ready(function($) {
                 $(document).on('click', '#default-table tbody tr', function() {
                     let cells = $(this).find('td');
                     let id = $(cells[0]).text().trim();
-                    function checkCase(id, callback) {
+                
+                    if (id) {
                         $.ajax({
                             url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
                             method: 'POST',
                             data: { vehiculoId: id },
                             success: function(response) {
                                 if (response && response.case) {
-                                    callback(response.case);
+                                    console.log('ID:', id, 'Caso:', response.case);
+                                    abrirModal(id, response.case); 
                                 } else {
-                                    callback(undefined);
+                                    console.error('No se recibió un caso válido en la respuesta.');
                                 }
                             },
                             error: function(xhr, status, error) {
-                                console.error(error);
+                                console.error('Error al verificar el caso:', error);
                             }
-                        });
-                    }
-                    if (id) {
-                        checkCase(id, function(caso) {
-                            console.log('ID:', id, 'Caso:', caso);
-                            abrirModal(id, caso);
                         });
                     } else {
                         console.error('El ID no fue encontrado en la fila seleccionada.');
                     }
-                });                
+
+                    function abrirModal(id, caso) {
+                        console.log('Abriendo modal para el caso:', caso);
+                        if (caso === 'Producto') {
+                            manejarCaso(id, 'Producto');
+                        } else if (caso === 'Múltiple') {
+                            manejarCaso(id, 'Múltiple');
+                        } else if (caso === 'Vacío') {
+                            manejarCaso(id, 'Vacío');
+                        }
+                    }
+                
+                    function manejarCaso(id, tipoCaso) {
+                        $.ajax({
+                            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
+                            method: 'POST',
+                            data: { vehiculoId: id },
+                            success: function(response) {
+                                if (response.estatus === 'Finalizado') {
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Este vehículo ya ha finalizado su proceso de descarga.',
+                                        confirmButtonText: 'OK',
+                                        confirmButtonColor: '#053684'
+                                    });
+                                    return; 
+                                } else {
+                                    if (tipoCaso === 'Producto') {
+                                        iniciarModalCaso0(id);
+                                    } else if (tipoCaso === 'Múltiple') {
+                                        iniciarModalCaso1(id);
+                                    } else if (tipoCaso === 'Vacío') {
+                                        iniciarModalCaso2(id);
+                                    }
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error al verificar el estatus del vehículo:', error);
+                            }
+                        });
+                    }
+                });                                                
             },
             error: function(xhr, status, error) {
                 console.error('Error al cargar los registros:', error);
@@ -153,42 +190,42 @@ jQuery(document).ready(function($) {
         });
     }
     
-    function abrirModal(id, caso) {
-        console.log('Abriendo modal para el caso:', caso); 
-        if (caso === 'Producto') {
-            abrirModalCaso0(id);
-        } else if (caso === 'Múltiple') {
-            abrirModalCaso1(id);
-        } else if (caso === 'Vacío') {
-            abrirModalCaso2(id);
-        }
-    }
+    // function abrirModal(id, caso) {
+    //     console.log('Abriendo modal para el caso:', caso); 
+    //     if (caso === 'Producto') {
+    //         abrirModalCaso0(id);
+    //     } else if (caso === 'Múltiple') {
+    //         abrirModalCaso1(id);
+    //     } else if (caso === 'Vacío') {
+    //         abrirModalCaso2(id);
+    //     }
+    // }
 
-    function abrirModalCaso0(id) {
-        $.ajax({
-            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
-            method: 'POST',
-            data: { vehiculoId: id },
-            success: function(response) {
-                if (response.estatus === 'Finalizado') {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Este vehículo ya ha finalizado su proceso de descarga.',
-                        confirmButtonText: 'OK',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        confirmButtonColor: '#053684'
-                    });
-                    return; 
-                } else {
-                    iniciarModalCaso0(id);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al verificar el estatus del vehículo:', error);
-            }
-        });
-    }
+    // function abrirModalCaso0(id) {
+    //     $.ajax({
+    //         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
+    //         method: 'POST',
+    //         data: { vehiculoId: id },
+    //         success: function(response) {
+    //             if (response.estatus === 'Finalizado') {
+    //                 Swal.fire({
+    //                     icon: 'info',
+    //                     title: 'Este vehículo ya ha finalizado su proceso de descarga.',
+    //                     confirmButtonText: 'OK',
+    //                     allowOutsideClick: false,
+    //                     allowEscapeKey: false,
+    //                     confirmButtonColor: '#053684'
+    //                 });
+    //                 return; 
+    //             } else {
+    //                 iniciarModalCaso0(id);
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error al verificar el estatus del vehículo:', error);
+    //         }
+    //     });
+    // }
 
     function iniciarModalCaso0(id) {
         let pesoBrutoInicial = null;
@@ -241,7 +278,7 @@ jQuery(document).ready(function($) {
                                     <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
                                     <input type="text" id="observaciones" name="observaciones" 
                                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                        placeholder="Ingrese su observacion" maxlength="14">
+                                        placeholder="Ingrese su observacion">
                                 </div>
                                 </div>
                             </div>
@@ -411,7 +448,7 @@ jQuery(document).ready(function($) {
                         return;
                     }
                 
-                    const pesoTara = pesoActual - pesoBrutoActual;
+                    const pesoNeto = pesoActual - pesoBrutoActual;
                 
                     $.ajax({
                         url: wb_subdir + '/php/vehiculos/saveVehicleExitCase0.php',
@@ -423,13 +460,13 @@ jQuery(document).ready(function($) {
                             silo: siloSeleccionado,
                             cantidad: cantidadIngresada,
                             observaciones: observaciones,
-                            pesoTara: pesoTara
+                            pesoNeto: pesoNeto
                         },
                         success: function(response) {
                             Swal.fire({
                                 icon: 'success',
                                 title: 'Proceso completado',
-                                text: `El producto (${productoSeleccionado}) de ${pesoTara} kg ha sido descargado y el proceso ha finalizado.`,
+                                text: `El producto (${productoSeleccionado}) de ${pesoNeto} kg ha sido descargado y el proceso ha finalizado.`,
                                 confirmButtonColor: '#053684',
                                 confirmButtonText: 'OK'
                             }).then(() => {
@@ -500,30 +537,30 @@ jQuery(document).ready(function($) {
         });
     }
     
-    function abrirModalCaso1(id) {
-        $.ajax({
-            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
-            method: 'POST',
-            data: { vehiculoId: id },
-            success: function(response) {
-                if (response.estatus === 'Finalizado') {
-                    console.log(response.estatus)
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Este vehículo ya ha finalizado su proceso de descarga.',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#053684'
-                    });
-                    return; 
-                } else {
-                    iniciarModalCaso1(id);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al verificar el estatus del vehículo:', error);
-            }
-        });
-    }
+    // function abrirModalCaso1(id) {
+    //     $.ajax({
+    //         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
+    //         method: 'POST',
+    //         data: { vehiculoId: id },
+    //         success: function(response) {
+    //             if (response.estatus === 'Finalizado') {
+    //                 console.log(response.estatus)
+    //                 Swal.fire({
+    //                     icon: 'info',
+    //                     title: 'Este vehículo ya ha finalizado su proceso de descarga.',
+    //                     confirmButtonText: 'OK',
+    //                     confirmButtonColor: '#053684'
+    //                 });
+    //                 return; 
+    //             } else {
+    //                 iniciarModalCaso1(id);
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error al verificar el estatus del vehículo:', error);
+    //         }
+    //     });
+    // }
     
     function iniciarModalCaso1(id) {
         let pesoBrutoInicial = null;
@@ -587,7 +624,7 @@ jQuery(document).ready(function($) {
                                     <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
                                     <input type="text" id="observaciones" name="observaciones" 
                                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                        placeholder="Ingrese su observacion" maxlength="14">
+                                        placeholder="Ingrese su observacion">
                                 </div>
                             </div>
                         </div>
@@ -848,29 +885,29 @@ jQuery(document).ready(function($) {
         });
     }
          
-    function abrirModalCaso2(id) {
-        $.ajax({
-            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
-            method: 'POST',
-            data: { vehiculoId: id },
-            success: function(response) {
-                if (response.estatus === 'Finalizado') {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'Este vehículo ya ha finalizado su proceso de descarga.',
-                        confirmButtonText: 'OK',
-                        confirmButtonColor: '#053684'
-                    });
-                    return; 
-                } else {
-                    iniciarModalCaso2(id);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error('Error al verificar el estatus del vehículo:', error);
-            }
-        });
-    }
+    // function abrirModalCaso2(id) {
+    //     $.ajax({
+    //         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
+    //         method: 'POST',
+    //         data: { vehiculoId: id },
+    //         success: function(response) {
+    //             if (response.estatus === 'Finalizado') {
+    //                 Swal.fire({
+    //                     icon: 'info',
+    //                     title: 'Este vehículo ya ha finalizado su proceso de descarga.',
+    //                     confirmButtonText: 'OK',
+    //                     confirmButtonColor: '#053684'
+    //                 });
+    //                 return; 
+    //             } else {
+    //                 iniciarModalCaso2(id);
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error al verificar el estatus del vehículo:', error);
+    //         }
+    //     });
+    // }
     
     function iniciarModalCaso2(id) {
         Swal.fire({
@@ -899,7 +936,7 @@ jQuery(document).ready(function($) {
                                     <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
                                     <input type="text" id="observaciones" name="observaciones" 
                                         class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                        placeholder="Ingrese su observacion" maxlength="14">
+                                        placeholder="Ingrese su observacion">
                                 </div>
                         <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
                         <div class="mt-6">
@@ -956,7 +993,7 @@ jQuery(document).ready(function($) {
     
                 $('#formSalidaCaso2').off('submit').on('submit', function (e) {
                     e.preventDefault();
-                    
+
                     const $form = $(this);
                     const $submitButton = $form.find('button[type="submit"]');
                     $submitButton.prop('disabled', true).text('Procesando...');

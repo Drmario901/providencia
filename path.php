@@ -1,3 +1,3 @@
 <?php
-    echo __DIR__;
+define('BASE_PATH', __DIR__);
 ?>

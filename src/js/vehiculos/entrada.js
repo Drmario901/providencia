@@ -627,4 +627,5 @@ jQuery(document).ready(function($) {
     $("#fecha-form").val(formattedToday);
     $("#fecha-form").attr('readonly', true);
     $("#fecha-table").val(formattedToday);
+    $('#fecha-modal').val(formattedToday);
 });

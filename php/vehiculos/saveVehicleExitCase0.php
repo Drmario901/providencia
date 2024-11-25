@@ -6,6 +6,7 @@ error_reporting(E_ALL);
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
 require __DIR__ . '/../global.php';
+require __DIR__ . '/../documentos/observations.php'; 
 
 $bd = "serviaves";
 mysqli_select_db($conexion, $bd);
@@ -13,10 +14,12 @@ date_default_timezone_set('America/Caracas');
 
 $userID = $_SESSION['CUENTA_ID'] ?? null; 
 $vehiculoId = $_POST['vehiculoId'] ?? null;
-$pesoActual = $_POST['pesoTara'] ?? null;
+$pesoActual = $_POST['pesoNeto'] ?? null;
 $producto = $_POST['producto'] ?? null;
 $silo = $_POST['silo'] ?? null;
 $observaciones = $_POST['observaciones'] ?? null;
+$hash = substr(hash('crc32b', $observaciones), 0, 6);
+storeObservationInFile($hash, $observaciones);
 $cantidad = $_POST['cantidad'] ?? null;
 $unidadMedida = $_POST['unidadMedida'] ?? null;
 $exitHour = date('h:i:s');
@@ -48,10 +51,10 @@ $resultPeso = mysqli_query($conexion, $queryPeso);
 if ($resultPeso) {
     $data = mysqli_fetch_assoc($resultPeso);
     $pesoBrutoInicial = $data['peso_bruto'];
-    $pesoTara = $pesoActual;
+    $pesoTara = $pesoBrutoInicial - $pesoActual;
 
     $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) 
-                          VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$observaciones')";
+                          VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
 
     if (mysqli_query($conexion, $insertSalidaQuery)) {
         $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) 

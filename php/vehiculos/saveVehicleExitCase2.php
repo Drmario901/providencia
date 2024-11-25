@@ -5,6 +5,8 @@ error_reporting(E_ALL);
 
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php';
+require __DIR__. '/../documentos/observations.php';
+
 session_start();
 
 $bd = "serviaves";
@@ -15,6 +17,8 @@ $userID = $_SESSION['CUENTA_ID'];
 $vehiculoId = $_POST['vehiculoId'];
 $pesoActual = $_POST['pesoBruto'];
 $observaciones =  $_POST['observaciones'];
+$hash = substr(hash('crc32b', $observaciones), 0, 6);
+storeObservationInFile($hash, $observaciones);
 $exitHour = date('h:i:s');
 $numDoc = $userID . $vehiculoId; 
 $numDoc = str_pad($numDoc, 10, '0', STR_PAD_LEFT);
@@ -34,7 +38,7 @@ if ($resultMainEntry && mysqli_num_rows($resultMainEntry) > 0) {
 
     $pesoTara = $pesoActual;
     $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) 
-                          VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$observaciones')";
+                          VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
 
     if (mysqli_query($conexion, $insertSalidaQuery)) {
         $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";

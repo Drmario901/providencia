@@ -3,9 +3,11 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-session_start();
-require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__ . '/../../path.php';
 require __DIR__ . '/../conexion.php';
+require __DIR__ . '/../global.php';
+require __DIR__ . '/../../vendor/autoload.php';
+require __DIR__. '/../documentos/observations.php';
 
 $bd = "serviaves";
 mysqli_select_db($conexion, $bd);
@@ -18,11 +20,11 @@ if (file_exists($logoPath)) {
     $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
 }
 
-//$vehiculoId = $_POST['vehiculoId'] ?? '';
-$vehiculoId = '000065';
-$netoProveedor = $_POST['netoProveedor'] ?? '27960';
-$sica = $_POST['sica'] ?? '155920053';
-$proveedor = $_POST['proveedor'] ?? 'MOCASA';
+$vehiculoId = $_POST['vehiculoId'] ?? '';
+//$vehiculoId = '000070';
+$netoProveedor = $_POST['netoProveedor'] ?? 'Sin neto de proveedor';
+$sica = $_POST['sica'] ?? 'Sin sica';
+$proveedor = $_POST['proveedor'] ?? 'Sin proveedor';
 $nombre = $_SESSION['nUsuario'] ?? 'Sin nombre';
 
 $query = "
@@ -81,6 +83,7 @@ if ($result->num_rows === 0) {
 }
 
 $data = $result->fetch_assoc();
+$productos = $data['productos'] ?? 'Sin productos';
 $tara = $data['peso_bruto'] - $data['peso_neto'];
 
 use Dompdf\Dompdf;
@@ -191,16 +194,15 @@ $html = '
         <div class="subheader">SERVIAVES C.A. Rif.:J40505786-6</div>
         <div class="separator-line"></div>
         
-        <!-- Sección de proveedor y producto -->
         <div class="section">
             <div class="left">
                 <span class="label">PROVEEDOR:</span> 
-                <span class="value">MOCASA</span>
+                <span class="value">'.$proveedor.'</span>
             </div>
             <div class="right">
                 <span class="label">PRODUCTO:</span> 
                 <br>
-                <span class="value">'.$data['productos'].'</span>
+                <span class="value">'.$productos.'</span>
             </div>
         </div>
 
@@ -217,7 +219,7 @@ $html = '
             </div>
             <div class="right">
                 <span class="label">N°:</span> 
-                <span class="value">'.htmlspecialchars($data['documento']).'</span>
+                <span class="value">'.htmlspecialchars($data['documento'] ?? 'Sin documento').'</span>
             </div>
         </div>
 
@@ -242,15 +244,15 @@ $html = '
         <br>
         <br>
 
-        <div class="section">
+     <div class="section">
             <div class="left" style="margin-bottom: 20px;"> 
-                <div>
-                    <span class="label">CONFORME CHOFER:</span>
-                    <span style="display: inline-block; width: calc(100% - 150px); border-bottom: 1px solid black; vertical-align: middle; margin-left: 10px;"></span>
-                </div>
-                <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">'.htmlspecialchars($data['conductor_nombre']).'</div>
-                <div class="signature-name" style="margin-top: 5px; margin-left: 165px;">'.htmlspecialchars($data['cedula']).'</div>
-            </div>
+        <div>
+            <span class="label">CONFORME CHOFER:</span>
+            <span style="display: inline-block; width: calc(100% - 150px); border-bottom: 1px solid black; vertical-align: middle; margin-left: 10px;"></span>
+    </div>
+        <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">'.htmlspecialchars($data['conductor_nombre']).'</div>
+        <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">CI: '.htmlspecialchars($data['cedula']).'</div>
+    </div>
             <div class="right">
                 <div>
                     <span class="label">CONFORME ROMANA:</span>
@@ -261,7 +263,7 @@ $html = '
 
         <div class="observation-section">
             <div class="observation-title">OBSERVACIÓN:</div>
-            <span class="value">'.htmlspecialchars($data['observaciones']).'</span>
+            <span class="value">'.htmlspecialchars(retrieveObservationFromFile($data['observaciones'])).'</span>
             <!--div class="observation-line"></div-->
         </div>
     </div>
@@ -272,4 +274,5 @@ $html = '
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
-$dompdf->stream("recepcion_materia_prima.pdf", ["Attachment" => false]);
+$dompdf->stream("recepcion.pdf", ["Attachment" => false]);
+?>
