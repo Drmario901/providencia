@@ -20,10 +20,10 @@ if (file_exists($logoPath)) {
     $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
 }
 
-$vehiculoId = $_POST['vehiculoId'] ?? '';
-//$vehiculoId = '000070';
+//$vehiculoId = $_POST['vehiculoId'] ?? '';
+$vehiculoId = '000094';
 $netoProveedor = $_POST['netoProveedor'] ?? 'Sin neto de proveedor';
-$sica = $_POST['sica'] ?? 'Sin sica';
+$destino = $_POST['destino'] ??  'Sin destino';
 $proveedor = $_POST['proveedor'] ?? 'Sin proveedor';
 $nombre = $_SESSION['nUsuario'] ?? 'Sin nombre';
 
@@ -191,22 +191,10 @@ $html = '
 <body>
     <div class="container">
         <img src="' . $logoBase64 . '" alt="Logo" class="logo">
-        <div class="header">RECEPCIÓN DE MATERIA PRIMA</div>
+        <div class="header">DESPACHO DE MATERIA PRIMA</div>
         <div class="subheader">SERVIAVES C.A. Rif.:J40505786-6</div>
-        <div class="separator-line"></div>
         
-        <div class="section">
-            <div class="left">
-                <span class="label">PROVEEDOR:</span> 
-                <span class="value">'.$proveedor.'</span>
-            </div>
-            <div class="right">
-                <span class="label">PRODUCTO:</span> 
-                <br>
-                <span class="value">'.$productos.'</span>
-            </div>
-        </div>
-
+         <div class="separator-line"></div>
             <div class="section">
             <div class="left">
                 <div>
@@ -224,20 +212,38 @@ $html = '
             </div>
         </div>
 
-        <div class="separator-line"></div>
+    <div class="separator-line"></div>
+        <div class"section">
+            <div class="left">
+                <span class="label">DESTINO:</span> 
+                <span class="value">'.$destino.'</span>
+                <br>
+                <br>
+
+            <div style="display: flex; align-items: center; white-space: nowrap;">
+                <span style="font-weight: bold;">PRODUCTO:</span>
+                <span style="margin-left: 5px;">'.$productos.'</span>
+            </div>
+
+            </div>
+            <div class="separator-line"></div>
 
         <div class="section">
             <div class="left">
+                <b><span class="value">DATOS DEL CHOFER</span></b>
+                <br> 
+                <br>
                 <div><span class="label">NOMBRE DEL CHOFER:</span> <span class="value">'.htmlspecialchars($data['conductor_nombre']).'</span></div>
                 <div><span class="label">CÉDULA:</span> <span class="value">'.htmlspecialchars($data['cedula']).'</span></div>
                 <div><span class="label">PLACA:</span> <span class="value">'.htmlspecialchars($data['placa']).'</span></div>
-                <div><span class="label">SICA:</span> <span class="value">'.$sica.'</span></div>
             </div>
             <div class="right">
+                <b><span class="value">DATOS DE ROMANA</span></b> 
+                <br> 
+                <br>
                 <div><span class="label">PESO BRUTO:</span> <span class="value">'.htmlspecialchars($data['peso_bruto']).'</span></div>
                 <div><span class="label">TARA:</span> <span class="value">'.htmlspecialchars($tara).'</span></div>
                 <div><span class="label">NETO:</span> <span class="value">'.htmlspecialchars($data['peso_neto']).'</span></div>
-                <div><span class="label">NETO PROVEEDOR:</span> <span class="value">'.$netoProveedor.'</span></div>
             </div>
         </div>
         <div class="separator-line"></div>

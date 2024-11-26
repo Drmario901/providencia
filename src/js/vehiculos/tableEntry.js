@@ -190,43 +190,6 @@ jQuery(document).ready(function($) {
         });
     }
     
-    // function abrirModal(id, caso) {
-    //     console.log('Abriendo modal para el caso:', caso); 
-    //     if (caso === 'Producto') {
-    //         abrirModalCaso0(id);
-    //     } else if (caso === 'Múltiple') {
-    //         abrirModalCaso1(id);
-    //     } else if (caso === 'Vacío') {
-    //         abrirModalCaso2(id);
-    //     }
-    // }
-
-    // function abrirModalCaso0(id) {
-    //     $.ajax({
-    //         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
-    //         method: 'POST',
-    //         data: { vehiculoId: id },
-    //         success: function(response) {
-    //             if (response.estatus === 'Finalizado') {
-    //                 Swal.fire({
-    //                     icon: 'info',
-    //                     title: 'Este vehículo ya ha finalizado su proceso de descarga.',
-    //                     confirmButtonText: 'OK',
-    //                     allowOutsideClick: false,
-    //                     allowEscapeKey: false,
-    //                     confirmButtonColor: '#053684'
-    //                 });
-    //                 return; 
-    //             } else {
-    //                 iniciarModalCaso0(id);
-    //             }
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error('Error al verificar el estatus del vehículo:', error);
-    //         }
-    //     });
-    // }
-
     function iniciarModalCaso0(id) {
         let pesoBrutoInicial = null;
         let pesoActual = null;
@@ -536,32 +499,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
-    
-    // function abrirModalCaso1(id) {
-    //     $.ajax({
-    //         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
-    //         method: 'POST',
-    //         data: { vehiculoId: id },
-    //         success: function(response) {
-    //             if (response.estatus === 'Finalizado') {
-    //                 console.log(response.estatus)
-    //                 Swal.fire({
-    //                     icon: 'info',
-    //                     title: 'Este vehículo ya ha finalizado su proceso de descarga.',
-    //                     confirmButtonText: 'OK',
-    //                     confirmButtonColor: '#053684'
-    //                 });
-    //                 return; 
-    //             } else {
-    //                 iniciarModalCaso1(id);
-    //             }
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error('Error al verificar el estatus del vehículo:', error);
-    //         }
-    //     });
-    // }
-    
+
     function iniciarModalCaso1(id) {
         let pesoBrutoInicial = null;
         let pesoActual = null;
@@ -865,31 +803,7 @@ jQuery(document).ready(function($) {
             }
         });
     }
-         
-    // function abrirModalCaso2(id) {
-    //     $.ajax({
-    //         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php', 
-    //         method: 'POST',
-    //         data: { vehiculoId: id },
-    //         success: function(response) {
-    //             if (response.estatus === 'Finalizado') {
-    //                 Swal.fire({
-    //                     icon: 'info',
-    //                     title: 'Este vehículo ya ha finalizado su proceso de descarga.',
-    //                     confirmButtonText: 'OK',
-    //                     confirmButtonColor: '#053684'
-    //                 });
-    //                 return; 
-    //             } else {
-    //                 iniciarModalCaso2(id);
-    //             }
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error('Error al verificar el estatus del vehículo:', error);
-    //         }
-    //     });
-    // }
-    
+
     function iniciarModalCaso2(id) {
         Swal.fire({
             title: 'Salida de Vehículo - Sin Productos',
