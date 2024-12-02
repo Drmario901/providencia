@@ -18,8 +18,10 @@ $pesoActual = $_POST['pesoNeto'] ?? null;
 $producto = $_POST['producto'] ?? null;
 $silo = $_POST['silo'] ?? null;
 $observaciones = $_POST['observaciones'] ?? null;
-$hash = substr(hash('crc32b', $observaciones), 0, 6);
-storeObservationInFile($hash, $observaciones);
+$proveedor = $_POST['proveedor'] ?? null;
+$netoProveedor = $_POST['netoProveedor'] ?? null;
+$sica = $_POST['sica'] ?? null;
+$destino = $_POST['destino'] ?? null;
 $cantidad = $_POST['cantidad'] ?? null;
 $unidadMedida = $_POST['unidadMedida'] ?? null;
 $exitHour = date('h:i:s');
@@ -52,9 +54,21 @@ if ($resultPeso) {
     $data = mysqli_fetch_assoc($resultPeso);
     $pesoBrutoInicial = $data['peso_bruto'];
     $pesoTara = $pesoBrutoInicial - $pesoActual;
+    $dataJSON = [
+        'observaciones' => $observaciones,
+        'proveedor' => $proveedor,
+        'netoProveedor' => $netoProveedor,
+        'sica' => $sica,
+        //'destino' => $destino,
+    ];
+
+    $hash = substr(hash('crc32b', json_encode($dataJSON)), 0, 6);
 
     $insertSalidaQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) 
                           VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
+
+
+    storeJsonInS3($hash, $dataJSON);
 
     if (mysqli_query($conexion, $insertSalidaQuery)) {
         $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) 

@@ -2,7 +2,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 require __DIR__ . '/../conexion.php'; 
 
-$bd = "serviaves_web";
+$bd = "servivaves_web";
 mysqli_select_db($conexion, $bd);
 
 function convertirNumIngEspDos($numero)

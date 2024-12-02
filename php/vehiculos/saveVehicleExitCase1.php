@@ -19,8 +19,9 @@ $producto = $_POST['producto'];
 $unidadMedida = $_POST['unidadMedida'] ?? NULL;
 $silo = $_POST['silo'];
 $observaciones = $_POST['observaciones'];
-$hash = substr(hash('crc32b', $observaciones), 0, 6);
-storeObservationInFile($hash, $observaciones);
+$proveedor = $_POST['proveedor'];
+$netoProveedor = $_POST['netoProveedor'];
+$sica = $_POST['sica'];
 $cantidad = $_POST['cantidad'];
 $exitHour = date('h:i:s');
 $numDoc = $userID . $vehiculoId; 
@@ -60,7 +61,7 @@ if ($resultPeso) {
         }
     }
 
-    $updatePesoProductoQuery = "UPDATE dpmovinv SET MOV_FECHA = NOW(), MOV_PESO = '$pesoProducto', MOV_UNDMED = '$unidadMedida', MOV_CANTID = '$cantidad', MOV_CODALM = '$silo' WHERE MOV_CODIGO = '$producto' AND MOV_CODCOM = '$vehiculoId'";
+    $updatePesoProductoQuery = "UPDATE dpmovinv SET MOV_FECHA = NOW(), MOV_PESO = '$pesoProducto', MOV_UNDMED = '$unidadMedida', MOV_CANTID = '$cantidad', MOV_CODALM = '$silo', MOV_TIPDOC = 'NRE' WHERE MOV_CODIGO = '$producto' AND MOV_CODCOM = '$vehiculoId'";
     mysqli_query($conexion, $updatePesoProductoQuery);
 
     $productosRestantes = array_diff($productosRestantes, [$producto]);
@@ -74,8 +75,20 @@ if ($resultPeso) {
             $pesoNeto = $dataPesoNeto['pesoNeto'];
             $pesoTara = $pesoBrutoInicial - $pesoNeto;
 
+            $dataJSON = [
+                'observaciones' => $observaciones,
+                'proveedor' => $proveedor,
+                'netoProveedor' => $netoProveedor,
+                'sica' => $sica,
+                //'destino' => $destino,
+            ];
+
+            $hash = substr(hash('crc32b', json_encode($dataJSON)), 0, 6);
+
             $finalizarQuery = "INSERT INTO dpvehiculospesaje (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) VALUES ('$vehiculoId', '$pesoTara', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
             mysqli_query($conexion, $finalizarQuery);
+
+            storeJsonInS3($hash, $dataJSON);
 
             $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";
             mysqli_query($conexion, $insertDocumento);

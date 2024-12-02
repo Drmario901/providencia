@@ -20,12 +20,8 @@ if (file_exists($logoPath)) {
     $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
 }
 
-$vehiculoId = $_POST['vehiculoId'] ?? '';
-//$vehiculoId = '000070';
-$netoProveedor = $_POST['netoProveedor'] ?? 'Sin neto de proveedor';
-$sica = $_POST['sica'] ?? 'Sin sica';
-$proveedor = $_POST['proveedor'] ?? 'Sin proveedor';
-$nombre = $_SESSION['nUsuario'] ?? 'Sin nombre';
+$vehiculoId = $_GET['vehiculoId'] ?? '';
+//$vehiculoId = '000070'; 
 
 $query = "
     SELECT
@@ -55,7 +51,7 @@ $query = "
          WHERE salida_rel.VHP_CODCON = entrada.VHP_CODCON
            AND salida_rel.VHP_TIPO = 'S'
            AND salida_rel.VHP_FECHA = entrada.VHP_FECHA
-         LIMIT 1) AS observaciones 
+         LIMIT 1) AS hash 
     FROM
         dpvehiculospesaje entrada
     LEFT JOIN
@@ -83,8 +79,20 @@ if ($result->num_rows === 0) {
 }
 
 $data = $result->fetch_assoc();
+
+$nombre = $_SESSION['nUsuario'] ?? 'Sin nombre';
+$dataJSON = retrieveJSONFromS3($data['hash']);
+if (is_array($dataJSON)) {
+    $observations = $dataJSON['observaciones'] ?? 'Sin datos';
+    $proveedor = $dataJSON['proveedor'] ?? 'Sin datos';
+    $sica = $dataJSON['sica'] ?? 'Sin datos';
+    //$destination = $dataJSON['destino'] ?? 'Sin datos';
+    $netoProveedor = $dataJSON['netoProveedor'] ?? 'Sin datos';
+} else {
+    echo "Error: $dataJSON";
+}
+
 $productos = $data['productos'] ?? 'Sin productos';
-$observations = retrieveObservationFromFile($data['observaciones']) ?? '';
 $tara = $data['peso_bruto'] - $data['peso_neto'];
 
 use Dompdf\Dompdf;

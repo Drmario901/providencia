@@ -5,5 +5,9 @@
         "react/event-loop": "^1.5",
         "react/mysql": "^0.6.0",
         "dompdf/dompdf": "^3.0"
+    },
+    "config": {
+        "process-timeout": 1200,
+        "preferred-install": "dist"
     }
 }

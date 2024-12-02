@@ -270,12 +270,12 @@
                                         Reimprimir ticket
                                     </button>
                                 </div>
-                                <div class="flex-shrink-0">
+                                <!-- <div class="flex-shrink-0">
                                     <button data-modal-target="pdfModal" data-modal-toggle="pdfModal" type="button" class="w-full lg:w-auto inline-flex items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                                         <i data-lucide="clipboard-check" class="w-5 h-5 mr-2"></i>
                                         Notas
                                     </button>
-                                </div>
+                                </div> -->
                                 <div class="flex-shrink-0">
                                     <label class="inline-flex items-center cursor-pointer">
                                         <input id="print" checked type="checkbox" value="" class="sr-only peer">

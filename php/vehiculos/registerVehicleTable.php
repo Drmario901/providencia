@@ -41,8 +41,8 @@ if ($conexion->query($query)) {
         $productos = explode(',', $codigo_productos);
         foreach ($productos as $codigo_producto) {
             $codigo_producto = trim($codigo_producto); 
-            $query2 = "INSERT INTO dpmovinv (MOV_CODIGO,  MOV_CODCOM, MOV_DOCUME, MOV_FECHA, MOV_TIPDOC) 
-                       VALUES ('$codigo_producto', '$idVeh', '$numDoc', '$fecha_peso_bruto', 'NRE')";
+            $query2 = "INSERT INTO dpmovinv (MOV_CODIGO,  MOV_CODCOM, MOV_DOCUME, MOV_FECHA) 
+                       VALUES ('$codigo_producto', '$idVeh', '$numDoc', '$fecha_peso_bruto')";
             $conexion->query($query2);
         }
     } elseif ($caso == '2') {

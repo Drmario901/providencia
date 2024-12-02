@@ -21,7 +21,7 @@ if (file_exists($logoPath)) {
 }
 
 //$vehiculoId = $_POST['vehiculoId'] ?? '';
-$vehiculoId = '000094';
+$vehiculoId = '000005';
 $netoProveedor = $_POST['netoProveedor'] ?? 'Sin neto de proveedor';
 $destino = $_POST['destino'] ??  'Sin destino';
 $proveedor = $_POST['proveedor'] ?? 'Sin proveedor';

@@ -17,4 +17,5 @@ RewriteRule ^vehiculos/registro?$ templates/sections/vehiculosEntrada.php [L] #E
 
 ##DOCUMENTOS
 RewriteRule ^vehiculos/documentos/recepcion?$ php/documentos/recepcion.php [L] #recepcion
-RewriteRule ^vehiculos/documentos/despacho?$ php/documentos/despacho.php   [L] #despacho
+RewriteRule ^vehiculos/documentos/despacho?$ php/documentos/despacho.php   [L] #despacho materia prima
+RewriteRule ^vehiculos/documentos/producto_terminado?$ php/documentos/ordenTerminado.php   [L] #producto terminado

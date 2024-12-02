@@ -1,1 +1,0 @@
-Esto es una prueba que si esta guardando observaciones largas, sin importar el tamaño, aqui solo estoy guardando el texto a un .txt, lo otro se manda a un hash a la base de datos.

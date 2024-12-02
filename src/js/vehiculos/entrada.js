@@ -442,7 +442,7 @@ jQuery(document).ready(function($) {
                     method: 'POST',
                     dataType: 'JSON',
                     success: function (response) {
-                        const drivers = response.data;
+                        const drivers = response.data
                         const driverData = drivers.map(driver => [
                             driver.nombre,
                             driver.ci_rif,
