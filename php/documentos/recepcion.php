@@ -50,18 +50,16 @@ $query = "
          FROM dpvehiculospesaje salida_rel
          WHERE salida_rel.VHP_CODCON = entrada.VHP_CODCON
            AND salida_rel.VHP_TIPO = 'S'
-           AND salida_rel.VHP_FECHA = entrada.VHP_FECHA
          LIMIT 1) AS hash 
     FROM
         dpvehiculospesaje entrada
     LEFT JOIN
         dpvehiculospesaje salida ON entrada.VHP_CODCON = salida.VHP_CODCON
         AND salida.VHP_NUMASO = 'Finalizado'
-        AND entrada.VHP_FECHA = salida.VHP_FECHA
+        AND salida.VHP_FECHA >= entrada.VHP_FECHA
     LEFT JOIN
         dpvehiculospesaje entrada_pendiente ON entrada.VHP_CODCON = entrada_pendiente.VHP_CODCON
         AND entrada_pendiente.VHP_NUMASO = 'Pendiente'
-        AND entrada.VHP_FECHA = entrada_pendiente.VHP_FECHA
     LEFT JOIN
         dpconductores cond ON entrada.VHP_CODINV = cond.CDT_CI_RIF
     LEFT JOIN
@@ -201,20 +199,8 @@ $html = '
         <img src="' . $logoBase64 . '" alt="Logo" class="logo">
         <div class="header">RECEPCIÓN DE MATERIA PRIMA</div>
         <div class="subheader">SERVIAVES C.A. Rif.:J40505786-6</div>
-        <div class="separator-line"></div>
-        
-        <div class="section">
-            <div class="left">
-                <span class="label">PROVEEDOR:</span> 
-                <span class="value">'.$proveedor.'</span>
-            </div>
-            <div class="right">
-                <span class="label">PRODUCTO:</span> 
-                <br>
-                <span class="value">'.$productos.'</span>
-            </div>
-        </div>
 
+        <div class="separator-line"></div>
             <div class="section">
             <div class="left">
                 <div>
@@ -233,6 +219,21 @@ $html = '
         </div>
 
         <div class="separator-line"></div>
+        
+        <div class"section">
+            <div class="left">
+                <span class="label">PROVEEDOR:</span> 
+                <span class="value">'.$proveedor.'</span>
+                <br>
+                <br>
+
+            <div style="display: flex; align-items: center; white-space: nowrap;">
+                <span style="font-weight: bold;">PRODUCTO:</span>
+                <span style="margin-left: 5px;">'.$productos.'</span>
+            </div>
+
+            </div>
+            <div class="separator-line"></div>
 
         <div class="section">
             <div class="left">
@@ -283,5 +284,5 @@ $html = '
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
-$dompdf->stream("recepcion.pdf", ["Attachment" => false]);
+$dompdf->stream("recepcion_$vehiculoId.pdf", ["Attachment" => false]);
 ?>

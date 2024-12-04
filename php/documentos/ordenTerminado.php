@@ -20,10 +20,10 @@ if (file_exists($logoPath)) {
     $logoBase64 = 'data:image/png;base64,' . base64_encode($imageData);
 }
 
-//$vehiculoId = $_POST['vehiculoId'] ?? '';
-$vehiculoId = '000005';
+$vehiculoId = $_GET['vehiculoId'] ?? '';
+//$vehiculoId = '000005';
 $netoProveedor = $_POST['netoProveedor'] ?? 'Sin neto de proveedor';
-$destino = $_POST['destino'] ??  'Sin destino';
+//$destino = $_POST['destino'] ??  'Sin destino';
 $proveedor = $_POST['proveedor'] ?? 'Sin proveedor';
 $nombre = $_SESSION['nUsuario'] ?? 'Sin nombre';
 
@@ -54,18 +54,16 @@ $query = "
          FROM dpvehiculospesaje salida_rel
          WHERE salida_rel.VHP_CODCON = entrada.VHP_CODCON
            AND salida_rel.VHP_TIPO = 'S'
-           AND salida_rel.VHP_FECHA = entrada.VHP_FECHA
-         LIMIT 1) AS observaciones 
+         LIMIT 1) AS hash 
     FROM
         dpvehiculospesaje entrada
     LEFT JOIN
         dpvehiculospesaje salida ON entrada.VHP_CODCON = salida.VHP_CODCON
         AND salida.VHP_NUMASO = 'Finalizado'
-        AND entrada.VHP_FECHA = salida.VHP_FECHA
+        AND salida.VHP_FECHA >= entrada.VHP_FECHA
     LEFT JOIN
         dpvehiculospesaje entrada_pendiente ON entrada.VHP_CODCON = entrada_pendiente.VHP_CODCON
         AND entrada_pendiente.VHP_NUMASO = 'Pendiente'
-        AND entrada.VHP_FECHA = entrada_pendiente.VHP_FECHA
     LEFT JOIN
         dpconductores cond ON entrada.VHP_CODINV = cond.CDT_CI_RIF
     LEFT JOIN
@@ -84,7 +82,15 @@ if ($result->num_rows === 0) {
 
 $data = $result->fetch_assoc();
 $productos = $data['productos'] ?? 'Sin productos';
-$observations = retrieveObservationFromFile($data['observaciones']) ?? '';
+$dataJSON = retrieveJSONFromS3($data['hash']);
+if (is_array($dataJSON)) {
+    $precintos = $dataJSON['precintos'] ?? 'Sin datos';
+    $destino = $dataJSON['destino'] ?? 'Sin datos';
+    $precintosF = implode(', ', $precintos);
+    //$destination = $dataJSON['destino'] ?? 'Sin datos';
+} else {
+    echo "Error: $dataJSON";
+}
 $tara = $data['peso_bruto'] - $data['peso_neto'];
 
 $tabla = '<div class="section" style="text-align: center; margin: 20px;">
@@ -306,8 +312,8 @@ $html = '
         </div>
 
         <div class="observation-section">
-            <div class="observation-title">OBSERVACIÓN:</div>
-            <span class="value">'.htmlspecialchars($observations).'</span>
+            <div class="observation-title">PRECINTOS:</div>
+            <span>'.$precintosF.'</span>
             <!--div class="observation-line"></div-->
         </div>
     </div>
@@ -318,5 +324,5 @@ $html = '
 $dompdf->loadHtml($html);
 $dompdf->setPaper('A4', 'portrait');
 $dompdf->render();
-$dompdf->stream("recepcion.pdf", ["Attachment" => false]);
+$dompdf->stream("despacho_producto_terminado_$vehiculoId.pdf", ["Attachment" => false]);
 ?>

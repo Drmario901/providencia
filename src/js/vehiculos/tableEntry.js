@@ -938,190 +938,302 @@ jQuery(document).ready(function($) {
     }
 
     function iniciarModalCaso2(id) {
-    Swal.fire({
-        title: `${id} - Salida de Vehículo - Sin Productos`,
-        html: `
-            <div class="relative bg-white shadow-lg rounded-lg p-6" style="width: 100%; max-width: 500px; margin: 0 auto;">
-                <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-                <form id="formSalidaCaso2" class="space-y-4">
-                    <!-- Select para los productos (oculto inicialmente) -->
-                    <div class="mt-4" id="selectProductosCaso2" style="display: none;">
-                        <label for="productosCaso2" class="block text-sm font-medium text-gray-700 mb-1">Productos</label>
-                        <select id="multipleProductSelectCaso2" multiple="multiple" class="form-control w-full">
-                            <!-- Opciones de productos se agregarán aquí -->
-                        </select>
-                    </div>
-
-                    <!-- Checkboxes para las opciones -->
-                    <div class="mt-4">
-                        <input type="checkbox" id="salidaVaciaCaso2" class="mr-2">
-                        <label for="salidaVaciaCaso2">Salida Vacía</label>
-                    </div>
-                    <div class="mt-2">
-                        <input type="checkbox" id="despachoMateriaPrimaCaso2" class="mr-2">
-                        <label for="despachoMateriaPrimaCaso2">Despacho de Materia Prima</label>
-                    </div>
-                    <div class="mt-2">
-                        <input type="checkbox" id="despachoProductoTerminadoCaso2" class="mr-2">
-                        <label for="despachoProductoTerminadoCaso2">Despacho de Producto Terminado</label>
-                    </div>
-
-                    <div>
-                        <label for="pesoBruto" class="block text-sm font-medium text-gray-700 mb-1">Peso Bruto</label>
-                        <div class="flex items-center space-x-2">
-                            <input type="number" id="pesoBrutoCaso2" name="pesoBruto" 
-                                   class="flex-grow px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                                   placeholder="Peso del vehículo" required>
-                            <button type="button" id="leerPesoVehiculoCaso2" 
-                                    class="px-4 py-2 bg-blue-900 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
-                                Leer Peso
-                            </button>
+        Swal.fire({
+            html: `
+                <div class="relative bg-white shadow-lg rounded-lg p-6 max-w-lg mx-auto">
+                    <button id="close-modal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+    
+                    <form id="formSalidaCaso2" class="space-y-6">
+                        <div class="space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-900 text-center">Tipo de Salida</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="salidaVaciaCaso2" class="tipo-salida h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="salidaVaciaCaso2" class="ml-3 block text-sm text-gray-900">Salida Vacía</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="despachoMateriaPrimaCaso2" class="tipo-salida h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="despachoMateriaPrimaCaso2" class="ml-3 block text-sm text-gray-900">Despacho de Materia Prima</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="checkbox" id="despachoProductoTerminadoCaso2" class="tipo-salida h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <label for="despachoProductoTerminadoCaso2" class="ml-3 block text-sm text-gray-900">Despacho de Producto Terminado</label>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+    
+                        <div class="space-y-6">
+                            <div id="selectProductosCaso2" class="hidden">
+                                <label for="productosCaso2" class="block text-sm font-medium text-gray-700 mb-2">Productos</label>
+                                <select id="multipleProductSelectCaso2" multiple class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 min-h-[100px]"></select>
+                                <div id="productosPesosCaso2" class="mt-6 space-y-4 hidden"></div>
+                            </div>
+    
+                            <div id="pesoLeerCaso2" class="hidden">
+                                <label for="pesoBrutoCaso2" class="block text-sm font-medium text-gray-700 mb-2">Peso Bruto</label>
+                                <div class="flex space-x-4">
+                                    <input type="number" id="pesoBrutoCaso2" name="pesoBruto" 
+                                        class="flex-grow px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                        placeholder="Peso del vehículo" required>
+                                    <button type="button" id="leerPesoVehiculoCaso2" 
+                                            class="px-6 py-3 bg-blue-900 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200">
+                                        Leer Peso
+                                    </button>
+                                </div>
+                            </div>
 
-                    <div class="mt-2">
-                        <label for="observaciones" class="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
-                        <input type="text" id="observacionesCaso2" name="observaciones" 
-                               class="w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
-                               placeholder="Ingrese su observacion">
-                    </div>
+                            <div id="campoDestinoCaso2" class="hidden">
+                                <label for="destinosCaso2" class="block text-sm font-medium text-gray-700 mb-2">Destino</label>
+                                <input type="text" required id="destinoCaso2" name="destino"
+                                    class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                    placeholder="Ingrese el destino"></input>
+                            </div>
+    
+                            <div id="campoObservacionesCaso2" class="hidden">
+                                <label for="observacionesCaso2" class="block text-sm font-medium text-gray-700 mb-2">Observaciones</label>
+                                <textarea id="observacionesCaso2" name="observaciones" rows="4"
+                                    class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
+                                    placeholder="Ingrese observaciones"></textarea>
+                            </div>
 
-                    <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
-                    <div class="mt-6">
-                        <button type="submit" class="w-full px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+                            <div id="campoPrecintosCaso2" class="hidden">
+                                <label for="precintosCaso2" class="block text-sm font-medium text-gray-700 mb-2">Precintos</label>
+                                <select id="multiplePrecintosCaso2" multiple class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></select>
+                            </div>
+                        </div>
+    
+                        <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
+    
+                        <button type="submit" id="registrarSalidaBtn" class="w-full px-6 py-3 bg-blue-800 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 transition-colors duration-200" disabled>
                             Registrar Salida
                         </button>
-                    </div>
-                </form>
-            </div>`,
-        width: 800,
-        showConfirmButton: false,
-        allowOutsideClick: false,
-        showClass: {
-            popup: 'animate__animated animate__fadeInUp animate__faster'
-        },
-        hideClass: {
-            popup: 'animate__animated animate__fadeOutDown animate__faster'
-        },
-        didOpen: () => {
-            $("#close-modal").on("click", function() {
-                Swal.close();
-            });
-
-            $("#leerPesoVehiculoCaso2").on("click", function() {
-                let $button = $(this);
-                let originalButtonText = $button.html();
-
-                $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
-
-                $.ajax({
-                    url: 'http://localhost:81/index',
-                    method: 'POST',
-                    success: function(response) {
-                        const match = response.match(/[-+]?\d*\.?\d+/);
-                        if (match) {
-                            $('#pesoBrutoCaso2').val(parseFloat(match[0]));
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Hubo un problema al obtener el peso.',
-                            confirmButtonColor: '#053684',
-                            confirmButtonText: 'OK'
-                        });
-                    },
-                    complete: function() {
-                        $button.html(originalButtonText).prop('disabled', false);
-                    }
+                    </form>
+                </div>`,
+            showConfirmButton: false,
+            allowOutsideClick: false,
+            customClass: {
+                popup: 'swal2-popup-large'
+            },
+            showClass: {
+                popup: 'animate__animated animate__fadeInUp animate__faster'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutDown animate__faster'
+            },
+            didOpen: () => {
+                $("#close-modal").on("click", function () {
+                    Swal.close();
                 });
-            });
-
-            $('#despachoMateriaPrimaCaso2').on('change', function() {
-                if ($(this).is(':checked')) {
-                    //$('#selectProductosCaso2').show(); 
-                    $('#selectProductosCaso2').select2({
-                        placeholder: 'Seleccione un proveedor',
-                        allowClear: true,
-                        dropdownParent: $('.swal2-popup') 
+    
+                function toggleFields() {
+                    $(".tipo-salida").on("change", function () {
+                        $(".tipo-salida").not(this).prop("checked", false);
+                        const selected = $(".tipo-salida:checked").length ? this.id : null;
+                        updateFields(selected);
+                        $("#registrarSalidaBtn").prop("disabled", !$(".tipo-salida:checked").length);
                     });
-            
+                }
+    
+                function updateFields(selected) {
+                    $("#selectProductosCaso2, #pesoLeerCaso2, #campoObservacionesCaso2, #campoPrecintosCaso2").addClass("hidden");
+                    $("#productosPesosCaso2").empty().addClass("hidden");
+                    $("#multipleProductSelectCaso2").val(null).trigger("change");
+                    $("#multiplePrecintosCaso2").val(null).trigger("change");
+                    $("#pesoBrutoCaso2").val("");
+                    $("#observacionesCaso2").val("");
+    
+                    if (!selected) {
+                        $('#campoDestinoCaso2').addClass('hidden');
+                        return;
+                    }
+    
+                    if (selected === "salidaVaciaCaso2") {
+                        $("#pesoLeerCaso2, #campoObservacionesCaso2").removeClass("hidden");
+                        $('#campoDestinoCaso2').addClass('hidden');
+                    } else if (selected === "despachoMateriaPrimaCaso2") {
+                        $("#productosPesosCaso2").empty().addClass("hidden");
+                        $("#selectProductosCaso2, #pesoLeerCaso2, #campoObservacionesCaso2, #campoDestinoCaso2").removeClass("hidden");
+                        initializeProductSelect(false); 
+                    } else if (selected === "despachoProductoTerminadoCaso2") {
+                        $("#selectProductosCaso2, #pesoLeerCaso2, #campoPrecintosCaso2, #campoDestinoCaso2").removeClass("hidden");
+                        initializeProductSelect(true); 
+                        initializePrecintosSelect();
+                    }
+                }
+    
+                function initializeProductSelect(showWeights) {
+                    $("#multipleProductSelectCaso2").select2({
+                        placeholder: "Seleccione productos",
+                        allowClear: true,
+                        dropdownParent: $(".swal2-popup"),
+                    });
+    
                     $.ajax({
-                        url: wb_subdir + '/php/inventario/productsCode.php',
-                        method: 'POST',
-                        success: function(response) {
-                            const $productos = $('#selectProductosCaso2');
+                        url: wb_subdir + "/php/inventario/productsCode.php",
+                        method: "POST",
+                        success: function (response) {
+                            const $productos = $("#multipleProductSelectCaso2");
                             $productos.empty();
+    
                             if (response.data && Array.isArray(response.data)) {
-                                response.data.forEach(productos => {
-                                    if (productos.codigo && productos.nombre) {
-                                        $productos.append(new Option(productos.nombre, productos.codigo));
+                                response.data.forEach((producto) => {
+                                    if (producto.codigo && producto.nombre) {
+                                        $productos.append(new Option(producto.nombre, producto.codigo));
                                     }
                                 });
-                                select = $('#selectProductosCaso2').val();
-                                console.log(select)
                             } else {
-                                console.error('Formato inesperado en la respuesta:', response);
+                                console.error("Formato inesperado en la respuesta:", response);
                             }
                         },
-                        error: function(xhr, status, error) {
-                            console.error('Error al obtener proveedores:', error);
+                        error: function (xhr, status, error) {
+                            console.error("Error al obtener productos:", error);
+                        },
+                    });
+    
+                    $("#multipleProductSelectCaso2").on("change", function () {
+                        const productosSeleccionados = $(this).val();
+                        const $productosPesos = $("#productosPesosCaso2");
+    
+                        if (showWeights) {
+                            const valoresExistentes = {};
+                            $productosPesos.find("input[type='number']").each(function () {
+                                const productoId = $(this).attr("name").replace("peso_", "");
+                                valoresExistentes[productoId] = $(this).val();
+                            });
+    
+                            $productosPesos.empty();
+    
+                            if (productosSeleccionados && productosSeleccionados.length > 0) {
+                                productosSeleccionados.forEach((producto) => {
+                                    const valorExistente = valoresExistentes[producto] || "";
+    
+                                    const inputHtml = `
+                                        <div class="flex items-center space-x-3" id="peso_${producto}">
+                                            <label class="block text-sm font-medium text-gray-700">${producto}</label>
+                                            <input type="number" name="peso_${producto}" value="${valorExistente}" 
+                                                   class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+                                                   placeholder="Peso" required>
+                                        </div>`;
+                                    $productosPesos.append(inputHtml);
+                                });
+                                $productosPesos.removeClass("hidden");
+                            }
+                        } else {
+                            $productosPesos.empty().addClass("hidden");
                         }
                     });
-                } else {
-                    $('#selectProductosCaso2').hide();  
                 }
-            });
+    
+                function initializePrecintosSelect() {
+                    $("#multiplePrecintosCaso2").select2({
+                        tags: true,
+                        tokenSeparators: [','],
+                        placeholder: "Escriba y presione Enter para agregar",
+                        dropdownParent: $(".swal2-popup"),
+                    });
+                }
+    
+                toggleFields();
+    
+                $("#formSalidaCaso2").off("submit").on("submit", function (e) {
+                    e.preventDefault();
 
-            $('#formSalidaCaso2').off('submit').on('submit', function (e) {
-                e.preventDefault();
-
-                const $form = $(this);
-                const $submitButton = $form.find('button[type="submit"]');
-                $submitButton.prop('disabled', true).text('Procesando...');
-            
-                let formData = new FormData(this);
-            
-                $.ajax({
-                    url: wb_subdir + '/php/vehiculos/saveVehicleExitCase2.php',
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function (response) {
+                    const tipoSalida = $(".tipo-salida:checked").attr("id");
+                    const pesoBruto = $("#pesoBrutoCaso2").val();
+                    const productosSeleccionados = $("#multipleProductSelectCaso2").val() || [];
+                    const precintos = $("#multiplePrecintosCaso2").val() || [];
+                    const destino = $("#destinoCaso2").val();
+                    const observaciones = $("#observacionesCaso2").val();
+    
+                    if (!pesoBruto || pesoBruto <= 0) {
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Salida registrada',
-                            text: 'El vehículo ha salido exitosamente.',
-                            confirmButtonColor: '#053684',
-                            confirmButtonText: 'OK'
-                        }).then(() => {
-                            cargarRegistros($('#fecha-table').val());
+                            icon: "error",
+                            title: "Error",
+                            text: "Debe ingresar un peso bruto válido.",
                         });
-                    },
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: 'Ocurrió un error al registrar la salida.',
-                            confirmButtonColor: '#053684',
-                            confirmButtonText: 'OK'
-                        });
-                    },
-                    complete: function () {
-                        $submitButton.prop('disabled', false).text('Registrar Salida');
+                        return;
                     }
+    
+                    if ((tipoSalida === "despachoMateriaPrimaCaso2" || tipoSalida === "despachoProductoTerminadoCaso2") && productosSeleccionados.length === 0) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Debe seleccionar al menos un producto.",
+                        });
+                        return;
+                    }
+    
+                    if (tipoSalida === "despachoProductoTerminadoCaso2" && precintos.length === 0) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Error",
+                            text: "Debe ingresar al menos un precinto.",
+                        });
+                        return;
+                    }
+    
+                    const productosPesos = {};
+                    $("#productosPesosCaso2")
+                        .find("input[type='number']")
+                        .each(function () {
+                            const productoId = $(this).attr("name").replace("peso_", "");
+                            const peso = $(this).val();
+                            if (!peso || peso <= 0) {
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Error",
+                                    text: `Debe ingresar un peso válido para el producto ${productoId}.`,
+                                });
+                                return false;
+                            }
+                            productosPesos[productoId] = peso;
+                        });
+    
+                    const data = {
+                        vehiculoId: id,
+                        tipoSalida,
+                        pesoBruto,
+                        productosSeleccionados,
+                        productosPesos,
+                        destino,
+                        precintos,
+                        observaciones,
+                    };
+    
+                    $.ajax({
+                        url: wb_subdir + "/php/vehiculos/saveVehicleExitCase2.php",
+                        method: "POST",
+                        data: JSON.stringify(data),
+                        contentType: "application/json",
+                        success: function () {
+                            Swal.fire({
+                                icon: "success",
+                                title: "Salida registrada",
+                                text: "El vehículo ha salido exitosamente.",
+                                confirmButtonColor: "#053684",
+                                confirmButtonText: "OK",
+                            }).then(() => {
+                                cargarRegistros($("#fecha-table").val());
+                            });
+                        },
+                        error: function () {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Error",
+                                text: "Ocurrió un error al registrar la salida.",
+                            });
+                        },
+                    });
                 });
-            });
-        }
-    });
-}
-
+            },
+        });
+    }
+    
+    
     $('#period').on('change', function () {
         let selectedPeriod = $(this).val();
         let today = new Date();
