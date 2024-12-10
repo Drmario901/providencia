@@ -7,20 +7,29 @@
 
     $salida = array("data" => array());
 
-    $consulta = "SELECT INV_CODIGO, INV_DESCRI FROM dpinv";        
+    $consulta = "
+        SELECT DISTINCT 
+            dpinv.INV_CODIGO AS codigo, 
+            dpinv.INV_DESCRI AS nombre
+        FROM 
+            dpinv
+        INNER JOIN 
+            dpmovinv ON dpinv.INV_CODIGO = dpmovinv.MOV_CODIGO
+        WHERE 
+            dpmovinv.MOV_CODALM IN ('201', '202', '203')";
+
     $resultado = $conexion->query($consulta);
 
     $productos = array(); 
 
-    while ($rows = $resultado->fetch_assoc()){
-        $codigo = $rows['INV_CODIGO'];
-        $nombre = $rows['INV_DESCRI'];
-        $productos[] = array("codigo" => $codigo, "nombre" => $nombre);
+    while ($rows = $resultado->fetch_assoc()) {
+        $productos[] = array(
+            "codigo" => $rows['codigo'], 
+            "nombre" => $rows['nombre']
+        );
     }
-
-    $productos = array_unique($productos, SORT_REGULAR);
-
-    foreach ($productos as $producto){
+    
+    foreach ($productos as $producto) {
         $salida["data"][] = $producto; 
     }
     

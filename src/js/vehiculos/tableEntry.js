@@ -13,50 +13,16 @@ jQuery(document).ready(function($) {
     });
 
     function cargarRegistros(fecha, fechaInicio, fechaFin) {
-        let data = {};
-    
-        if (fechaInicio && fechaFin) {
-            data = { startDate: fechaInicio, endDate: fechaFin };
-        } else if (fecha) {
-            data = { fecha: fecha };
-        }
-    
+        let data = fechaInicio && fechaFin ? { startDate: fechaInicio, endDate: fechaFin } : { fecha: fecha };
         let tbody = $('#default-table tbody');
-        tbody.empty().append(`
-            <tr>
-                <td colspan="13" class="text-center">
-                    <div class="spinner-container">
-                        <div class="spinner"></div>
-                    </div>
-                </td>
-            </tr>
-        `);
     
-        $('<style>')
-            .prop('type', 'text/css')
-            .html(`
-                .spinner-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 20px;
-                }
-                .spinner {
-                    border: 4px solid #f3f3f3;
-                    border-top: 4px solid #1e3a8a;
-                    border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
-                    animation: spin 1s linear infinite;
-                    margin-bottom: 10px;
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `)
-            .appendTo('head');
+        tbody.empty().append(`<tr><td colspan="13" class="text-center"><div class="spinner-container"><div class="spinner"></div></div></td></tr>`);
+    
+        $('<style>').prop('type', 'text/css').html(`
+            .spinner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+            .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1e3a8a; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        `).appendTo('head');
     
         $.ajax({
             url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
@@ -64,34 +30,15 @@ jQuery(document).ready(function($) {
             data: data,
             dataType: 'JSON',
             success: function(response) {
-                if (table) {
-                    table.destroy();
-                }
-    
+                if (table) table.destroy();
                 table = new simpleDatatables.DataTable("#default-table", {
                     perPage: 30,
-                    perPageSelect: [5,10,20,30,40,50,60],
+                    perPageSelect: [5, 10, 20, 30, 40, 50, 60],
                     data: {
-                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida"/*, "Código Producto",*/ ,"Producto Ingresado", "Estado", "Acciones"],
-                        data: response.map(function(registro) {
-                            let estatusClass = '';
-                            if (registro.estatus === 'Pendiente') {
-                                estatusClass = 'row-pendiente';
-                            } else if (registro.estatus === 'Finalizado') {
-                                estatusClass = 'row-finalizado';
-                            }
-    
-                            let casoText = '';
-                            if (registro.caso == '0') {
-                                casoText = 'Producto';
-                            } else if (registro.caso == '1') {
-                                casoText = 'Múltiple';
-                            } else if (registro.caso == '2') {
-                                casoText = 'Vacío';
-                            } else {
-                                casoText = '-';
-                            }
-
+                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Estado", "Acciones"],
+                        data: response.map(registro => {
+                            const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
+                            const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
                             return [
                                 `<span>${registro.id}</span>`,
                                 `<span class="font-bold">${registro.VHP_PLACA}</span>`,
@@ -105,10 +52,10 @@ jQuery(document).ready(function($) {
                                 `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
                                 `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
                                 `<span class="${estatusClass}">${registro.estatus}</span>`,
-                                registro.estatus === 'Pendiente'
+                                registro.estatus === 'Pendiente' 
                                     ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
                                     : registro.estatus === 'Finalizado'
-                                    ? `<div class="flex justify-center items-center">
+                                    ?`<div class="flex justify-center items-center">
                                         <button type="button" 
                                                 class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                                 onclick="genDoc('${registro.id}')">
@@ -118,9 +65,9 @@ jQuery(document).ready(function($) {
                                                 <path d="m9 14 2 2 4-4"/>
                                             </svg>
                                         </button>
-                                    </div>`
+                                    </div>` 
                                     : ''
-                            ];                                                            
+                            ];
                         })
                     }
                 });
@@ -167,58 +114,72 @@ jQuery(document).ready(function($) {
                         }
                     });
                 };
-                
-                $(document).on('click', '#default-table tbody tr', function() {
-                    let cells = $(this).find('td');
-                    let id = $(cells[0]).text().trim();
-                
-                    if (id) {
-                        $.ajax({
-                            url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
-                            method: 'POST',
-                            data: { vehiculoId: id },
-                            success: function(response) {
-                                if (response && response.case) {
-                                    if (response.estatus === 'Finalizado') {
-                                       console.log('Finalizado')
-                                    } else {
-                                        manejarCaso(id, response.case);
-                                    }
-                                } else {
-                                    console.error('No se recibió un caso válido en la respuesta.');
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error('Error al verificar y manejar el caso:', error);
+    
+                $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function() {
+                    const id = $(this).find('td:first').text().trim();
+                    const estatus = $(this).find('td').eq(11).text().trim();
+                    if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
+    
+                    if (estatus === 'Finalizado') {
+                        console.log('Caso finalizado');
+                        Swal.close();
+                        return;
+                    }
+    
+                    Swal.fire({
+                        title: 'Cargando',
+                        didOpen: () => Swal.showLoading(),
+                        showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
+                        hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` },
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        showConfirmButton: false
+                    });
+    
+                    $.ajax({
+                        url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
+                        method: 'POST',
+                        data: { vehiculoId: id },
+                        success: function(response) {
+                            if (response && response.case) {
+                                manejarCaso(id, response.case, response.estatus);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'No se recibió un caso válido.'
+                                });
                             }
-                        });
-                    } else {
-                        console.error('El ID no fue encontrado en la fila seleccionada.');
-                    }
-                
-                    function manejarCaso(id, tipoCaso) {
-                        console.log('Manejando caso:', tipoCaso);
-                        if (tipoCaso === 'Producto') {
-                            iniciarModalCaso0(id);
-                        } else if (tipoCaso === 'Múltiple') {
-                            iniciarModalCaso1(id);
-                        } else if (tipoCaso === 'Vacío') {
-                            iniciarModalCaso2(id);
+                        },
+                        error: function() {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: 'Hubo un problema al cargar los registros.'
+                            });
                         }
+                    });
+                });
+    
+                function manejarCaso(id, tipoCaso, estatus) {
+                    const casos = ['Producto', 'Múltiple', 'Vacío'];
+                    const acciones = [iniciarModalCaso0, iniciarModalCaso1, iniciarModalCaso2];
+                    const index = casos.indexOf(tipoCaso);
+                
+                    if (index >= 0 && estatus !== 'Finalizado') {
+                        setTimeout(() => {
+                            acciones[index](id);
+                        }, 500); 
                     }
-                });                                                                            
+                }                
             },
             error: function(xhr, status, error) {
                 console.error('Error al cargar los registros:', error);
-                tbody.empty().append(`
-                    <tr>
-                        <td colspan="13" class="text-center text-red-500">Error al cargar los registros</td>
-                    </tr>
-                `);
+                tbody.empty().append(`<tr><td colspan="13" class="text-center text-red-500">Error al cargar los registros</td></tr>`);
             }
         });
     }
-    
+       
     function iniciarModalCaso0(id) {
         let pesoBrutoInicial = null;
         let pesoActual = null;
@@ -434,10 +395,12 @@ jQuery(document).ready(function($) {
                     $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
     
                     $.ajax({
-                        url: 'http://localhost:81/index',
+                        url: 'http://127.0.0.1:8080/index',
                         method: 'POST',
                         success: function(response) {
-                            const match = response.match(/[-+]?\\d*\\.?\\d+/);
+                            console.log('Peso: ' + response)
+                            const match = response.match(/[-+]?\d*\.?\d+/g);
+                            console.log(match)
                             if (match) {
                                 pesoActual = parseFloat(match[0]);
                                 $('#pesoBrutoCaso0').val(pesoActual);
@@ -523,7 +486,7 @@ jQuery(document).ready(function($) {
                                                 const data = response.data;
                 
                                                 $.ajax({
-                                                    url: 'http://127.0.0.1:81/exit',
+                                                    url: 'http://127.0.0.1:8080/exit',
                                                     method: 'POST',
                                                     contentType: 'application/json',
                                                     data: JSON.stringify({
@@ -804,10 +767,10 @@ jQuery(document).ready(function($) {
                     $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
     
                     $.ajax({
-                        url: 'http://localhost:81/index',
+                        url: 'http://127.0.0.1:8080/index',
                         method: 'POST',
                         success: function(response) {
-                            const match = response.match(/[-+]?\\d*\\.?\\d+/);
+                            const match = response.match(/[-+]?\d*\.?\d+/g);
                             if (match) {
                                 pesoActual = parseFloat(match[0]);
                                 $('#pesoBrutoCaso1').val(pesoActual);
@@ -890,7 +853,7 @@ jQuery(document).ready(function($) {
                                             const data = response.data;
                                             
                                             $.ajax({
-                                                url: 'http://127.0.0.1:81/exit',  
+                                                url: 'http://127.0.0.1:8080/exit',  
                                                 method: 'POST',
                                                 contentType: 'application/json',
                                                 data: JSON.stringify({
@@ -1070,6 +1033,40 @@ jQuery(document).ready(function($) {
                         placeholder: "Seleccione productos",
                         allowClear: true,
                         dropdownParent: $(".swal2-popup"),
+                    });
+
+                    $("#leerPesoVehiculoCaso2").on("click", function() {
+                        let $button = $(this);
+                        let originalButtonText = $button.html();
+        
+                        $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
+        
+                        $.ajax({
+                            url: 'http://127.0.0.1:8080/index',
+                            method: 'POST',
+                            success: function(response) {
+                                console.log('Peso: ' + response)
+                                const match = response.match(/[-+]?\d*\.?\d+/g);
+                                console.log(match)
+                                if (match) {
+                                    pesoActual = parseFloat(match[0]);
+                                    $('#pesoBrutoCaso2').val(pesoActual);
+                                }
+                            },
+                            error: function(xhr, status, error) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Hubo un problema al obtener el peso.',
+                                    confirmButtonColor: '#053684',
+                                    confirmButtonText: 'OK'
+                                });
+                            },
+                            complete: function() {
+                                $button.html(originalButtonText).prop('disabled', false);
+                                lucide.createIcons();
+                            }
+                        });
                     });
     
                     $.ajax({
@@ -1396,23 +1393,24 @@ jQuery(document).ready(function($) {
             $productLabel.removeClass('hidden');
             $productWeight.removeClass('hidden');
             $productRead.removeClass('hidden');
-
+    
             $multipleProductsCheckbox.prop('disabled', true);
             $noProductEntryCheckbox.prop('disabled', true);
 
             $productSelect.empty();
+            $productSelect.prop('disabled', true);
             $productSelect.append($("<option>", {
                 value: '',
                 text: ''
             }));
-
+    
             $.ajax({
                 url: wb_subdir + '/php/inventario/productsCode.php',
                 method: 'POST',
                 dataType: 'JSON',
                 success: function(data) {
                     const productos = data.data;
-
+    
                     $.each(productos, function(index, producto) {
                         $productSelect.append($("<option>", {
                             value: producto.codigo,
@@ -1420,6 +1418,7 @@ jQuery(document).ready(function($) {
                         }));
                     });
 
+                    $productSelect.prop('disabled', false);
                     $productSelect.trigger('change');
                 },
                 error: function(xhr, status, error) {
@@ -1432,12 +1431,12 @@ jQuery(document).ready(function($) {
             $productLabel.addClass('hidden');
             $productWeight.addClass('hidden');
             $productRead.addClass('hidden');
-
+    
             $multipleProductsCheckbox.prop('disabled', false);
             $noProductEntryCheckbox.prop('disabled', false);
         }
     });
-
+    
     // Caso 2
     $multipleProductsCheckbox.change(function () {
         if ($(this).is(':checked')) {
@@ -1447,11 +1446,12 @@ jQuery(document).ready(function($) {
             $productRegister.removeClass('hidden');
             $productWeight.removeClass('hidden');
             $productRead.removeClass('hidden');
-
+    
             $productEntryCheckbox.prop('disabled', true);
             $noProductEntryCheckbox.prop('disabled', true);
 
             $multipleProductSelect.empty();
+            $multipleProductSelect.prop('disabled', true);
 
             $.ajax({
                 url: wb_subdir + '/php/inventario/productsCode.php',
@@ -1467,6 +1467,7 @@ jQuery(document).ready(function($) {
                         }));
                     });
 
+                    $multipleProductSelect.prop('disabled', false);
                     $multipleProductSelect.trigger('change');
                 },
                 error: function(xhr, status, error) {
@@ -1479,11 +1480,11 @@ jQuery(document).ready(function($) {
             $multipleProductLabel.addClass('hidden'); 
             $productWeight.addClass('hidden');
             $productRead.addClass('hidden');
-
+    
             $productEntryCheckbox.prop('disabled', false);
             $noProductEntryCheckbox.prop('disabled', false);
         }
-    });
+    });    
 
     // Caso 3
     $noProductEntryCheckbox.change(function () {
@@ -1516,18 +1517,22 @@ jQuery(document).ready(function($) {
 
     $('#entryForm').on('submit', function(e) {
         e.preventDefault();
+
+        $(this).find('button[type="submit"]').prop('disabled', true);
+    
         let caso = $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2);
     
         if (!$('#plate').val() || !$('#driverName').val() || !$('#driver').val() || !$('#plateType').val() ||
             !$('#entryWeight').val() || !$('#fecha-form').val() || !$('#multipleProductSelect').val() || 
             (!$('#product-entry').is(':checked') && !$('#multiple-products').is(':checked') && caso !== 2)) {
-            
+    
             Swal.fire({
                 icon: 'warning',
                 title: 'Por favor completa todos los campos obligatorios',
                 confirmButtonColor: '#053684',
                 showConfirmButton: true
             });
+            $('#entryForm').find('button[type="submit"]').prop('disabled', false);
             return;
         }
     
@@ -1539,10 +1544,9 @@ jQuery(document).ready(function($) {
             peso_bruto: $('#entryWeight').val(),
             fecha_peso_bruto: $('#fecha-form').val(),
             hora_entrada: $('#hiddenTimeInput').val(),
-            //vehiculo_activo: 'Sí',
             caso: caso 
         };
-        
+    
         if (data.caso === 0) {
             data.codigo_productos = $('#productSelect').val();
             data.producto_ingresado = $('#productSelect option:selected').text();
@@ -1555,6 +1559,23 @@ jQuery(document).ready(function($) {
             data.codigo_productos = 'Vacío'; 
             data.producto_ingresado = 'Vacío'; 
         }
+
+        Swal.fire({
+            title: 'Registrando',
+            //text: 'Cargando',
+            didOpen: () => {
+                  Swal.showLoading(); 
+            },
+            showClass: {
+               popup: `animate__animated animate__fadeInUp animate__faster`
+            },
+            hideClass: {
+                popup: `animate__animated animate__fadeOutDown animate__faster`
+            },
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+             showConfirmButton: false
+        });
     
         $.ajax({
             url: wb_subdir + '/php/vehiculos/registerVehicleTable.php',
@@ -1568,39 +1589,31 @@ jQuery(document).ready(function($) {
                     confirmButtonColor: '#053684',
                     showConfirmButton: true
                 });
-
-            if ($('#print').is(':checked')) {
-                $.ajax({
-                    url: 'http://127.0.0.1:81/entry',  
-                    method: 'POST',
-                    contentType: 'application/json',  
-                    data: JSON.stringify({  
-                        placa: data.placa,
-                        chofer: data.conductor,
-                        cedula: data.cedula,
-                        tipo: data.tipo,
-                        peso_bruto: data.peso_bruto,
-                        fecha_peso_bruto: data.fecha_peso_bruto,
-                        hora_entrada: data.hora_entrada,
-                        codigo_productos: data.codigo_productos,
-                        producto_ingresado: data.producto_ingresado
-                    }),
-                    success: function(response) {
-                        console.log(response);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
-                ,
-                    success: function() {
-                        console.log("Ticket de entrada generado exitosamente.");
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error al generar el ticket de entrada:', error);
-                        Swal.fire('Error al generar el ticket de entrada', '', 'error');
-                    }
-                });
-            }
+    
+                if ($('#print').is(':checked')) {
+                    $.ajax({
+                        url: 'http://127.0.0.1:8080/entry',
+                        method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            placa: data.placa,
+                            chofer: data.conductor,
+                            cedula: data.cedula,
+                            tipo: data.tipo,
+                            peso_bruto: data.peso_bruto,
+                            fecha_peso_bruto: data.fecha_peso_bruto,
+                            hora_entrada: data.hora_entrada,
+                            codigo_productos: data.codigo_productos,
+                            producto_ingresado: data.producto_ingresado
+                        }),
+                        success: function(response) {
+                            console.log(response);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
+                }
     
                 $('#entryForm')[0].reset();
                 const today = new Date().toISOString().split('T')[0];
@@ -1608,7 +1621,7 @@ jQuery(document).ready(function($) {
                 $('#product-entry, #multiple-products, #no-product-entry').prop('checked', false);
                 destroySelect2();
                 destroyMultipleSelect2();
-            
+    
                 $productEntryCheckbox.prop('disabled', false);
                 $multipleProductsCheckbox.prop('disabled', false);
                 $noProductEntryCheckbox.prop('disabled', false);
@@ -1623,6 +1636,10 @@ jQuery(document).ready(function($) {
             error: function(xhr, status, error) {
                 console.error('Error al registrar el vehículo:', error);
                 Swal.fire('Error al registrar el vehículo', '', 'error');
+            },
+            complete: function() {
+                $('#entryForm').find('button[type="submit"]').prop('disabled', false);
+                //Swal.close();
             }
         });
     });    

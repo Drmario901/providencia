@@ -193,7 +193,7 @@ jQuery(document).ready(function($) {
             const endpoint = ticketType === 'entrada' ? '/r-entry' : '/r-exit';
 
             $.ajax({
-                url: 'http://127.0.0.1:81' + endpoint,
+                url: 'http://127.0.0.1:8080' + endpoint,
                 method: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({

@@ -3,7 +3,7 @@ jQuery(document).ready(function($) {
     //READ WEIGHT FUNCTION
     function readWeight() {
         $.ajax({
-            url: 'http://localhost:81/index', 
+            url: 'http://localhost:8080/index', 
             method: 'POST',
             success: function(response) {
                 const match = response.match(/[-+]?\d*\.?\d+/);
