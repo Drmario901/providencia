@@ -7,7 +7,7 @@
 
     $salida = array("data" => array());
 
-    $consulta = "SELECT * FROM dpproveedor";
+    $consulta = "SELECT DISTINCT PRO_NOMBRE FROM dpproveedor";
     $resultado = $conexion->query($consulta);
     $proveedores = array();
 

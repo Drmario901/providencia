@@ -278,13 +278,19 @@ jQuery(document).ready(function($) {
                 $("#close-modal").on("click", function() {
                     Swal.close();
                 });
-    
+
+                $('#producto').prop('disabled', true);
+                $('#unidadMedida').prop('disabled', true);
+                $('#silo').prop('disabled', true);
+                $('#proveedor').prop('disabled', true);
+            
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getProductsCase1.php',
                     method: 'POST',
                     data: { vehiculoId: id },
                     success: function(response) {
                         $('#producto').empty();
+                
                         if (response.error) {
                             $('#producto').append(new Option('Error al cargar productos', ''));
                             return;
@@ -292,7 +298,7 @@ jQuery(document).ready(function($) {
                             $('#producto').append(new Option('No se encontraron productos', ''));
                             return;
                         }
-    
+
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
                                 if (producto.codigo && producto.descripcion) {
@@ -305,14 +311,18 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener productos:', error);
+                    },
+                    complete: function() {
+                        $('#producto').prop('disabled', false);
                     }
                 });
-    
+
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getUnd.php',
                     method: 'POST',
                     success: function(response) {
                         $('#unidadMedida').empty();
+                        
                         if (response.data && Array.isArray(response.data)) {
                             response.data.forEach(unidad => {
                                 if (unidad.unidad) {
@@ -325,14 +335,18 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener unidades de medida:', error);
+                    },
+                    complete: function() {
+                        $('#unidadMedida').prop('disabled', false);
                     }
                 });
-    
+
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getSilos.php',
                     method: 'POST',
                     success: function(response) {
                         $('#silo').empty();
+
                         if (response.data && Array.isArray(response.data)) {
                             response.data.forEach(silo => {
                                 if (silo.silo) {
@@ -345,21 +359,27 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener silos:', error);
+                    },
+                    complete: function() {
+                        $('#silo').prop('disabled', false);
                     }
                 });
 
                 $('#proveedor').select2({
                     placeholder: 'Seleccione un proveedor',
                     allowClear: true,
-                    dropdownParent: $('.swal2-popup') 
+                    dropdownParent: $('.swal2-popup')
                 });
-        
+
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/providers.php',
                     method: 'POST',
                     success: function(response) {
                         const $proveedor = $('#proveedor');
-                        $proveedor.empty();
+                        $proveedor.empty(); 
+
+                        $proveedor.append(new Option('Seleccione un proveedor', '', true, true));
+
                         if (response && Array.isArray(response)) {
                             response.forEach(proveedor => {
                                 if (proveedor.codigo && proveedor.nombre) {
@@ -372,9 +392,12 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener proveedores:', error);
+                    },
+                    complete: function() {
+                        $('#proveedor').prop('disabled', false);
                     }
                 });
-            
+   
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getTaraCase1.php',
                     method: 'POST',
@@ -646,20 +669,26 @@ jQuery(document).ready(function($) {
                     Swal.close();
                 });
     
+                $('#producto').prop('disabled', true);
+                $('#unidadMedida').prop('disabled', true);
+                $('#silo').prop('disabled', true);
+                $('#proveedor').prop('disabled', true);
+            
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/getProductsCase1.php',
                     method: 'POST',
                     data: { vehiculoId: id },
                     success: function(response) {
                         $('#producto').empty();
+                
                         if (response.error) {
-                            $('#notification').html('<div class="alert alert-danger">Error al obtener productos</div>').fadeIn();
+                            $('#producto').append(new Option('Error al cargar productos', ''));
                             return;
                         } else if (response.mensaje) {
-                            $('#notification').html('<div class="alert alert-warning">No se encontraron productos</div>').fadeIn();
+                            $('#producto').append(new Option('No se encontraron productos', ''));
                             return;
                         }
-                        
+
                         if (Array.isArray(response)) {
                             response.forEach(producto => {
                                 if (producto.codigo && producto.descripcion) {
@@ -671,22 +700,76 @@ jQuery(document).ready(function($) {
                         }
                     },
                     error: function(xhr, status, error) {
-                        $('#notification').html('<div class="alert alert-danger">Error al obtener productos</div>').fadeIn();
+                        console.error('Error al obtener productos:', error);
+                    },
+                    complete: function() {
+                        $('#producto').prop('disabled', false);
+                    }
+                });
+
+                $.ajax({
+                    url: wb_subdir + '/php/vehiculos/getUnd.php',
+                    method: 'POST',
+                    success: function(response) {
+                        $('#unidadMedida').empty();
+                        
+                        if (response.data && Array.isArray(response.data)) {
+                            response.data.forEach(unidad => {
+                                if (unidad.unidad) {
+                                    $('#unidadMedida').append(new Option(unidad.unidad, unidad.unidad));
+                                }
+                            });
+                        } else {
+                            console.error('Formato inesperado en la respuesta:', response);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener unidades de medida:', error);
+                    },
+                    complete: function() {
+                        $('#unidadMedida').prop('disabled', false);
+                    }
+                });
+
+                $.ajax({
+                    url: wb_subdir + '/php/vehiculos/getSilos.php',
+                    method: 'POST',
+                    success: function(response) {
+                        $('#silo').empty();
+
+                        if (response.data && Array.isArray(response.data)) {
+                            response.data.forEach(silo => {
+                                if (silo.silo) {
+                                    $('#silo').append(new Option(silo.silo, silo.silo));
+                                }
+                            });
+                        } else {
+                            console.error('Formato inesperado en la respuesta:', response);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error al obtener silos:', error);
+                    },
+                    complete: function() {
+                        $('#silo').prop('disabled', false);
                     }
                 });
 
                 $('#proveedor').select2({
                     placeholder: 'Seleccione un proveedor',
                     allowClear: true,
-                    dropdownParent: $('.swal2-popup') 
+                    dropdownParent: $('.swal2-popup')
                 });
-        
+
                 $.ajax({
                     url: wb_subdir + '/php/vehiculos/providers.php',
                     method: 'POST',
                     success: function(response) {
                         const $proveedor = $('#proveedor');
-                        $proveedor.empty();
+                        $proveedor.empty(); 
+
+                        $proveedor.append(new Option('Seleccione un proveedor', '', true, true));
+
                         if (response && Array.isArray(response)) {
                             response.forEach(proveedor => {
                                 if (proveedor.codigo && proveedor.nombre) {
@@ -699,49 +782,9 @@ jQuery(document).ready(function($) {
                     },
                     error: function(xhr, status, error) {
                         console.error('Error al obtener proveedores:', error);
-                    }
-                });
-    
-                $.ajax({
-                    url: wb_subdir + '/php/vehiculos/getUnd.php',
-                    method: 'POST',
-                    data: { vehiculoId: id },
-                    success: function(response) {
-                        $('#unidadMedida').empty();
-                        if (response.data && Array.isArray(response.data)) {
-                            response.data.forEach(unidad => {
-                                if (unidad.unidad) {
-                                    $('#unidadMedida').append(new Option(unidad.unidad, unidad.unidad));
-                                }
-                            });
-                        } else {
-                            console.error('Formato inesperado en la respuesta:', response);
-                            $('#notification').html('<div class="alert alert-danger">Error en el formato de respuesta al obtener unidades de medida</div>').fadeIn();
-                        }
                     },
-                    error: function(xhr, status, error) {
-                        $('#notification').html('<div class="alert alert-danger">Error al obtener unidades de medida</div>').fadeIn();
-                    }
-                });
-    
-                $.ajax({
-                    url: wb_subdir + '/php/vehiculos/getSilos.php',
-                    method: 'POST',
-                    success: function(response) {
-                        $('#silo').empty();
-                        if (response.data && Array.isArray(response.data)) {
-                            response.data.forEach(silo => {
-                                if (silo.silo) {
-                                    $('#silo').append(new Option(silo.silo, silo.silo));
-                                }
-                            });
-                        } else {
-                            console.error('Formato inesperado en la respuesta:', response);
-                            $('#notification').html('<div class="alert alert-danger">Error al obtener silos</div>').fadeIn();
-                        }
-                    },
-                    error: function(xhr, status, error) {
-                        $('#notification').html('<div class="alert alert-danger">Error al obtener silos</div>').fadeIn();
+                    complete: function() {
+                        $('#proveedor').prop('disabled', false);
                     }
                 });
     

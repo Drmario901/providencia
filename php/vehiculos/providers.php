@@ -9,17 +9,22 @@ require __DIR__ . '/../conexion.php';
 $bd = "serviaves";
 mysqli_select_db($conexion, $bd);
 
-$query = "SELECT PRO_CODIGO, PRO_NOMBRE FROM dpproveedor;";
+$query = "SELECT DISTINCT PRO_CODIGO, PRO_NOMBRE FROM dpproveedor;";
 
 $result = mysqli_query($conexion, $query);
 $proveedores = [];
+$unique_codes = [];
 
 if ($result) {
     while ($row = mysqli_fetch_assoc($result)) {
-        $proveedores[] = [
-            'codigo' => trim($row['PRO_CODIGO']), 
-            'nombre' => trim($row['PRO_NOMBRE']) 
-        ];
+        $codigo = trim($row['PRO_CODIGO']);
+        if (!in_array($codigo, $unique_codes)) {
+            $unique_codes[] = $codigo;
+            $proveedores[] = [
+                'codigo' => $codigo,
+                'nombre' => trim($row['PRO_NOMBRE'])
+            ];
+        }
     }
     
     if (empty($proveedores)) {

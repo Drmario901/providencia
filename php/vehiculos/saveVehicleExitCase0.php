@@ -25,8 +25,8 @@ $destino = $_POST['destino'] ?? null;
 $cantidad = $_POST['cantidad'] ?? null;
 $unidadMedida = $_POST['unidadMedida'] ?? null;
 $exitHour = date('h:i:s');
-$numDoc = $userID . $vehiculoId; 
-$numDoc = str_pad($numDoc, 10, '0', STR_PAD_LEFT);
+$numDoc = $userID .'0'. $vehiculoId; 
+//$numDoc = str_pad($numDoc, 10, '0', STR_PAD_LEFT);
 
 if (!$vehiculoId || !$pesoActual || !$producto || !$silo || !$cantidad || !$unidadMedida) {
     echo json_encode(['error' => 'Faltan parámetros obligatorios']);
