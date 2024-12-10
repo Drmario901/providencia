@@ -1,2 +1,4 @@
 /vendor/
 php/documentos/storage
+.env
+.gitignore
