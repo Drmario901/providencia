@@ -24,8 +24,7 @@ $netoProveedor = $_POST['netoProveedor'];
 $sica = $_POST['sica'];
 $cantidad = $_POST['cantidad'];
 $exitHour = date('h:i:s');
-$numDoc = $userID . $vehiculoId; 
-$numDoc = str_pad($numDoc, 10, '0', STR_PAD_LEFT);
+$numDoc = $userID .'0'. $vehiculoId; 
 
 if (is_null($pesoProducto) || $pesoProducto <= 0) {
     echo json_encode(['error' => 'El peso del producto descargado no es válido']);

@@ -30,8 +30,7 @@ $productosPesos = $inputData['productosPesos'] ?? [];
 $precintos = $inputData['precintos'] ?? [];
 $destino = $inputData['destino'] ?? null;
 $exitHour = date('h:i:s');
-$numDoc = $userID . $vehiculoId; 
-$numDoc = str_pad($numDoc, 10, '0', STR_PAD_LEFT);
+$numDoc = $userID .'0'. $vehiculoId; 
 
 if (empty($vehiculoId) || empty($pesoBruto) || empty($tipoSalida)) {
     echo json_encode(['error' => 'Faltan datos obligatorios (vehículo, peso bruto o tipo de salida)']);
