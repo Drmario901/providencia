@@ -105,53 +105,63 @@ switch ($tipoSalida) {
             echo json_encode(['status' => 'finalizado', 'productosRegistrados' => count($productos)]);
             break;        
 
-    case 'despachoProductoTerminadoCaso2':
-        if (empty($productos)) {
-            echo json_encode(['error' => 'No se seleccionaron productos para el despacho de producto terminado']);
-            exit;
-        }
+            case 'despachoProductoTerminadoCaso2':
+                if (empty($productos)) {
+                    echo json_encode(['error' => 'No se seleccionaron productos para el despacho de producto terminado']);
+                    exit;
+                }
+            
+                if (empty($precintos)) {
+                    echo json_encode(['error' => 'No se especificaron precintos para el despacho']);
+                    exit;
+                }
+            
+                foreach ($productos as $productoCodigo) {
+                    $pesoProducto = $productosPesos[$productoCodigo]['peso'] ?? 0;
+                    //$cantidadProducto = $productosPesos[$productoCodigo]['cantidad'] ?? 0;
+                    $cantidadProducto = 5;
+                    $unidadProducto = $productosPesos[$productoCodigo]['unidad'] ?? 0;
 
-        if (empty($precintos)) {
-            echo json_encode(['error' => 'No se especificaron precintos para el despacho']);
-            exit;
-        }
+                    if ($pesoProducto <= 0) {
+                        echo json_encode(['error' => "El peso del producto ($productoCodigo) no es válido"]);
+                        exit;
+                    }
+            
+                    if ($cantidadProducto <= 0) {
+                        echo json_encode(['error' => "La cantidad del producto ($productoCodigo) no es válida"]);
+                        exit;
+                    }
 
-        foreach ($productos as $productoCodigo) {
-            $pesoProducto = $productosPesos[$productoCodigo] ?? 0;
+                    $insertProductoQuery = "INSERT INTO dpmovinv 
+                        (MOV_CODIGO, MOV_FECHA, MOV_PESO, MOV_CODCOM, MOV_TIPDOC, MOV_DOCUME, MOV_CANTID, MOV_UNDMED) 
+                        VALUES ('$productoCodigo', NOW(), '$pesoProducto', '$vehiculoId', 'NPT', '$numDoc', '$cantidadProducto', '$unidadProducto')";
 
-            if ($pesoProducto <= 0) {
-                echo json_encode(['error' => "El peso del producto ($productoCodigo) no es válido"]);
-                exit;
-            }
+                    mysqli_query($conexion, $insertProductoQuery);
+                }
+            
+                $dataJSON = [
+                    'observaciones' => $observaciones,
+                    'destino' => $destino,
+                    'precintos' => $precintos,
+                ];
+                $hash = substr(hash('crc32b', json_encode($dataJSON)), 0, 6);
+                storeJsonInS3($hash, $dataJSON);
+            
+                $insertSalidaProductoTerminado = "INSERT INTO dpvehiculospesaje 
+                                                  (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) 
+                                                  VALUES ('$vehiculoId', '$pesoBruto', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
+                mysqli_query($conexion, $insertSalidaProductoTerminado);
 
-            $insertProductoQuery = "INSERT INTO dpmovinv 
-                                    (MOV_CODIGO, MOV_FECHA, MOV_PESO, MOV_CODCOM, MOV_TIPDOC, MOV_DOCUME) 
-                                    VALUES ('$productoCodigo', NOW(), '$pesoProducto', '$vehiculoId', 'NPT', '$numDoc')";
-            mysqli_query($conexion, $insertProductoQuery);
-        }
-
-        $dataJSON = [
-            'observaciones' => $observaciones,
-            'destino' => $destino,
-            'precintos' => $precintos,
-        ];
-        $hash = substr(hash('crc32b', json_encode($dataJSON)), 0, 6);
-        storeJsonInS3($hash, $dataJSON);
-
-        $insertSalidaProductoTerminado = "INSERT INTO dpvehiculospesaje 
-                                          (VHP_CODCON, VHP_PESO, VHP_FECHA, VHP_HORA, VHP_NUMASO, VHP_TIPO, VHP_PC, VHP_PLACA, VHP_CODINV, VHP_IP) 
-                                          VALUES ('$vehiculoId', '$pesoBruto', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
-        mysqli_query($conexion, $insertSalidaProductoTerminado);
-
-        $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";
-            mysqli_query($conexion, $insertDocumento);
-
-        echo json_encode(['status' => 'finalizado', 'productosRegistrados' => count($productos), 'precintos' => implode(',', $precintos)]);
-        break;
-
-    default:
-        echo json_encode(['error' => 'Tipo de salida no válido']);
-        break;
+                $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) 
+                                    VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";
+                mysqli_query($conexion, $insertDocumento);
+            
+                echo json_encode(['status' => 'finalizado', 'productosRegistrados' => count($productos), 'precintos' => implode(',', $precintos)]);
+                break;
+            
+            default:
+                echo json_encode(['error' => 'Tipo de salida no válido']);
+                break;            
 }
 
 mysqli_close($conexion);

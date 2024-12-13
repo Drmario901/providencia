@@ -124,6 +124,10 @@ jQuery(document).ready(function($) {
                         console.log('Caso finalizado');
                         Swal.close();
                         return;
+                    } else if(estatus === '') { 
+                        console.log('Sin caso.');
+                        Swal.close();
+                        return;
                     }
     
                     Swal.fire({
@@ -953,7 +957,7 @@ jQuery(document).ready(function($) {
                         </svg>
                     </button>
     
-                    <form id="formSalidaCaso2" class="space-y-6">
+                    <form novalidate id="formSalidaCaso2" class="space-y-6">
                         <div class="space-y-6">
                             <h3 class="text-lg font-semibold text-gray-900 text-center">Tipo de Salida</h3>
                             <div class="space-y-3">
@@ -994,7 +998,7 @@ jQuery(document).ready(function($) {
 
                             <div id="campoDestinoCaso2" class="hidden">
                                 <label for="destinosCaso2" class="block text-sm font-medium text-gray-700 mb-2">Destino</label>
-                                <input type="text" required id="destinoCaso2" name="destino"
+                                <input type="text" required id="destinoCaso2" name="destinoCaso2"
                                     class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" 
                                     placeholder="Ingrese el destino"></input>
                             </div>
@@ -1058,8 +1062,9 @@ jQuery(document).ready(function($) {
                     }
     
                     if (selected === "salidaVaciaCaso2") {
-                        $("#pesoLeerCaso2, #campoObservacionesCaso2").removeClass("hidden");
-                        $('#campoDestinoCaso2').addClass('hidden');
+                        $("#productosPesosCaso2").empty().addClass("hidden");
+                        $("#pesoLeerCaso2, #campoObservacionesCaso2").removeClass("hidden"); 
+                        initializeProductSelect(false); 
                     } else if (selected === "despachoMateriaPrimaCaso2") {
                         $("#productosPesosCaso2").empty().addClass("hidden");
                         $("#selectProductosCaso2, #pesoLeerCaso2, #campoObservacionesCaso2, #campoDestinoCaso2").removeClass("hidden");
@@ -1152,11 +1157,20 @@ jQuery(document).ready(function($) {
                                     const valorExistente = valoresExistentes[producto] || "";
     
                                     const inputHtml = `
-                                        <div class="flex items-center space-x-3" id="peso_${producto}">
+                                          <div class="flex items-center space-x-3" id="peso_${producto}">
                                             <label class="block text-sm font-medium text-gray-700">${producto}</label>
                                             <input type="number" name="peso_${producto}" value="${valorExistente}" 
-                                                   class="w-full px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+                                                   class="w-1/3 px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
                                                    placeholder="Peso" required>
+                                            <input type="number" name="cantidad_${producto}" value="" 
+                                                   class="w-1/3 px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" 
+                                                   placeholder="Cant." hidden>
+                                            <select name="unidad_${producto}" class="w-1/3 px-4 py-3 bg-white border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="KG" selected>KG</option>
+                                                <!--option value="G">G</option-->
+                                                <!--option value="LB">LB</option-->
+                                                <!--option value="OZ">OZ</option-->
+                                            </select>
                                         </div>`;
                                     $productosPesos.append(inputHtml);
                                 });
@@ -1218,10 +1232,13 @@ jQuery(document).ready(function($) {
     
                     const productosPesos = {};
                     $("#productosPesosCaso2")
-                        .find("input[type='number']")
+                        .find("div[id^='peso_']")
                         .each(function () {
-                            const productoId = $(this).attr("name").replace("peso_", "");
-                            const peso = $(this).val();
+                            const productoId = $(this).attr("id").replace("peso_", "");
+                            const peso = $(this).find("input[name^='peso_']").val();
+                            //const cantidad = $(this).find("input[name^='cantidad_']").val();
+                            const unidad = $(this).find("select[name^='unidad_']").val();
+
                             if (!peso || peso <= 0) {
                                 Swal.fire({
                                     icon: "error",
@@ -1230,9 +1247,32 @@ jQuery(document).ready(function($) {
                                 });
                                 return false;
                             }
-                            productosPesos[productoId] = peso;
+
+                            // if (!cantidad || cantidad <= 0) {
+                            //     Swal.fire({
+                            //         icon: "error",
+                            //         title: "Error",
+                            //         text: `Debe ingresar una cantidad válida para el producto ${productoId}.`,
+                            //     });
+                            //     return false;
+                            // }
+
+                            // if (!unidad) {
+                            //     Swal.fire({
+                            //         icon: "error",
+                            //         title: "Error",
+                            //         text: `Debe seleccionar una unidad válida para el producto ${productoId}.`,
+                            //     });
+                            //     return false;
+                            // }
+
+                            productosPesos[productoId] = {
+                                peso: parseFloat(peso),
+                                //cantidad: parseInt(cantidad, 10),
+                                unidad: unidad,
+                            };
                         });
-    
+                        
                     const data = {
                         vehiculoId: id,
                         tipoSalida,
@@ -1257,17 +1297,61 @@ jQuery(document).ready(function($) {
                                 confirmButtonColor: "#053684",
                                 confirmButtonText: "OK",
                             }).then(() => {
+                                if ($('#print').is(':checked')) {
+                                    $.ajax({
+                                        url: wb_subdir + '/php/vehiculos/exitTicketData.php',
+                                        method: 'POST',
+                                        data: { vehiculoId: id },
+                                        dataType: 'json',
+                                        success: function(response) {
+                                            if (response.status === 'success') {
+                                                const data = response.data;
+                                                $.ajax({
+                                                    url: 'http://127.0.0.1:8080/exit',
+                                                    method: 'POST',
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify({
+                                                        placa: data.VHP_PLACA,
+                                                        chofer: data.conductor_nombre,
+                                                        cedula: data.cedula,
+                                                        destino: data.destino,
+                                                        silo_origen: data.silo_origen,
+                                                        peso_bruto: data.peso_bruto,
+                                                        peso_neto: data.peso_neto,
+                                                        codigo_productos: data.codigo_productos,
+                                                        producto_ingresado: data.productos,
+                                                        productos_con_silos: data.productos_con_silos
+                                                    }),
+                                                    success: function(printResponse) {
+                                                        console.log("Respuesta de impresión:", printResponse);
+                                                        $('#notification').html('<div class="alert alert-success">Salida registrada e impresión realizada correctamente.</div>').fadeIn();
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        console.error('Error al enviar los datos de impresión:', error);
+                                                        $('#notification').html('<div class="alert alert-danger">Error al realizar la impresión.</div>').fadeIn();
+                                                    }
+                                                });
+                                            } else {
+                                                console.error('Error al obtener datos del ticket:', response);
+                                            }
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error al obtener datos para impresión:', error);
+                                        }
+                                    });
+                                }
                                 cargarRegistros($("#fecha-table").val());
                             });
                         },
-                        error: function () {
+                        error: function (xhr, status, error) {
+                            console.error('Error al registrar la salida:', error);
                             Swal.fire({
                                 icon: "error",
                                 title: "Error",
                                 text: "Ocurrió un error al registrar la salida.",
                             });
-                        },
-                    });
+                        }
+                    });                    
                 });
             },
         });

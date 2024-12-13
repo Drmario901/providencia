@@ -28,48 +28,47 @@ $proveedor = $_POST['proveedor'] ?? 'Sin proveedor';
 $nombre = $_SESSION['nUsuario'] ?? 'Sin nombre';
 
 $query = "
-    SELECT
-        entrada.VHP_CODCON AS id,
-        entrada.VHP_FECHA AS fecha,
-        entrada.VHP_PLACA AS placa,
-        entrada.VHP_CODINV AS cedula,
-        entrada.VHP_HORA AS hora_entrada,
-        salida.VHP_HORA AS hora_salida,
-        COALESCE(salida.VHP_NUMASO, entrada.VHP_NUMASO) AS estatus,
-        entrada.VHP_PC AS caso,
-        COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) AS peso_bruto,
-        salida.VHP_PESO AS peso_salida,
-        (COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) - COALESCE(salida.VHP_PESO, 0)) AS peso_neto,
-        (SELECT GROUP_CONCAT(DISTINCT inv.INV_CODIGO ORDER BY inv.INV_DESCRI SEPARATOR ', ')
-         FROM dpinv inv
-         INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO
-         WHERE dom.MOV_CODCOM = entrada.VHP_CODCON) AS codigo_productos,
-        (SELECT GROUP_CONCAT(DISTINCT inv.INV_DESCRI ORDER BY inv.INV_DESCRI SEPARATOR ', ')
-         FROM dpinv inv
-         INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO
-         WHERE dom.MOV_CODCOM = entrada.VHP_CODCON) AS productos,
-        cond.CDT_NOMBRE AS conductor_nombre,
-        dom.MOV_DOCUME AS documento,
-        (SELECT salida_rel.VHP_IP
-         FROM dpvehiculospesaje salida_rel
-         WHERE salida_rel.VHP_CODCON = entrada.VHP_CODCON
-           AND salida_rel.VHP_TIPO = 'S'
-         LIMIT 1) AS hash 
-    FROM
-        dpvehiculospesaje entrada
-    LEFT JOIN
-        dpvehiculospesaje salida ON entrada.VHP_CODCON = salida.VHP_CODCON
-        AND salida.VHP_NUMASO = 'Finalizado'
-        AND salida.VHP_FECHA >= entrada.VHP_FECHA
-    LEFT JOIN
-        dpvehiculospesaje entrada_pendiente ON entrada.VHP_CODCON = entrada_pendiente.VHP_CODCON
-        AND entrada_pendiente.VHP_NUMASO = 'Pendiente'
-    LEFT JOIN
-        dpconductores cond ON entrada.VHP_CODINV = cond.CDT_CI_RIF
-    LEFT JOIN
-        dpmovinv dom ON dom.MOV_CODCOM = entrada.VHP_CODCON
-    WHERE
-        entrada.VHP_CODCON = ? ";
+   SELECT
+    entrada.VHP_CODCON AS id,
+    entrada.VHP_FECHA AS fecha,
+    entrada.VHP_PLACA AS placa,
+    entrada.VHP_CODINV AS cedula,
+    entrada.VHP_HORA AS hora_entrada,
+    salida.VHP_HORA AS hora_salida,
+    COALESCE(salida.VHP_NUMASO, entrada.VHP_NUMASO) AS estatus,
+    entrada.VHP_PC AS caso,
+    COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) AS peso_bruto,
+    salida.VHP_PESO AS peso_salida,
+    (COALESCE(entrada_pendiente.VHP_PESO, entrada.VHP_PESO) - COALESCE(salida.VHP_PESO, 0)) AS peso_neto,
+    inv.INV_CODIGO AS codigo_producto,
+    inv.INV_DESCRI AS descripcion_producto,
+    dom.MOV_CANTID AS cantidad,
+    dom.MOV_PESO AS peso_producto,
+    dom.MOV_UNDMED AS unidad_medida,
+    cond.CDT_NOMBRE AS conductor_nombre,
+    dom.MOV_DOCUME AS documento,
+    (SELECT salida_rel.VHP_IP
+     FROM dpvehiculospesaje salida_rel
+     WHERE salida_rel.VHP_CODCON = entrada.VHP_CODCON
+       AND salida_rel.VHP_TIPO = 'S'
+     LIMIT 1) AS hash
+FROM
+    dpvehiculospesaje entrada
+LEFT JOIN
+    dpvehiculospesaje salida ON entrada.VHP_CODCON = salida.VHP_CODCON
+    AND salida.VHP_NUMASO = 'Finalizado'
+    AND salida.VHP_FECHA >= entrada.VHP_FECHA
+LEFT JOIN
+    dpvehiculospesaje entrada_pendiente ON entrada.VHP_CODCON = entrada_pendiente.VHP_CODCON
+    AND entrada_pendiente.VHP_NUMASO = 'Pendiente'
+LEFT JOIN
+    dpconductores cond ON entrada.VHP_CODINV = cond.CDT_CI_RIF
+LEFT JOIN
+    dpmovinv dom ON dom.MOV_CODCOM = entrada.VHP_CODCON
+LEFT JOIN
+    dpinv inv ON inv.INV_CODIGO = dom.MOV_CODIGO
+WHERE
+    entrada.VHP_CODCON = ?;";
 
 $stmt = $conexion->prepare($query);
 $stmt->bind_param("s", $vehiculoId);
@@ -81,17 +80,28 @@ if ($result->num_rows === 0) {
 }
 
 $data = $result->fetch_assoc();
+
+$fecha = $data['fecha'] ?? 'No hay fecha.';
+$cedula = $data['cedula'] ?? 'Sin cédula';
+$tara = $data['peso_bruto'] - $data['peso_neto']; 
+$hora_entrada = $data['hora_entrada'] ?? 'Hora de entrada no disponible';
+$hora_salida = $data['hora_salida'] ?? 'Hora de salida no disponible';
+$estatus = $data['estatus'] ?? 'Estatus no disponible';
+$caso = $data['caso'] ?? 'Caso no disponible';
+$conductor_nombre = $data['conductor_nombre'] ?? 'Conductor no disponible';
+$documento = $data['documento'] ?? 'Documento no disponible';
 $productos = $data['productos'] ?? 'Sin productos';
+$placa = $data['placa'] ?? 'Sin placa';
+$peso_neto = $data['peso_neto'] ?? 'Sin peso neto';
+$peso_bruto = $data['peso_bruto'] ?? 'Sin peso bruto';
 $dataJSON = retrieveJSONFromS3($data['hash']);
 if (is_array($dataJSON)) {
     $precintos = $dataJSON['precintos'] ?? 'Sin datos';
     $destino = $dataJSON['destino'] ?? 'Sin datos';
     $precintosF = implode(', ', $precintos);
-    //$destination = $dataJSON['destino'] ?? 'Sin datos';
 } else {
     echo "Error: $dataJSON";
 }
-$tara = $data['peso_bruto'] - $data['peso_neto'];
 
 $tabla = '<div class="section" style="text-align: center; margin: 20px;">
 <table style="width: 98%; margin: 0 auto; border-collapse: collapse; border: 1px solid #ddd; font-family: Arial, sans-serif;">
@@ -105,37 +115,61 @@ $tabla = '<div class="section" style="text-align: center; margin: 20px;">
     </thead>
     <tbody>';
 
-$productosArray = explode(', ', $data['codigo_productos']);
-$descripcionesArray = explode(', ', $data['productos']);
-$cantidadArray = [10, 15, 8]; 
-$pesoNetoArray = [100.5, 150.75, 80.3]; 
 $totalPesoNeto = 0;
+$codigosAgregados = [];
 
-for ($i = 0; $i < count($productosArray); $i++) {
-    $codigo = htmlspecialchars($productosArray[$i] ?? 'Sin código');
-    $descripcion = htmlspecialchars($descripcionesArray[$i] ?? 'Sin descripción');
-    $cantidad = htmlspecialchars($cantidadArray[$i] ?? 0);
-    $pesoNeto = htmlspecialchars($pesoNetoArray[$i] ?? 0);
+while ($data = $result->fetch_assoc()) {
+    $codigo = htmlspecialchars($data['codigo_producto'] ?? 'Sin código');
+
+    if (in_array($codigo, $codigosAgregados)) {
+        continue; 
+    }
+    
+    $codigosAgregados[] = $codigo;
+    
+    $descripcion = htmlspecialchars($data['descripcion_producto'] ?? 'Sin descripción');
+    $cantidad = htmlspecialchars($data['cantidad'] ?? 0);
+    $pesoNeto = htmlspecialchars($data['peso_producto'] ?? 0);
+    $unidad_medida = htmlspecialchars($data['unidad_medida'] ?? 'KG');
+
+    $cantidad = ltrim($cantidad, '0');
+    $cantidad = $cantidad === '' ? '0' : $cantidad;
+    $pesoNeto = ltrim($pesoNeto, '0');
+    $pesoNeto = $pesoNeto === '' ? '0' : $pesoNeto;
+
+    if (strpos($cantidad, '.') !== false) {
+        $cantidad = rtrim($cantidad, '0'); 
+        $cantidad = rtrim($cantidad, '.'); 
+    }
+    
+    if (strpos($pesoNeto, '.') !== false) {
+        $pesoNeto = rtrim($pesoNeto, '0'); 
+        $pesoNeto = rtrim($pesoNeto, '.'); 
+    }
+    
     $totalPesoNeto += floatval($pesoNeto);
 
+    $toneladas = $pesoNeto / 1000;  
+    $toneladas = number_format($toneladas, 2);  
+    
     $tabla .= "<tr>
-        <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$codigo</td>
-        <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$descripcion</td>
-        <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$cantidad</td>
-        <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$pesoNeto</td>
-    </tr>";
+            <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$codigo</td>
+            <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$descripcion</td>
+            <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$pesoNeto ".$unidad_medida."</td>
+            <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$toneladas TON</td>
+        </tr>";
+    
 }
 
 $tabla .= "<tr style='background-color: #f4f4f4; font-weight: bold;'>
     <td colspan='3' style='padding: 10px; border: 1px solid #ddd; text-align: center;'>TOTAL</td>
-    <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$totalPesoNeto</td>
+    <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$totalPesoNeto KG</td>
 </tr>";
 
 $tabla .= '</tbody>
 </table>
 </div>';
-
-
+   
 use Dompdf\Dompdf;
 $dompdf = new Dompdf();
 
@@ -191,6 +225,14 @@ $html = '
             padding-left: 5px;
             padding-right: 5px;
         }
+
+        .line {
+            display: inline-block;
+            /*border-bottom: 1px solid black;*/
+            padding-left: 5px;
+            padding-right: 5px;
+        }
+
         .separator-line {
             border-bottom: 1px solid black;
             margin-top: 5px;
@@ -248,7 +290,7 @@ $html = '
             <div class="left">
                 <div>
                     <span class="label">FECHA:</span> 
-                    <span class="value">'.$data['fecha'].'</span>
+                    <span class="value">'.$fecha.'</span>
                 </div>
                 <div style="margin-top: 10px;">
                     <span class="label">USUARIO:</span> 
@@ -257,11 +299,11 @@ $html = '
             </div>
             <div class="right">
                 <span class="label">ORDEN N°:</span> 
-                <span class="value">'.htmlspecialchars($data['documento'] ?? 'Sin documento').'</span>
+                <span class="value">'.htmlspecialchars($documento).'</span>
 
                 <div style="margin-top: 10px;">
                     <span class="label">DESTINO:</span> 
-                    <span class="value">'.$destino.'</span>
+                    <span class="line">'.$destino.'</span>
                 </div>
             </div>
         </div>
@@ -276,17 +318,17 @@ $html = '
                 <b><span class="value">DATOS DEL CHOFER</span></b>
                 <br> 
                 <br>
-                <div><span class="label">NOMBRE DEL CHOFER:</span> <span class="value">'.htmlspecialchars($data['conductor_nombre']).'</span></div>
-                <div><span class="label">CÉDULA:</span> <span class="value">'.htmlspecialchars($data['cedula']).'</span></div>
-                <div><span class="label">PLACA:</span> <span class="value">'.htmlspecialchars($data['placa']).'</span></div>
+                <div><span class="label">NOMBRE DEL CHOFER:</span> <span class="line">'.htmlspecialchars($conductor_nombre).'</span></div>
+                <div><span class="label">CÉDULA:</span> <span class="line">'.htmlspecialchars($cedula).'</span></div>
+                <div><span class="label">PLACA:</span> <span class="line">'.htmlspecialchars($placa).'</span></div>
             </div>
             <div class="right">
                 <b><span class="value">DATOS DE ROMANA</span></b> 
                 <br> 
                 <br>
-                <div><span class="label">PESO BRUTO:</span> <span class="value">'.htmlspecialchars($data['peso_bruto']).'</span></div>
-                <div><span class="label">TARA:</span> <span class="value">'.htmlspecialchars($tara).'</span></div>
-                <div><span class="label">NETO:</span> <span class="value">'.htmlspecialchars($data['peso_neto']).'</span></div>
+                <div><span class="label">PESO BRUTO:</span> <span class="line">'.htmlspecialchars($peso_bruto).'</span></div>
+                <div><span class="label">TARA:</span> <span class="line">'.htmlspecialchars($tara).'</span></div>
+                <div><span class="label">NETO:</span> <span class="line">'.htmlspecialchars($peso_neto).'</span></div>
             </div>
         </div>
         <div class="separator-line"></div>
@@ -300,8 +342,8 @@ $html = '
             <span class="label">CONFORME CHOFER:</span>
             <span style="display: inline-block; width: calc(100% - 150px); border-bottom: 1px solid black; vertical-align: middle; margin-left: 10px;"></span>
     </div>
-        <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">'.htmlspecialchars($data['conductor_nombre']).'</div>
-        <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">CI: '.htmlspecialchars($data['cedula']).'</div>
+        <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">'.htmlspecialchars($conductor_nombre).'</div>
+        <div class="signature-name" style="margin-top: 3px; margin-left: 155px;">CI: '.htmlspecialchars($cedula).'</div>
     </div>
             <div class="right">
                 <div>
@@ -311,7 +353,7 @@ $html = '
             </div>
         </div>
 
-        <div class="observation-section">
+        <div class="left">
             <div class="observation-title">PRECINTOS:</div>
             <span>'.$precintosF.'</span>
             <!--div class="observation-line"></div-->
