@@ -1,5 +1,5 @@
 jQuery(document).ready(function($) {
-
+    
     let table;
 
     $('#fecha-table').on('change', function() {

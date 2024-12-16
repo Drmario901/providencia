@@ -82,6 +82,7 @@ if ($result->num_rows === 0) {
 $data = $result->fetch_assoc();
 
 $fecha = $data['fecha'] ?? 'No hay fecha.';
+$exitHour = date('h:i:s A');
 $cedula = $data['cedula'] ?? 'Sin cédula';
 $tara = $data['peso_bruto'] - $data['peso_neto']; 
 $hora_entrada = $data['hora_entrada'] ?? 'Hora de entrada no disponible';
@@ -277,9 +278,16 @@ $html = '
         .signature-name {
             margin-top: 5px;
         }
+
+        .hora { 
+            position: absolute; top: 20mm; 
+            right: 20mm; 
+            font-size: 12px; text-align: right;  
+        }
     </style>
 </head>
 <body>
+    <div class="hora">Hora: '.$exitHour.'</div>
     <div class="container">
         <img src="' . $logoBase64 . '" alt="Logo" class="logo">
         <div class="header">DESPACHO DE PRODUCTO TERMINADO</div>
@@ -288,6 +296,15 @@ $html = '
          <div class="separator-line"></div>
             <div class="section">
             <div class="left">
+            <span class="label">ORDEN N°:</span> 
+                <span class="value">'.htmlspecialchars($documento).'</span>
+
+                <div style="margin-top: 10px;">
+                    <span class="label">DESTINO:</span> 
+                    <span class="line">'.$destino.'</span>
+                </div>
+            </div>
+            <div class="right">
                 <div>
                     <span class="label">FECHA:</span> 
                     <span class="value">'.$fecha.'</span>
@@ -296,16 +313,6 @@ $html = '
                     <span class="label">USUARIO:</span> 
                     <span class="value">'.$nombre.'</span>
                 </div>
-            </div>
-            <div class="right">
-                <span class="label">ORDEN N°:</span> 
-                <span class="value">'.htmlspecialchars($documento).'</span>
-
-                <div style="margin-top: 10px;">
-                    <span class="label">DESTINO:</span> 
-                    <span class="line">'.$destino.'</span>
-                </div>
-            </div>
         </div>
 
     <div class="separator-line"></div>

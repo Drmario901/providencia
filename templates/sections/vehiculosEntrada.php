@@ -8,7 +8,7 @@
 <html lang="es" class="dark">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=1.0, user-scalable=no">
     <title>Vehículos - Entrada y Salida</title>
     <?php
         require_lib_js('tailwind/tailwind.js');
@@ -30,9 +30,17 @@
         echo $favicon;
         echo $disable; 
     ?>
+
     <style>
+        /* body {
+            transform: scale(0.9);
+            transform-origin: 0 0; 
+            width: 111.1%; 
+            overflow-y: auto; 
+        } */
+        
       .table-container {
-        overflow-x: auto;
+        overflow-x: 111.1%;
         max-width: 100%;
       }
       table {
@@ -297,7 +305,9 @@
                         </div>
                     </div>
                 </div>
-
+                <br>
+                <br>
+                <br>
                 <footer class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     &copy; <?php echo date('Y'); ?> <a href="/<?php echo $wb_subdir?>/" class="hover:underline" target="_blank">Serviaves C.A</a>. Todos los derechos reservados.
                 </footer>
