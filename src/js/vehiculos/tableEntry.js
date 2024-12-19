@@ -1,4 +1,13 @@
 jQuery(document).ready(function($) {
+
+    let port_number = 'COM2'; 
+
+    $('#portNumber').on('click', function() {
+        port_number = $('#portNumber').val() || 'COM2';
+        if (port_number !== 'COM2' && port_number !== null) {
+            port_number = 'COM3';
+        }
+    });
     
     let table;
 
@@ -35,7 +44,7 @@ jQuery(document).ready(function($) {
                     perPage: 30,
                     perPageSelect: [5, 10, 20, 30, 40, 50, 60],
                     data: {
-                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Estado", "Acciones"],
+                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Producto despachado","Estado", "Acciones"],
                         data: response.map(registro => {
                             const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
                             const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
@@ -51,21 +60,22 @@ jQuery(document).ready(function($) {
                                 `<span class="font-bold">${registro.hora_entrada}</span>`,
                                 `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
                                 `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+                                `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
                                 `<span class="${estatusClass}">${registro.estatus}</span>`,
                                 registro.estatus === 'Pendiente' 
                                     ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
-                                    : registro.estatus === 'Finalizado'
-                                    ?`<div class="flex justify-center items-center">
-                                        <button type="button" 
-                                                class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                                onclick="genDoc('${registro.id}')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
-                                                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
-                                                <path d="m9 14 2 2 4-4"/>
-                                            </svg>
-                                        </button>
-                                    </div>` 
+                                    : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
+                                    ? `<div class="flex justify-center items-center">
+                                            <button type="button" 
+                                                    class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                    onclick="genDoc('${registro.id}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
+                                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
+                                                    <path d="m9 14 2 2 4-4"/>
+                                                </svg>
+                                            </button>
+                                        </div>`
                                     : ''
                             ];
                         })
@@ -73,6 +83,22 @@ jQuery(document).ready(function($) {
                 });
 
                 window.genDoc = function(id) {
+                    Swal.fire({
+                        title: 'Cargando',
+                        //text: 'Cargando',
+                        didOpen: () => {
+                              Swal.showLoading(); 
+                        },
+                        showClass: {
+                           popup: `animate__animated animate__fadeInUp animate__faster`
+                        },
+                        // hideClass: {
+                        //     popup: `animate__animated animate__fadeOutDown animate__faster`
+                        // },
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                         showConfirmButton: false
+                    });
                     $.ajax({
                         url: wb_subdir + '/php/documentos/generateDocument.php',
                         method: 'POST',
@@ -117,11 +143,11 @@ jQuery(document).ready(function($) {
     
                 $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function() {
                     const id = $(this).find('td:first').text().trim();
-                    const estatus = $(this).find('td').eq(11).text().trim();
+                    const estatus = $(this).find('td').eq(12).text().trim();
                     if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
     
                     if (estatus === 'Finalizado') {
-                        console.log('Caso finalizado');
+                        //console.log('Caso finalizado');
                         Swal.close();
                         return;
                     } else if(estatus === '') { 
@@ -423,10 +449,12 @@ jQuery(document).ready(function($) {
     
                     $.ajax({
                         url: 'http://127.0.0.1:8080/index',
+                        contentType: 'application/json',
+                        data: JSON.stringify({port_name: port_number}),
                         method: 'POST',
                         success: function(response) {
                             console.log('Peso: ' + response)
-                            const match = response.match(/[-+]?\d*\.?\d+/g);
+                            const match = response.data.match(/[-+]?\d*\.?\d+/g);
                             console.log(match)
                             if (match) {
                                 pesoActual = parseFloat(match[0]);
@@ -816,8 +844,10 @@ jQuery(document).ready(function($) {
                     $.ajax({
                         url: 'http://127.0.0.1:8080/index',
                         method: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({port_name: port_number}),
                         success: function(response) {
-                            const match = response.match(/[-+]?\d*\.?\d+/g);
+                            const match = response.data.match(/[-+]?\d*\.?\d+/g);
                             if (match) {
                                 pesoActual = parseFloat(match[0]);
                                 $('#pesoBrutoCaso1').val(pesoActual);
@@ -1087,14 +1117,16 @@ jQuery(document).ready(function($) {
                         let $button = $(this);
                         let originalButtonText = $button.html();
         
-                        $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
+                        $button.html('<i></i> Leyendo...').prop('disabled', true);
         
                         $.ajax({
                             url: 'http://127.0.0.1:8080/index',
                             method: 'POST',
+                            contentType: 'application/json',
+                            data: JSON.stringify({port_name: port_number}),
                             success: function(response) {
                                 console.log('Peso: ' + response)
-                                const match = response.match(/[-+]?\d*\.?\d+/g);
+                                const match = response.data.match(/[-+]?\d*\.?\d+/g);
                                 console.log(match)
                                 if (match) {
                                     pesoActual = parseFloat(match[0]);

@@ -21,7 +21,6 @@ window.onload = function() {
     setInterval(updateTime, 60000); 
 };
 
-
 //ASIDE  SUBMENU BEHAVIOR 
 document.addEventListener('DOMContentLoaded', function () {
     const currentUrl = window.location.pathname;

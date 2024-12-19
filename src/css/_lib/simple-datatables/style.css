@@ -193,3 +193,8 @@
     background-color: #d4edda; 
     color: #155724; 
 }
+
+.datatable-table td {
+    cursor: pointer; 
+    transition: background-color 0.2s ease; 
+}

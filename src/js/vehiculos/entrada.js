@@ -1,22 +1,60 @@
 jQuery(document).ready(function($) {  
 
     //READ WEIGHT FUNCTION
+    // function readWeight() {
+    //     $.ajax({
+    //         url: 'http://localhost:8080/index', 
+    //         method: 'GET',
+    //         success: function(response) {
+    //             const match = response.match(/[-+]?\d*\.?\d+/);
+    //             if (match) {
+    //                 const peso = match[0];
+    //                 console.log(peso)
+    //                 $('#entryWeight').val(peso);
+    //             }
+    //             Swal.close();
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error al obtener el peso:', error);
+    //             Swal.close();
+    //         }
+    //     });
+    // }
+
+    // //READ WEIGHT FUNCTION
+    let port_number = 'COM2'; 
+
+    $('#portNumber').on('click', function() {
+        port_number = $('#portNumber').val() || 'COM2';
+        if (port_number !== 'COM2' && port_number !== null) {
+            port_number = 'COM3';
+        }
+    });
+    
     function readWeight() {
         $.ajax({
             url: 'http://localhost:8080/index', 
-            method: 'POST',
+            method: 'POST', 
+            contentType: 'application/json',
+            data: JSON.stringify({port_name: port_number}),
             success: function(response) {
-                const match = response.match(/[-+]?\d*\.?\d+/);
-                if (match) {
-                    const peso = match[0];
-                    console.log(peso)
-                    $('#entryWeight').val(peso);
+                if (response && response.data) {
+                    const match = response.data.match(/[-+]?\d*\.?\d+/); 
+                    if (match) {
+                        const peso = match[0];
+                        console.log(peso);
+                        $('#entryWeight').val(peso); 
+                    } else {
+                        console.warn('No se encontró un peso en la respuesta.');
+                    }
+                } else {
+                    console.warn('Respuesta inesperada del servidor:', response);
                 }
-                Swal.close();
+                Swal.close(); 
             },
             error: function(xhr, status, error) {
                 console.error('Error al obtener el peso:', error);
-                Swal.close();
+                Swal.close(); 
             }
         });
     }
@@ -28,7 +66,9 @@ jQuery(document).ready(function($) {
             allowOutsideClick: false,
             didOpen: () => {
                 Swal.showLoading();
-                readWeight(); 
+                setTimeout(() => {
+                    readWeight();
+                }, 500); 
             }
         });
     });

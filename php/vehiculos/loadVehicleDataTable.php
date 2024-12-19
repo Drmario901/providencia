@@ -79,6 +79,11 @@ $query = "
          FROM dpinv inv 
          INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO 
          WHERE dom.MOV_CODCOM = entrada.VHP_CODCON) as productos,
+        (SELECT GROUP_CONCAT(DISTINCT inv.INV_DESCRI ORDER BY inv.INV_DESCRI SEPARATOR ', ')
+         FROM dpinv inv
+         INNER JOIN dpmovinv dom ON inv.INV_CODIGO = dom.MOV_CODIGO
+         WHERE dom.MOV_CODCOM = entrada.VHP_CODCON
+           AND dom.MOV_TIPDOC IN ('NEN', 'NPT')) as producto_despachado,
         cond.CDT_NOMBRE as conductor_nombre
     FROM dpvehiculospesaje as entrada
     LEFT JOIN dpvehiculospesaje as salida 

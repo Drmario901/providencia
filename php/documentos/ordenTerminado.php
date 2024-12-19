@@ -105,13 +105,13 @@ if (is_array($dataJSON)) {
 }
 
 $tabla = '<div class="section" style="text-align: center; margin: 20px;">
-<table style="width: 98%; margin: 0 auto; border-collapse: collapse; border: 1px solid #ddd; font-family: Arial, sans-serif;">
-    <thead style="background-color: #f4f4f4;">
+<table style="width: 98%; margin: 0 auto; border-collapse: collapse; border: 1px solid; font-family: Arial, sans-serif;">
+    <thead>
         <tr>
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Código</th>
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Descripción</th>
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Cantidad</th>
-            <th style="padding: 10px; border: 1px solid #ddd; text-align: center;">Peso Neto</th>
+            <th style="padding: 10px; border: 1px solid; text-align: center;">Código</th>
+            <th style="padding: 10px; border: 1px solid; text-align: center;">Descripción</th>
+            <th style="padding: 10px; border: 1px solid; text-align: center;">Cantidad</th>
+            <th style="padding: 10px; border: 1px solid; text-align: center;">Peso Neto</th>
         </tr>
     </thead>
     <tbody>';
@@ -154,17 +154,17 @@ while ($data = $result->fetch_assoc()) {
     $toneladas = number_format($toneladas, 2);  
     
     $tabla .= "<tr>
-            <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$codigo</td>
-            <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$descripcion</td>
-            <td style='padding: 10px; border: 1px solid #ddd; text-align: center;'>$pesoNeto ".$unidad_medida."</td>
-            <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$toneladas TON</td>
+            <td style='padding: 10px; border: 1px solid; text-align: center;'>$codigo</td>
+            <td style='padding: 10px; border: 1px solid; text-align: center;'>$descripcion</td>
+            <td style='padding: 10px; border: 1px solid; text-align: center;'>$pesoNeto ".$unidad_medida."</td>
+            <td style='padding: 10px; border: 1px solid; text-align: right;'>$toneladas TON</td>
         </tr>";
     
 }
 
-$tabla .= "<tr style='background-color: #f4f4f4; font-weight: bold;'>
-    <td colspan='3' style='padding: 10px; border: 1px solid #ddd; text-align: center;'>TOTAL</td>
-    <td style='padding: 10px; border: 1px solid #ddd; text-align: right;'>$totalPesoNeto KG</td>
+$tabla .= "<tr style='font-weight: bold;'>
+    <td colspan='3' style='padding: 10px; border: 1px solid; text-align: center;'>TOTAL</td>
+    <td style='padding: 10px; border: 1px solid; text-align: right;'>$totalPesoNeto KG</td>
 </tr>";
 
 $tabla .= '</tbody>
@@ -173,6 +173,228 @@ $tabla .= '</tbody>
    
 use Dompdf\Dompdf;
 $dompdf = new Dompdf();
+
+// $html = '
+// <html>
+// <head>
+//     <style>
+//         @page { margin: 5mm; }
+//         body { font-family: Arial, sans-serif; font-size: 8px; margin: 0; padding: 0; }
+//         .page-container { width: 100%; }
+//         .form-container { 
+//             width: 100%; 
+//             padding: 5px;
+//             box-sizing: border-box;
+//         }
+//         .form-container:first-child {
+//             margin-bottom: 10px;
+//             border-bottom: 1px dashed #000;
+//             padding-bottom: 15px;
+//         }
+//         .logo {
+//             width: 80px;
+//             height: auto;
+//             display: block;
+//             margin: 0 auto;
+//         }
+//         .header {
+//             text-align: center;
+//             font-weight: bold;
+//             font-size: 12px;
+//             margin-top: 6px;
+//         }
+//         .subheader {
+//             text-align: center;
+//             font-size: 8px;
+//             margin-top: 2px;
+//             margin-bottom: 10px;
+//         }
+//         .section { margin-bottom: 12px; }
+//         .section div { margin-bottom: 4px; }
+//         .left, .right {
+//             display: inline-block;
+//             vertical-align: top;
+//             width: 48%;
+//         }
+//         .left { text-align: left; }
+//         .right { text-align: right; }
+//         .label {
+//             font-weight: bold;
+//             display: inline-block;
+//             width: 35%;
+//         }
+//         .value {
+//             display: inline-block;
+//             border-bottom: 1px solid black;
+//             padding-left: 4px;
+//             padding-right: 4px;
+//         }
+//         .separator-line {
+//             border-bottom: 1px solid black;
+//             margin-top: 4px;
+//             margin-bottom: 10px;
+//         }
+//         .line {
+//             display: inline-block;
+//             padding-left: 4px;
+//             padding-right: 4px;
+//         }
+//         .observation-section {
+//             margin-top: 15px;
+//             padding-left: 10px;
+//             padding-right: 10px;
+//         }
+//         .observation-title {
+//             font-weight: bold;
+//             margin-bottom: 4px;
+//         }
+//         .signature-section {
+//             display: flex;
+//             justify-content: space-between;
+//             align-items: center;
+//             margin-top: 20px;
+//             padding: 0 10px;
+//         }
+//         .signature-box {
+//             width: 45%;
+//             font-size: 8px;
+//             text-align: center;
+//         }
+//         .signature-line {
+//             border-top: 1px solid black;
+//             width: 100%;
+//             margin-top: 6px;
+//         }
+//         .hora { 
+//             position: absolute;
+//             top: 10mm; 
+//             right: 10mm; 
+//             font-size: 8px;
+//             text-align: right;  
+//         }
+
+//         .hora2 { 
+//             position: absolute;
+//             top: 150mm;  
+//             right: 10mm;
+//             font-size: 8px;
+//             text-align: right;  
+//         }
+
+//     </style>
+// </head>
+// <body>
+//     <div class="page-container">';
+
+//     function generateForm($logoBase64, $exitHour, $nombre, $productos, $tara, $destino, $tabla, $precintosF, $documento, $fecha, $conductor_nombre, $cedula, $placa, $peso_bruto, $peso_neto) {
+//         return '
+//         <div class="form-container">
+//             <div class="hora">Hora: '.$exitHour.'</div>
+//             <div class="hora2">Hora: '.$exitHour.'</div>
+//             <img src="'.$logoBase64.'" alt="Logo" class="logo">
+//             <div class="header">DESPACHO DE PRODUCTO TERMINADO</div>
+//             <div class="subheader">SERVIAVES C.A. Rif.:J40505786-6</div>
+    
+//         <div class="separator-line"></div>
+//             <div class="section">
+//             <div class="left">
+//             <span class="label">ORDEN N°:</span> 
+//                 <span class="value">'.$documento.'</span>
+
+//                 <div style="margin-top: 10px;">
+//                     <span class="label">DESTINO:</span> 
+//                     <span class="line">'.$destino.'</span>
+//                 </div>
+//             </div>
+//             <div class="right">
+//                 <div>
+//                     <span class="label">FECHA:</span> 
+//                     <span class="value">'.$fecha.'</span>
+//                 </div>
+//                 <div style="margin-top: 10px;">
+//                     <span class="label">USUARIO:</span> 
+//                     <span class="value">'.$nombre.'</span>
+//                 </div>
+//         </div>
+    
+//             <div class="separator-line"></div>
+            
+//             <div class="section">
+//                 <div class="left">
+//                     <div style="display: flex; align-items: center; white-space: nowrap;">
+//                         <span style="font-weight: bold;">DESTINO:</span>
+//                         <span style="margin-left: 5px;">'.$destino.'</span>
+//                     </div>
+//                     <br><br>
+//                     <div style="display: flex; align-items: center; white-space: nowrap;">
+//                         <span style="font-weight: bold;">PRODUCTO:</span>
+//                         <span style="margin-left: 5px;">'.$productos.'</span>
+//                     </div>
+//                 </div>
+//             </div>
+    
+//         <div class="separator-line"></div>
+//             <div class"section">
+//                 '.$tabla.'
+//             </div>
+//         <div class="separator-line"></div>
+    
+//             <div class="section">
+//                 <div class="left">
+//                     <b><span class="value">DATOS DEL CHOFER</span></b>
+//                     <br><br>
+//                     <div><span class="label">NOMBRE DEL CHOFER:</span> <span class="line">'.$conductor_nombre.'</span></div>
+//                     <div><span class="label">CÉDULA:</span> <span class="line">'.$cedula.'</span></div>
+//                     <div><span class="label">PLACA:</span> <span class="line">'.$placa.'</span></div>
+//                 </div>
+//                 <div class="right">
+//                     <b><span class="value">DATOS DE ROMANA</span></b>
+//                     <br><br>
+//                     <div><span class="label">PESO BRUTO:</span> <span class="line">'.$peso_bruto.'</span></div>
+//                     <div><span class="label">TARA:</span> <span class="line">'.htmlspecialchars($tara).'</span></div>
+//                     <div><span class="label">NETO:</span> <span class="line">'.$peso_neto.'</span></div>
+//                 </div>
+//             </div>
+    
+//             <div class="separator-line"></div>
+//             <br>
+    
+//             <div class="section">
+//                 <div class="left" style="margin-bottom: 12px;"> 
+//                 <br>
+//                 <br>
+//                     <div>
+//                         <span class="label">CONFORME CHOFER:</span>
+//                         <span style="display: inline-block; width: calc(100% - 130px); border-bottom: 1px solid black; vertical-align: middle; margin-left: 0;"></span>
+//                     </div>
+//                     <center><div class="signature-name" style="margin-top: 2px; margin-left: 140px;">'.$conductor_nombre.'</div></center>
+//                     <center><div class="signature-name" style="margin-top: 2px; margin-left: 140px;">CI: '.$cedula.'</div></center>
+//                 </div>
+//                 <div class="right">
+//                 <br>
+//                 <br>
+//                     <div>
+//                         <span class="label">CONFORME ROMANA:</span>
+//                         <span style="display: inline-block; width: calc(100% - 130px); border-bottom: 1px solid black; vertical-align: middle; margin-left: 0;"></span>
+//                     </div>
+//                 </div>
+//             </div>
+    
+//             <div class="section">
+//                 <div class="observation-title">PRECINTOS:</div>
+//                 <span class="line">'.htmlspecialchars($precintosF).'</span>
+//             </div>
+//         </div>';
+//     }
+
+// $html .= generateForm($logoBase64, $exitHour, $nombre, $productos, $tara, $destino, $tabla, $precintosF, $documento, $fecha, $conductor_nombre, $cedula, $placa, $peso_bruto, $peso_neto);
+// $html .= generateForm($logoBase64, $exitHour, $nombre, $productos, $tara, $destino, $tabla, $precintosF, $documento, $fecha, $conductor_nombre, $cedula, $placa, $peso_bruto, $peso_neto);
+// //$html .= generateForm2($data, $logoBase64, $exitHour, $nombre, $productos, $tara,  $destination, $observations);
+
+// $html .= '
+//     </div>
+// </body>
+// </html>';
 
 $html = '
 <html>
@@ -342,6 +564,10 @@ $html = '
         <br>
         <br>
         <br>
+        <br>
+        <br>
+        <br>
+        <br>
 
      <div class="section">
             <div class="left" style="margin-bottom: 20px;"> 
@@ -360,6 +586,7 @@ $html = '
             </div>
         </div>
 
+        <br>
         <div class="left">
             <div class="observation-title">PRECINTOS:</div>
             <span>'.$precintosF.'</span>
