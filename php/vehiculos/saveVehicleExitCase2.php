@@ -98,7 +98,7 @@ switch ($tipoSalida) {
                                          VALUES ('$vehiculoId', '$pesoBruto', NOW(), '$exitHour', 'Finalizado', 'S', '$caso', '$placa', '$cedula', '$hash')";
             mysqli_query($conexion, $insertSalidaMateriaPrima);
 
-            $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";
+            $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) VALUES ('$numDoc', NOW(), 'NEN', '000001', '$userID', '$vehiculoId')";
             mysqli_query($conexion, $insertDocumento);
         
             echo json_encode(['status' => 'finalizado', 'productosRegistrados' => count($productos)]);
@@ -152,7 +152,7 @@ switch ($tipoSalida) {
                 mysqli_query($conexion, $insertSalidaProductoTerminado);
 
                 $insertDocumento = "INSERT INTO dpdocmov (DOC_NUMERO, DOC_FECHA, DOC_NUMCBT, DOC_CODSUC, DOC_CODPER, DOC_NUMPAR) 
-                                    VALUES ('$numDoc', NOW(), 'NRE', '000001', '$userID', '$vehiculoId')";
+                                    VALUES ('$numDoc', NOW(), 'NPT', '000001', '$userID', '$vehiculoId')";
                 mysqli_query($conexion, $insertDocumento);
             
                 echo json_encode(['status' => 'finalizado', 'productosRegistrados' => count($productos), 'precintos' => implode(',', $precintos)]);
