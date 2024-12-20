@@ -21,98 +21,320 @@ jQuery(document).ready(function($) {
         }
     });
 
+    // function cargarRegistros(fecha, fechaInicio, fechaFin) {
+    //     let data = fechaInicio && fechaFin ? { startDate: fechaInicio, endDate: fechaFin } : { fecha: fecha };
+    //     let tbody = $('#default-table tbody');
+    
+    //     tbody.empty().append(`<tr><td colspan="13" class="text-center"><div class="spinner-container"><div class="spinner"></div></div></td></tr>`);
+    
+    //     $('<style>').prop('type', 'text/css').html(`
+    //         .spinner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+    //         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1e3a8a; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+    //         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    //     `).appendTo('head');
+    
+    //     $.ajax({
+    //         url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
+    //         method: 'POST',
+    //         data: data,
+    //         dataType: 'JSON',
+    //         success: function(response) {
+    //             if (table) table.destroy();
+    //             table = new simpleDatatables.DataTable("#default-table", {
+    //                 perPage: 30,
+    //                 perPageSelect: [5, 10, 20, 30, 40, 50, 60],
+    //                 data: {
+    //                     headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Producto despachado","Estado", "Acciones"],
+    //                     data: response.map(registro => {
+    //                         const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
+    //                         const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
+    //                         return [
+    //                             `<span>${registro.id}</span>`,
+    //                             `<span class="font-bold">${registro.VHP_PLACA}</span>`,
+    //                             `<span class="font-bold">${registro.conductor_nombre}</span>`,
+    //                             `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+    //                             `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
+    //                             `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
+    //                             `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
+    //                             `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
+    //                             `<span class="font-bold">${registro.hora_entrada}</span>`,
+    //                             `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
+    //                             `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+    //                             `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
+    //                             `<span class="${estatusClass}">${registro.estatus}</span>`,
+    //                             registro.estatus === 'Pendiente' 
+    //                                 ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
+    //                                 : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
+    //                                 ? `<div class="flex justify-center items-center">
+    //                                         <button type="button" 
+    //                                                 class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    //                                                 onclick="genDoc('${registro.id}')">
+    //                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
+    //                                                 <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+    //                                                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
+    //                                                 <path d="m9 14 2 2 4-4"/>
+    //                                             </svg>
+    //                                         </button>
+    //                                     </div>`
+    //                                 : ''
+    //                         ];
+    //                     })
+    //                 }
+    //             });
+
+    //             window.genDoc = function(id) {
+    //                 Swal.fire({
+    //                     title: 'Cargando',
+    //                     //text: 'Cargando',
+    //                     didOpen: () => {
+    //                           Swal.showLoading(); 
+    //                     },
+    //                     showClass: {
+    //                        popup: `animate__animated animate__fadeInUp animate__faster`
+    //                     },
+    //                     // hideClass: {
+    //                     //     popup: `animate__animated animate__fadeOutDown animate__faster`
+    //                     // },
+    //                     allowOutsideClick: false,
+    //                     allowEscapeKey: false,
+    //                      showConfirmButton: false
+    //                 });
+    //                 $.ajax({
+    //                     url: wb_subdir + '/php/documentos/generateDocument.php',
+    //                     method: 'POST',
+    //                     data: {
+    //                         vehiculoId: id
+    //                     },
+    //                     success: function(response) {
+    //                         const data = JSON.parse(response);
+                
+    //                         if (data.success) {
+    //                             Swal.fire({
+    //                                 icon: 'success',
+    //                                 title: 'Documento encontrado',
+    //                                 confirmButtonColor: '#053684',
+    //                                 confirmButtonText: 'Ver PDF'
+    //                             }).then(() => {
+    //                                 if (data.redirectUrl) {
+    //                                     window.open(data.redirectUrl, '_blank');
+    //                                 }
+    //                             });
+    //                         } else {
+    //                             Swal.fire({
+    //                                 icon: 'error',
+    //                                 title: 'Error',
+    //                                 text: data.message,
+    //                                 confirmButtonText: 'OK'
+    //                             });
+    //                         }
+    //                     },
+    //                     error: function(xhr, status, error) {
+    //                         Swal.fire({
+    //                             icon: 'error',
+    //                             title: 'Error',
+    //                             text: 'Hubo un problema con la solicitud.',
+    //                             confirmButtonText: 'OK'
+    //                         });
+    //                     },
+    //                     complete: function() {
+    //                     }
+    //                 });
+    //             };
+    
+    //             $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function() {
+    //                 const id = $(this).find('td:first').text().trim();
+    //                 const estatus = $(this).find('td').eq(12).text().trim();
+    //                 if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
+    
+    //                 if (estatus === 'Finalizado') {
+    //                     //console.log('Caso finalizado');
+    //                     Swal.close();
+    //                     return;
+    //                 } else if(estatus === '') { 
+    //                     console.log('Sin caso.');
+    //                     Swal.close();
+    //                     return;
+    //                 }
+    
+    //                 Swal.fire({
+    //                     title: 'Cargando',
+    //                     didOpen: () => Swal.showLoading(),
+    //                     showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
+    //                     hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` },
+    //                     allowOutsideClick: false,
+    //                     allowEscapeKey: false,
+    //                     showConfirmButton: false
+    //                 });
+    
+    //                 $.ajax({
+    //                     url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
+    //                     method: 'POST',
+    //                     data: { vehiculoId: id },
+    //                     success: function(response) {
+    //                         if (response && response.case) {
+    //                             manejarCaso(id, response.case, response.estatus);
+    //                         } else {
+    //                             Swal.fire({
+    //                                 icon: 'error',
+    //                                 title: 'Error',
+    //                                 text: 'No se recibió un caso válido.'
+    //                             });
+    //                         }
+    //                     },
+    //                     error: function() {
+    //                         Swal.fire({
+    //                             icon: 'error',
+    //                             title: 'Error',
+    //                             text: 'Hubo un problema al cargar los registros.'
+    //                         });
+    //                     }
+    //                 });
+    //             });
+    
+    //             function manejarCaso(id, tipoCaso, estatus) {
+    //                 const casos = ['Producto', 'Múltiple', 'Vacío'];
+    //                 const acciones = [iniciarModalCaso0, iniciarModalCaso1, iniciarModalCaso2];
+    //                 const index = casos.indexOf(tipoCaso);
+                
+    //                 if (index >= 0 && estatus !== 'Finalizado') {
+    //                     setTimeout(() => {
+    //                         acciones[index](id);
+    //                     }, 500); 
+    //                 }
+    //             }                
+    //         },
+    //         error: function(xhr, status, error) {
+    //             console.error('Error al cargar los registros:', error);
+    //             tbody.empty().append(`<tr><td colspan="13" class="text-center text-red-500">Error al cargar los registros</td></tr>`);
+    //         }
+    //     });
+    // }
+
     function cargarRegistros(fecha, fechaInicio, fechaFin) {
         let data = fechaInicio && fechaFin ? { startDate: fechaInicio, endDate: fechaFin } : { fecha: fecha };
         let tbody = $('#default-table tbody');
     
-        tbody.empty().append(`<tr><td colspan="13" class="text-center"><div class="spinner-container"><div class="spinner"></div></div></td></tr>`);
+        tbody.empty().append(`
+            <tr>
+                <td colspan="13" class="text-center">
+                    <div class="spinner-container">
+                        <div class="spinner"></div>
+                    </div>
+                </td>
+            </tr>
+        `);
     
-        $('<style>').prop('type', 'text/css').html(`
-            .spinner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-            .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1e3a8a; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        `).appendTo('head');
+        $('<style>')
+            .prop('type', 'text/css')
+            .html(`
+                .spinner-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 20px;
+                }
+                .spinner {
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #1e3a8a;
+                    border-radius: 50%;
+                    width: 40px;
+                    height: 40px;
+                    animation: spin 1s linear infinite;
+                    margin-bottom: 10px;
+                }
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            `).appendTo('head');
     
         $.ajax({
             url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
             method: 'POST',
             data: data,
             dataType: 'JSON',
-            success: function(response) {
-                if (table) table.destroy();
-                table = new simpleDatatables.DataTable("#default-table", {
-                    perPage: 30,
-                    perPageSelect: [5, 10, 20, 30, 40, 50, 60],
-                    data: {
-                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Producto despachado","Estado", "Acciones"],
-                        data: response.map(registro => {
-                            const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
-                            const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
-                            return [
-                                `<span>${registro.id}</span>`,
-                                `<span class="font-bold">${registro.VHP_PLACA}</span>`,
-                                `<span class="font-bold">${registro.conductor_nombre}</span>`,
-                                `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
-                                `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
-                                `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
-                                `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
-                                `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
-                                `<span class="font-bold">${registro.hora_entrada}</span>`,
-                                `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
-                                `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
-                                `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
-                                `<span class="${estatusClass}">${registro.estatus}</span>`,
-                                registro.estatus === 'Pendiente' 
-                                    ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
-                                    : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
-                                    ? `<div class="flex justify-center items-center">
-                                            <button type="button" 
-                                                    class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                                    onclick="genDoc('${registro.id}')">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
-                                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
-                                                    <path d="m9 14 2 2 4-4"/>
-                                                </svg>
-                                            </button>
-                                        </div>`
+            success: function (response) {
+                if ($.fn.DataTable.isDataTable('#default-table')) {
+                    $('#default-table').DataTable().destroy();
+                }
+    
+                $('#default-table').DataTable({
+                    data: response.map(registro => {
+                        const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
+                        const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
+                        return [
+                            registro.id,
+                            `<span class="font-bold">${registro.VHP_PLACA}</span>`,
+                            `<span class="font-bold">${registro.conductor_nombre}</span>`,
+                            `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+                            `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
+                            `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
+                            `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
+                            `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
+                            `<span class="font-bold">${registro.hora_entrada}</span>`,
+                            `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
+                            `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+                            `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
+                            `<span class="${estatusClass}">${registro.estatus}</span>`,
+                            registro.estatus === 'Pendiente'
+                                ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
+                                : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
+                                    ? `<center><button type="button" 
+                                               class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                               onclick="genDoc('${registro.id}')">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
+                                                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
+                                                <path d="m9 14 2 2 4-4"/>
+                                            </svg>
+                                        </button></center>`
                                     : ''
-                            ];
-                        })
+                        ];
+                    }),
+                    columns: [
+                        { title: "Número" },
+                        { title: "Placa" },
+                        { title: "Conductor" },
+                        { title: "Peso Entrada" },
+                        { title: "Peso Salida" },
+                        { title: "Peso Neto" },
+                        { title: "Fecha Entrada" },
+                        { title: "Fecha Salida" },
+                        { title: "Hora Entrada" },
+                        { title: "Hora Salida" },
+                        { title: "Producto Ingresado" },
+                        { title: "Producto Despachado" },
+                        { title: "Estado" },
+                        { title: "Acciones", orderable: false, searchable: false }
+                    ],
+                    pageLength: 30,
+                    lengthMenu: [5, 10, 20, 30, 40, 50],
+                    language: {
+                        url: '//cdn.datatables.net/plug-ins/2.1.8/i18n/es-MX.json',
                     }
                 });
-
-                window.genDoc = function(id) {
+    
+                window.genDoc = function (id) {
                     Swal.fire({
                         title: 'Cargando',
-                        //text: 'Cargando',
-                        didOpen: () => {
-                              Swal.showLoading(); 
-                        },
-                        showClass: {
-                           popup: `animate__animated animate__fadeInUp animate__faster`
-                        },
-                        // hideClass: {
-                        //     popup: `animate__animated animate__fadeOutDown animate__faster`
-                        // },
+                        didOpen: () => Swal.showLoading(),
                         allowOutsideClick: false,
                         allowEscapeKey: false,
-                         showConfirmButton: false
+                        showConfirmButton: false
                     });
+    
                     $.ajax({
                         url: wb_subdir + '/php/documentos/generateDocument.php',
                         method: 'POST',
-                        data: {
-                            vehiculoId: id
-                        },
-                        success: function(response) {
+                        data: { vehiculoId: id },
+                        success: function (response) {
                             const data = JSON.parse(response);
-                
+    
                             if (data.success) {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Documento encontrado',
-                                    confirmButtonColor: '#053684',
+                                    title: 'Documento generado',
                                     confirmButtonText: 'Ver PDF'
                                 }).then(() => {
                                     if (data.redirectUrl) {
@@ -123,34 +345,29 @@ jQuery(document).ready(function($) {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: data.message,
-                                    confirmButtonText: 'OK'
+                                    text: data.message
                                 });
                             }
                         },
-                        error: function(xhr, status, error) {
+                        error: function () {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: 'Hubo un problema con la solicitud.',
-                                confirmButtonText: 'OK'
+                                text: 'Hubo un problema con la solicitud.'
                             });
-                        },
-                        complete: function() {
                         }
                     });
                 };
     
-                $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function() {
+                $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function () {
                     const id = $(this).find('td:first').text().trim();
                     const estatus = $(this).find('td').eq(12).text().trim();
                     if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
     
                     if (estatus === 'Finalizado') {
-                        //console.log('Caso finalizado');
                         Swal.close();
                         return;
-                    } else if(estatus === '') { 
+                    } else if (estatus === '') {
                         console.log('Sin caso.');
                         Swal.close();
                         return;
@@ -159,8 +376,6 @@ jQuery(document).ready(function($) {
                     Swal.fire({
                         title: 'Cargando',
                         didOpen: () => Swal.showLoading(),
-                        showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
-                        hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` },
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         showConfirmButton: false
@@ -170,7 +385,7 @@ jQuery(document).ready(function($) {
                         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
                         method: 'POST',
                         data: { vehiculoId: id },
-                        success: function(response) {
+                        success: function (response) {
                             if (response && response.case) {
                                 manejarCaso(id, response.case, response.estatus);
                             } else {
@@ -181,7 +396,7 @@ jQuery(document).ready(function($) {
                                 });
                             }
                         },
-                        error: function() {
+                        error: function () {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
@@ -195,17 +410,20 @@ jQuery(document).ready(function($) {
                     const casos = ['Producto', 'Múltiple', 'Vacío'];
                     const acciones = [iniciarModalCaso0, iniciarModalCaso1, iniciarModalCaso2];
                     const index = casos.indexOf(tipoCaso);
-                
+    
                     if (index >= 0 && estatus !== 'Finalizado') {
                         setTimeout(() => {
                             acciones[index](id);
-                        }, 500); 
+                        }, 500);
                     }
-                }                
+                }
             },
-            error: function(xhr, status, error) {
-                console.error('Error al cargar los registros:', error);
-                tbody.empty().append(`<tr><td colspan="13" class="text-center text-red-500">Error al cargar los registros</td></tr>`);
+            error: function () {
+                tbody.empty().append(`
+                    <tr>
+                        <td colspan="13" class="text-center text-red-500">Error al cargar los registros</td>
+                    </tr>
+                `);
             }
         });
     }
@@ -448,7 +666,7 @@ jQuery(document).ready(function($) {
                     $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
     
                     $.ajax({
-                        url: 'http://127.0.0.1:8080/index',
+                        url: 'http://127.0.0.1:8081/index',
                         contentType: 'application/json',
                         data: JSON.stringify({port_name: port_number}),
                         method: 'POST',
@@ -1751,7 +1969,7 @@ jQuery(document).ready(function($) {
     
                 if ($('#print').is(':checked')) {
                     $.ajax({
-                        url: 'http://127.0.0.1:8081/entry',
+                        url: 'http://127.0.0.1:8080/entry',
                         method: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({

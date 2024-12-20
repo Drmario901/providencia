@@ -15,9 +15,12 @@
         require_lib_js('sweetalert2/sweetalert2.all.min.js');
         require_lib_css('sweetalert2/sweetalert2.min.css');
         require_lib_css('simple-datatables/style.css');
+        require_lib_css('datatables/datatable-tailwind.css');
         require_lib_css('animate-css/animate-css.css');
         require_lib_js('jquery/jquery.min.js');
         require_lib_js('simple-datatables/simple-datatables.js');
+        require_lib_js('datatable/datatable.js');
+        require_lib_js('datatable/datatable-tailwind.js');
         require_lib_js('select2/select2.min.js');
         require_lib_css('select2/select2.min.css');
         require_lib_js('html2pdfjs/html2pdf.js');
@@ -30,15 +33,8 @@
         echo $favicon;
         echo $disable; 
     ?>
-
+    
     <style>
-        /* body {
-            transform: scale(0.9);
-            transform-origin: 0 0; 
-            width: 111.1%; 
-            overflow-y: auto; 
-        } */
-        
        .table-container {
         overflow-x: auto;
         max-width: 100%;
@@ -300,7 +296,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <div class="overflow-x-auto">
+                            <div>
                                 <table id="default-table" class="w-full text-xs responsive-table">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                         <!-- HEADINGS -->
@@ -313,9 +309,6 @@
                         </div>
                     </div>
                 </div>
-                <br>
-                <br>
-                <br>
                 <footer class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     &copy; <?php echo date('Y'); ?> <a href="/<?php echo $wb_subdir?>/" class="hover:underline" target="_blank">Serviaves C.A</a>. Todos los derechos reservados.
                 </footer>

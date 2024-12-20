@@ -100,8 +100,8 @@ $html = '
 <head>
   <style>
     @page { 
-        size: 8.5in 11in; /* Tamaño carta */
-        margin: 5mm; /* Márgenes pequeños */
+        size: 8.5in 11in; 
+        margin: 5mm; 
     }
 
     body { 
@@ -122,15 +122,13 @@ $html = '
         box-sizing: border-box;
     }
 
-    /* Asegura que los formularios estén uno encima del otro */
     .form-container {
         display: block;
     }
 
-    /* Primer formulario (superior) */
     .form-container:first-child {
-        margin-bottom: 5mm; /* Ajusta el espacio para la línea de recorte */
-        border-bottom: 1px dashed #000; /* Línea de recorte */
+        margin-bottom: 5mm; 
+        border-bottom: 1px dashed #000; 
         padding-bottom: 15px;
     }
 
@@ -166,7 +164,7 @@ $html = '
     .left, .right {
         display: inline-block;
         vertical-align: top;
-        width: 48%; /* Ajuste para que quepa mejor */
+        width: 48%; 
     }
 
     .left { 
