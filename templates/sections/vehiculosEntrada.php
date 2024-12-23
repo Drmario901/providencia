@@ -296,8 +296,7 @@
                                     </label>
                                 </div>
                             </div>
-                            <!-- <div class="table-container"> -->
-                                <div>
+                            <div class="table-container">
                                 <table id="default-table" class="w-full text-xs responsive-table">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
                                     <!-- HEADINGS -->
