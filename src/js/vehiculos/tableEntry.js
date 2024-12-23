@@ -21,561 +21,97 @@ jQuery(document).ready(function($) {
         }
     });
 
-    // function cargarRegistros(fecha, fechaInicio, fechaFin) {
-    //     let data = fechaInicio && fechaFin ? { startDate: fechaInicio, endDate: fechaFin } : { fecha: fecha };
-    //     let tbody = $('#default-table tbody');
-    
-    //     tbody.empty().append(`<tr><td colspan="13" class="text-center"><div class="spinner-container"><div class="spinner"></div></div></td></tr>`);
-    
-    //     $('<style>').prop('type', 'text/css').html(`
-    //         .spinner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-    //         .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1e3a8a; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
-    //         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    //     `).appendTo('head');
-    
-    //     $.ajax({
-    //         url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
-    //         method: 'POST',
-    //         data: data,
-    //         dataType: 'JSON',
-    //         success: function(response) {
-    //             if (table) table.destroy();
-    //             table = new simpleDatatables.DataTable("#default-table", {
-    //                 perPage: 30,
-    //                 perPageSelect: [5, 10, 20, 30, 40, 50, 60],
-    //                 data: {
-    //                     headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Producto despachado","Estado", "Acciones"],
-    //                     data: response.map(registro => {
-    //                         const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
-    //                         const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
-    //                         return [
-    //                             `<span>${registro.id}</span>`,
-    //                             `<span class="font-bold">${registro.VHP_PLACA}</span>`,
-    //                             `<span class="font-bold">${registro.conductor_nombre}</span>`,
-    //                             `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
-    //                             `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
-    //                             `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
-    //                             `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
-    //                             `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
-    //                             `<span class="font-bold">${registro.hora_entrada}</span>`,
-    //                             `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
-    //                             `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
-    //                             `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
-    //                             `<span class="${estatusClass}">${registro.estatus}</span>`,
-    //                             registro.estatus === 'Pendiente' 
-    //                                 ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
-    //                                 : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
-    //                                 ? `<div class="flex justify-center items-center">
-    //                                         <button type="button" 
-    //                                                 class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-    //                                                 onclick="genDoc('${registro.id}')">
-    //                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
-    //                                                 <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-    //                                                 <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
-    //                                                 <path d="m9 14 2 2 4-4"/>
-    //                                             </svg>
-    //                                         </button>
-    //                                     </div>`
-    //                                 : ''
-    //                         ];
-    //                     })
-    //                 }
-    //             });
-
-    //             window.genDoc = function(id) {
-    //                 Swal.fire({
-    //                     title: 'Cargando',
-    //                     //text: 'Cargando',
-    //                     didOpen: () => {
-    //                           Swal.showLoading(); 
-    //                     },
-    //                     showClass: {
-    //                        popup: `animate__animated animate__fadeInUp animate__faster`
-    //                     },
-    //                     // hideClass: {
-    //                     //     popup: `animate__animated animate__fadeOutDown animate__faster`
-    //                     // },
-    //                     allowOutsideClick: false,
-    //                     allowEscapeKey: false,
-    //                      showConfirmButton: false
-    //                 });
-    //                 $.ajax({
-    //                     url: wb_subdir + '/php/documentos/generateDocument.php',
-    //                     method: 'POST',
-    //                     data: {
-    //                         vehiculoId: id
-    //                     },
-    //                     success: function(response) {
-    //                         const data = JSON.parse(response);
-                
-    //                         if (data.success) {
-    //                             Swal.fire({
-    //                                 icon: 'success',
-    //                                 title: 'Documento encontrado',
-    //                                 confirmButtonColor: '#053684',
-    //                                 confirmButtonText: 'Ver PDF'
-    //                             }).then(() => {
-    //                                 if (data.redirectUrl) {
-    //                                     window.open(data.redirectUrl, '_blank');
-    //                                 }
-    //                             });
-    //                         } else {
-    //                             Swal.fire({
-    //                                 icon: 'error',
-    //                                 title: 'Error',
-    //                                 text: data.message,
-    //                                 confirmButtonText: 'OK'
-    //                             });
-    //                         }
-    //                     },
-    //                     error: function(xhr, status, error) {
-    //                         Swal.fire({
-    //                             icon: 'error',
-    //                             title: 'Error',
-    //                             text: 'Hubo un problema con la solicitud.',
-    //                             confirmButtonText: 'OK'
-    //                         });
-    //                     },
-    //                     complete: function() {
-    //                     }
-    //                 });
-    //             };
-    
-    //             $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function() {
-    //                 const id = $(this).find('td:first').text().trim();
-    //                 const estatus = $(this).find('td').eq(12).text().trim();
-    //                 if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
-    
-    //                 if (estatus === 'Finalizado') {
-    //                     //console.log('Caso finalizado');
-    //                     Swal.close();
-    //                     return;
-    //                 } else if(estatus === '') { 
-    //                     console.log('Sin caso.');
-    //                     Swal.close();
-    //                     return;
-    //                 }
-    
-    //                 Swal.fire({
-    //                     title: 'Cargando',
-    //                     didOpen: () => Swal.showLoading(),
-    //                     showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
-    //                     hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` },
-    //                     allowOutsideClick: false,
-    //                     allowEscapeKey: false,
-    //                     showConfirmButton: false
-    //                 });
-    
-    //                 $.ajax({
-    //                     url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
-    //                     method: 'POST',
-    //                     data: { vehiculoId: id },
-    //                     success: function(response) {
-    //                         if (response && response.case) {
-    //                             manejarCaso(id, response.case, response.estatus);
-    //                         } else {
-    //                             Swal.fire({
-    //                                 icon: 'error',
-    //                                 title: 'Error',
-    //                                 text: 'No se recibió un caso válido.'
-    //                             });
-    //                         }
-    //                     },
-    //                     error: function() {
-    //                         Swal.fire({
-    //                             icon: 'error',
-    //                             title: 'Error',
-    //                             text: 'Hubo un problema al cargar los registros.'
-    //                         });
-    //                     }
-    //                 });
-    //             });
-    
-    //             function manejarCaso(id, tipoCaso, estatus) {
-    //                 const casos = ['Producto', 'Múltiple', 'Vacío'];
-    //                 const acciones = [iniciarModalCaso0, iniciarModalCaso1, iniciarModalCaso2];
-    //                 const index = casos.indexOf(tipoCaso);
-                
-    //                 if (index >= 0 && estatus !== 'Finalizado') {
-    //                     setTimeout(() => {
-    //                         acciones[index](id);
-    //                     }, 500); 
-    //                 }
-    //             }                
-    //         },
-    //         error: function(xhr, status, error) {
-    //             console.error('Error al cargar los registros:', error);
-    //             tbody.empty().append(`<tr><td colspan="13" class="text-center text-red-500">Error al cargar los registros</td></tr>`);
-    //         }
-    //     });
-    // }
-
     function cargarRegistros(fecha, fechaInicio, fechaFin) {
         let data = fechaInicio && fechaFin ? { startDate: fechaInicio, endDate: fechaFin } : { fecha: fecha };
         let tbody = $('#default-table tbody');
     
-        tbody.empty().append(`
-            <tr>
-                <td colspan="13" class="text-center">
-                    <div class="spinner-container">
-                        <div class="spinner"></div>
-                    </div>
-                </td>
-            </tr>
-        `);
+        tbody.empty().append(`<tr><td colspan="13" class="text-center"><div class="spinner-container"><div class="spinner"></div></div></td></tr>`);
     
-        $('<style>')
-            .prop('type', 'text/css')
-            .html(`
-                .spinner-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                    padding: 20px;
-                }
-                .spinner {
-                    border: 4px solid #f3f3f3;
-                    border-top: 4px solid #1e3a8a;
-                    border-radius: 50%;
-                    width: 40px;
-                    height: 40px;
-                    animation: spin 1s linear infinite;
-                    margin-bottom: 10px;
-                }
-                @keyframes spin {
-                    0% { transform: rotate(0deg); }
-                    100% { transform: rotate(360deg); }
-                }
-            `).appendTo('head');
+        $('<style>').prop('type', 'text/css').html(`
+            .spinner-container { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+            .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #1e3a8a; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 10px; }
+            @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        `).appendTo('head');
     
         $.ajax({
             url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
             method: 'POST',
             data: data,
             dataType: 'JSON',
-            success: function (response) {
-                if ($.fn.DataTable.isDataTable('#default-table')) {
-                    $('#default-table').DataTable().destroy();
-                }
-    
-                $('#default-table').DataTable({
-                    data: response.map(registro => {
-                        const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
-                        const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
-                        return [
-                            registro.id,
-                            `<span class="font-bold">${registro.VHP_PLACA}</span>`,
-                            `<span class="font-bold">${registro.conductor_nombre}</span>`,
-                            `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
-                            `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
-                            `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
-                            `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
-                            `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
-                            `<span class="font-bold">${registro.hora_entrada}</span>`,
-                            `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
-                            `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
-                            `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
-                            `<span class="${estatusClass}">${registro.estatus}</span>`,
-                            registro.estatus === 'Pendiente'
-                                ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
-                                : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
-                                    ? `<center><button type="button" 
-                                               class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                                               onclick="genDoc('${registro.id}')">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
-                                                <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
-                                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
-                                                <path d="m9 14 2 2 4-4"/>
-                                            </svg>
-                                        </button></center>`
+            success: function(response) {
+                if (table) table.destroy();
+                table = new simpleDatatables.DataTable("#default-table", {
+                    perPage: 30,
+                    perPageSelect: [5, 10, 20, 30, 40, 50, 60],
+                    data: {
+                        headings: ["Número", "Placa", "Conductor", "Peso Entrada", "Peso Salida", "Peso Neto", "Fecha Entrada", "Fecha Salida", "Hora Entrada", "Hora Salida", "Producto Ingresado", "Producto despachado","Estado", "Acciones"],
+                        data: response.map(registro => {
+                            const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
+                            const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
+                            return [
+                                `<span>${registro.id}</span>`,
+                                `<span class="font-bold">${registro.VHP_PLACA}</span>`,
+                                `<span class="font-bold">${registro.conductor_nombre}</span>`,
+                                `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+                                `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
+                                `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
+                                `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
+                                `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
+                                `<span class="font-bold">${registro.hora_entrada}</span>`,
+                                `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
+                                `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+                                `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
+                                `<span class="${estatusClass}">${registro.estatus}</span>`,
+                                registro.estatus === 'Pendiente' 
+                                    ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
+                                    : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
+                                    ? `<div class="flex justify-center items-center">
+                                            <button type="button" 
+                                                    class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                    onclick="genDoc('${registro.id}')">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
+                                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+                                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
+                                                    <path d="m9 14 2 2 4-4"/>
+                                                </svg>
+                                            </button>
+                                        </div>`
                                     : ''
-                        ];
-                    }),
-                    columns: [
-                        { title: "Número" },
-                        { title: "Placa" },
-                        { title: "Conductor" },
-                        { title: "Peso Entrada" },
-                        { title: "Peso Salida" },
-                        { title: "Peso Neto" },
-                        { title: "Fecha Entrada" },
-                        { title: "Fecha Salida" },
-                        { title: "Hora Entrada" },
-                        { title: "Hora Salida" },
-                        { title: "Producto Ingresado" },
-                        { title: "Producto Despachado" },
-                        { title: "Estado" },
-                        { title: "Acciones", orderable: false, searchable: false }
-                    ],
-                    pageLength: 30,
-                    lengthMenu: [5, 10, 20, 30, 40, 50],
-                    language: {
-                        "processing": "Procesando...",
-                        "lengthMenu": "Mostrar _MENU_ registros",
-                        "zeroRecords": "No se encontraron resultados",
-                        "emptyTable": "Ningún dato disponible en esta tabla",
-                        "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                        "infoFiltered": "(filtrado de un total de _MAX_ registros)",
-                        "search": "Buscar:",
-                        "loadingRecords": "Cargando...",
-                        "paginate": {
-                            "first": "<<",
-                            "last": ">>",
-                            "next": ">",
-                            "previous": "<"
-                        },
-                        "aria": {
-                            "sortAscending": ": Activar para ordenar la columna de manera ascendente",
-                            "sortDescending": ": Activar para ordenar la columna de manera descendente"
-                        },
-                        "buttons": {
-                            "copy": "Copiar",
-                            "colvis": "Visibilidad",
-                            "collection": "Colección",
-                            "colvisRestore": "Restaurar visibilidad",
-                            "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/> <br \/> Para cancelar, haga clic en este mensaje o presione escape.",
-                            "copySuccess": {
-                                "1": "Copiada 1 fila al portapapeles",
-                                "_": "Copiadas %ds fila al portapapeles"
-                            },
-                            "copyTitle": "Copiar al portapapeles",
-                            "csv": "CSV",
-                            "excel": "Excel",
-                            "pageLength": {
-                                "-1": "Mostrar todas las filas",
-                                "_": "Mostrar %d filas"
-                            },
-                            "pdf": "PDF",
-                            "print": "Imprimir",
-                            "renameState": "Cambiar nombre",
-                            "updateState": "Actualizar",
-                            "createState": "Crear Estado",
-                            "removeAllStates": "Remover Estados",
-                            "removeState": "Remover",
-                            "savedStates": "Estados Guardados",
-                            "stateRestore": "Estado %d"
-                        },
-                        "autoFill": {
-                            "cancel": "Cancelar",
-                            "fill": "Rellene todas las celdas con <i>%d<\/i>",
-                            "fillHorizontal": "Rellenar celdas horizontalmente",
-                            "fillVertical": "Rellenar celdas verticalmente"
-                        },
-                        "decimal": ",",
-                        "searchBuilder": {
-                            "add": "Añadir condición",
-                            "button": {
-                                "0": "Constructor de búsqueda",
-                                "_": "Constructor de búsqueda (%d)"
-                            },
-                            "clearAll": "Borrar todo",
-                            "condition": "Condición",
-                            "conditions": {
-                                "date": {
-                                    "before": "Antes",
-                                    "between": "Entre",
-                                    "empty": "Vacío",
-                                    "equals": "Igual a",
-                                    "notBetween": "No entre",
-                                    "not": "Diferente de",
-                                    "after": "Después",
-                                    "notEmpty": "No Vacío"
-                                },
-                                "number": {
-                                    "between": "Entre",
-                                    "equals": "Igual a",
-                                    "gt": "Mayor a",
-                                    "gte": "Mayor o igual a",
-                                    "lt": "Menor que",
-                                    "lte": "Menor o igual que",
-                                    "notBetween": "No entre",
-                                    "notEmpty": "No vacío",
-                                    "not": "Diferente de",
-                                    "empty": "Vacío"
-                                },
-                                "string": {
-                                    "contains": "Contiene",
-                                    "empty": "Vacío",
-                                    "endsWith": "Termina en",
-                                    "equals": "Igual a",
-                                    "startsWith": "Empieza con",
-                                    "not": "Diferente de",
-                                    "notContains": "No Contiene",
-                                    "notStartsWith": "No empieza con",
-                                    "notEndsWith": "No termina con",
-                                    "notEmpty": "No Vacío"
-                                },
-                                "array": {
-                                    "not": "Diferente de",
-                                    "equals": "Igual",
-                                    "empty": "Vacío",
-                                    "contains": "Contiene",
-                                    "notEmpty": "No Vacío",
-                                    "without": "Sin"
-                                }
-                            },
-                            "data": "Data",
-                            "deleteTitle": "Eliminar regla de filtrado",
-                            "leftTitle": "Criterios anulados",
-                            "logicAnd": "Y",
-                            "logicOr": "O",
-                            "rightTitle": "Criterios de sangría",
-                            "title": {
-                                "0": "Constructor de búsqueda",
-                                "_": "Constructor de búsqueda (%d)"
-                            },
-                            "value": "Valor"
-                        },
-                        "searchPanes": {
-                            "clearMessage": "Borrar todo",
-                            "collapse": {
-                                "0": "Paneles de búsqueda",
-                                "_": "Paneles de búsqueda (%d)"
-                            },
-                            "count": "{total}",
-                            "countFiltered": "{shown} ({total})",
-                            "emptyPanes": "Sin paneles de búsqueda",
-                            "loadMessage": "Cargando paneles de búsqueda",
-                            "title": "Filtros Activos - %d",
-                            "showMessage": "Mostrar Todo",
-                            "collapseMessage": "Colapsar Todo"
-                        },
-                        "select": {
-                            "cells": {
-                                "1": "1 celda seleccionada",
-                                "_": "%d celdas seleccionadas"
-                            },
-                            "columns": {
-                                "1": "1 columna seleccionada",
-                                "_": "%d columnas seleccionadas"
-                            },
-                            "rows": {
-                                "1": "1 fila seleccionada",
-                                "_": "%d filas seleccionadas"
-                            }
-                        },
-                        "thousands": ".",
-                        "datetime": {
-                            "previous": "Anterior",
-                            "hours": "Horas",
-                            "minutes": "Minutos",
-                            "seconds": "Segundos",
-                            "unknown": "-",
-                            "amPm": [
-                                "AM",
-                                "PM"
-                            ],
-                            "months": {
-                                "0": "Enero",
-                                "1": "Febrero",
-                                "10": "Noviembre",
-                                "11": "Diciembre",
-                                "2": "Marzo",
-                                "3": "Abril",
-                                "4": "Mayo",
-                                "5": "Junio",
-                                "6": "Julio",
-                                "7": "Agosto",
-                                "8": "Septiembre",
-                                "9": "Octubre"
-                            },
-                            "weekdays": {
-                                "0": "Dom",
-                                "1": "Lun",
-                                "2": "Mar",
-                                "4": "Jue",
-                                "5": "Vie",
-                                "3": "Mié",
-                                "6": "Sáb"
-                            },
-                            "next": "Próximo"
-                        },
-                        "editor": {
-                            "close": "Cerrar",
-                            "create": {
-                                "button": "Nuevo",
-                                "title": "Crear Nuevo Registro",
-                                "submit": "Crear"
-                            },
-                            "edit": {
-                                "button": "Editar",
-                                "title": "Editar Registro",
-                                "submit": "Actualizar"
-                            },
-                            "remove": {
-                                "button": "Eliminar",
-                                "title": "Eliminar Registro",
-                                "submit": "Eliminar",
-                                "confirm": {
-                                    "_": "¿Está seguro de que desea eliminar %d filas?",
-                                    "1": "¿Está seguro de que desea eliminar 1 fila?"
-                                }
-                            },
-                            "error": {
-                                "system": "Ha ocurrido un error en el sistema (<a target=\"\\\" rel=\"\\ nofollow\" href=\"\\\">Más información&lt;\\\/a&gt;).<\/a>"
-                            },
-                            "multi": {
-                                "title": "Múltiples Valores",
-                                "restore": "Deshacer Cambios",
-                                "noMulti": "Este registro puede ser editado individualmente, pero no como parte de un grupo.",
-                                "info": "Los elementos seleccionados contienen diferentes valores para este registro. Para editar y establecer todos los elementos de este registro con el mismo valor, haga clic o pulse aquí, de lo contrario conservarán sus valores individuales."
-                            }
-                        },
-                        "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                        "stateRestore": {
-                            "creationModal": {
-                                "button": "Crear",
-                                "name": "Nombre:",
-                                "order": "Clasificación",
-                                "paging": "Paginación",
-                                "select": "Seleccionar",
-                                "columns": {
-                                    "search": "Búsqueda de Columna",
-                                    "visible": "Visibilidad de Columna"
-                                },
-                                "title": "Crear Nuevo Estado",
-                                "toggleLabel": "Incluir:",
-                                "scroller": "Posición de desplazamiento",
-                                "search": "Búsqueda",
-                                "searchBuilder": "Búsqueda avanzada"
-                            },
-                            "removeJoiner": "y",
-                            "removeSubmit": "Eliminar",
-                            "renameButton": "Cambiar Nombre",
-                            "duplicateError": "Ya existe un Estado con este nombre.",
-                            "emptyStates": "No hay Estados guardados",
-                            "removeTitle": "Remover Estado",
-                            "renameTitle": "Cambiar Nombre Estado",
-                            "emptyError": "El nombre no puede estar vacío.",
-                            "removeConfirm": "¿Seguro que quiere eliminar %s?",
-                            "removeError": "Error al eliminar el Estado",
-                            "renameLabel": "Nuevo nombre para %s:"
-                        },
-                        "infoThousands": "."
-                    } 
+                            ];
+                        })
+                    }
                 });
-    
-                window.genDoc = function (id) {
+
+                window.genDoc = function(id) {
                     Swal.fire({
                         title: 'Cargando',
-                        didOpen: () => Swal.showLoading(),
+                        //text: 'Cargando',
+                        didOpen: () => {
+                              Swal.showLoading(); 
+                        },
+                        showClass: {
+                           popup: `animate__animated animate__fadeInUp animate__faster`
+                        },
+                        // hideClass: {
+                        //     popup: `animate__animated animate__fadeOutDown animate__faster`
+                        // },
                         allowOutsideClick: false,
                         allowEscapeKey: false,
-                        showConfirmButton: false
+                         showConfirmButton: false
                     });
-    
                     $.ajax({
                         url: wb_subdir + '/php/documentos/generateDocument.php',
                         method: 'POST',
-                        data: { vehiculoId: id },
-                        success: function (response) {
+                        data: {
+                            vehiculoId: id
+                        },
+                        success: function(response) {
                             const data = JSON.parse(response);
-    
+                
                             if (data.success) {
                                 Swal.fire({
                                     icon: 'success',
-                                    title: 'Documento generado',
+                                    title: 'Documento encontrado',
                                     confirmButtonColor: '#053684',
                                     confirmButtonText: 'Ver PDF'
                                 }).then(() => {
@@ -587,29 +123,34 @@ jQuery(document).ready(function($) {
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Error',
-                                    text: data.message
+                                    text: data.message,
+                                    confirmButtonText: 'OK'
                                 });
                             }
                         },
-                        error: function () {
+                        error: function(xhr, status, error) {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
-                                text: 'Hubo un problema con la solicitud.'
+                                text: 'Hubo un problema con la solicitud.',
+                                confirmButtonText: 'OK'
                             });
+                        },
+                        complete: function() {
                         }
                     });
                 };
     
-                $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function () {
+                $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function() {
                     const id = $(this).find('td:first').text().trim();
                     const estatus = $(this).find('td').eq(12).text().trim();
                     if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
     
                     if (estatus === 'Finalizado') {
+                        //console.log('Caso finalizado');
                         Swal.close();
                         return;
-                    } else if (estatus === '') {
+                    } else if(estatus === '') { 
                         console.log('Sin caso.');
                         Swal.close();
                         return;
@@ -618,6 +159,8 @@ jQuery(document).ready(function($) {
                     Swal.fire({
                         title: 'Cargando',
                         didOpen: () => Swal.showLoading(),
+                        showClass: { popup: `animate__animated animate__fadeInUp animate__faster` },
+                        hideClass: { popup: `animate__animated animate__fadeOutDown animate__faster` },
                         allowOutsideClick: false,
                         allowEscapeKey: false,
                         showConfirmButton: false
@@ -627,7 +170,7 @@ jQuery(document).ready(function($) {
                         url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
                         method: 'POST',
                         data: { vehiculoId: id },
-                        success: function (response) {
+                        success: function(response) {
                             if (response && response.case) {
                                 manejarCaso(id, response.case, response.estatus);
                             } else {
@@ -638,7 +181,7 @@ jQuery(document).ready(function($) {
                                 });
                             }
                         },
-                        error: function () {
+                        error: function() {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Error',
@@ -652,23 +195,480 @@ jQuery(document).ready(function($) {
                     const casos = ['Producto', 'Múltiple', 'Vacío'];
                     const acciones = [iniciarModalCaso0, iniciarModalCaso1, iniciarModalCaso2];
                     const index = casos.indexOf(tipoCaso);
-    
+                
                     if (index >= 0 && estatus !== 'Finalizado') {
                         setTimeout(() => {
                             acciones[index](id);
-                        }, 500);
+                        }, 500); 
                     }
-                }
+                }                
             },
-            error: function () {
-                tbody.empty().append(`
-                    <tr>
-                        <td colspan="13" class="text-center text-red-500">Error al cargar los registros</td>
-                    </tr>
-                `);
+            error: function(xhr, status, error) {
+                console.error('Error al cargar los registros:', error);
+                tbody.empty().append(`<tr><td colspan="13" class="text-center text-red-500">Error al cargar los registros</td></tr>`);
             }
         });
     }
+
+    // function cargarRegistros(fecha, fechaInicio, fechaFin) {
+    //     let data = fechaInicio && fechaFin ? { startDate: fechaInicio, endDate: fechaFin } : { fecha: fecha };
+    //     let tbody = $('#default-table tbody');
+    
+    //     tbody.empty().append(`
+    //         <tr>
+    //             <td colspan="13" class="text-center">
+    //                 <div class="spinner-container">
+    //                     <div class="spinner"></div>
+    //                 </div>
+    //             </td>
+    //         </tr>
+    //     `);
+    
+    //     $('<style>')
+    //         .prop('type', 'text/css')
+    //         .html(`
+    //             .spinner-container {
+    //                 display: flex;
+    //                 flex-direction: column;
+    //                 align-items: center;
+    //                 justify-content: center;
+    //                 padding: 20px;
+    //             }
+    //             .spinner {
+    //                 border: 4px solid #f3f3f3;
+    //                 border-top: 4px solid #1e3a8a;
+    //                 border-radius: 50%;
+    //                 width: 40px;
+    //                 height: 40px;
+    //                 animation: spin 1s linear infinite;
+    //                 margin-bottom: 10px;
+    //             }
+    //             @keyframes spin {
+    //                 0% { transform: rotate(0deg); }
+    //                 100% { transform: rotate(360deg); }
+    //             }
+    //         `).appendTo('head');
+    
+    //     $.ajax({
+    //         url: wb_subdir + '/php/vehiculos/loadVehicleDataTable.php',
+    //         method: 'POST',
+    //         data: data,
+    //         dataType: 'JSON',
+    //         success: function (response) {
+    //             if ($.fn.DataTable.isDataTable('#default-table')) {
+    //                 $('#default-table').DataTable().destroy();
+    //             }
+    
+    //             $('#default-table').DataTable({
+    //                 data: response.map(registro => {
+    //                     const estatusClass = registro.estatus === 'Pendiente' ? 'row-pendiente' : registro.estatus === 'Finalizado' ? 'row-finalizado' : '';
+    //                     const casoText = ['Producto', 'Múltiple', 'Vacío'][registro.caso] || '-';
+    //                     return [
+    //                         registro.id,
+    //                         `<span class="font-bold">${registro.VHP_PLACA}</span>`,
+    //                         `<span class="font-bold">${registro.conductor_nombre}</span>`,
+    //                         `<span class="font-bold">${registro.peso_bruto || '-'}</span>`,
+    //                         `<span class="font-bold">${registro.peso_salida || '-'}</span>`,
+    //                         `<span class="font-bold">${registro.peso_neto || '-'}</span>`,
+    //                         `<span class="font-bold">${registro.fecha_entrada || '-'}</span>`,
+    //                         `<span class="font-bold">${registro.fecha_salida || '-'}</span>`,
+    //                         `<span class="font-bold">${registro.hora_entrada}</span>`,
+    //                         `<span class="font-bold">${registro.hora_salida || 'Vacío'}</span>`,
+    //                         `<span class="font-bold">${registro.producto_ingresado || 'Vacío'}</span>`,
+    //                         `<span class="font-bold">${registro.producto_despachado || 'Vacío'}</span>`,
+    //                         `<span class="${estatusClass}">${registro.estatus}</span>`,
+    //                         registro.estatus === 'Pendiente'
+    //                             ? `<span class="font-bold flex justify-center items-center">Vacío</span>`
+    //                             : registro.estatus === 'Finalizado' && (registro.producto_ingresado || registro.producto_despachado)
+    //                                 ? `<center><button type="button" 
+    //                                            class="inline-flex items-center justify-center w-8 h-8 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-900 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+    //                                            onclick="genDoc('${registro.id}')">
+    //                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clipboard-check">
+    //                                             <rect width="8" height="4" x="8" y="2" rx="1" ry="1"/>
+    //                                             <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 1 2 2h2"/>
+    //                                             <path d="m9 14 2 2 4-4"/>
+    //                                         </svg>
+    //                                     </button></center>`
+    //                                 : ''
+    //                     ];
+    //                 }),
+    //                 columns: [
+    //                     { title: "Número" },
+    //                     { title: "Placa" },
+    //                     { title: "Conductor" },
+    //                     { title: "Peso Entrada" },
+    //                     { title: "Peso Salida" },
+    //                     { title: "Peso Neto" },
+    //                     { title: "Fecha Entrada" },
+    //                     { title: "Fecha Salida" },
+    //                     { title: "Hora Entrada" },
+    //                     { title: "Hora Salida" },
+    //                     { title: "Producto Ingresado" },
+    //                     { title: "Producto Despachado" },
+    //                     { title: "Estado" },
+    //                     { title: "Acciones", orderable: false, searchable: false }
+    //                 ],
+    //                 pageLength: 30,
+    //                 lengthMenu: [5, 10, 20, 30, 40, 50],
+    //                 language: {
+    //                     "processing": "Procesando...",
+    //                     "lengthMenu": "Mostrar _MENU_ registros",
+    //                     "zeroRecords": "No se encontraron resultados",
+    //                     "emptyTable": "Ningún dato disponible en esta tabla",
+    //                     "infoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+    //                     "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+    //                     "search": "Buscar:",
+    //                     "loadingRecords": "Cargando...",
+    //                     "paginate": {
+    //                         "first": "<<",
+    //                         "last": ">>",
+    //                         "next": ">",
+    //                         "previous": "<"
+    //                     },
+    //                     "aria": {
+    //                         "sortAscending": ": Activar para ordenar la columna de manera ascendente",
+    //                         "sortDescending": ": Activar para ordenar la columna de manera descendente"
+    //                     },
+    //                     "buttons": {
+    //                         "copy": "Copiar",
+    //                         "colvis": "Visibilidad",
+    //                         "collection": "Colección",
+    //                         "colvisRestore": "Restaurar visibilidad",
+    //                         "copyKeys": "Presione ctrl o u2318 + C para copiar los datos de la tabla al portapapeles del sistema. <br \/> <br \/> Para cancelar, haga clic en este mensaje o presione escape.",
+    //                         "copySuccess": {
+    //                             "1": "Copiada 1 fila al portapapeles",
+    //                             "_": "Copiadas %ds fila al portapapeles"
+    //                         },
+    //                         "copyTitle": "Copiar al portapapeles",
+    //                         "csv": "CSV",
+    //                         "excel": "Excel",
+    //                         "pageLength": {
+    //                             "-1": "Mostrar todas las filas",
+    //                             "_": "Mostrar %d filas"
+    //                         },
+    //                         "pdf": "PDF",
+    //                         "print": "Imprimir",
+    //                         "renameState": "Cambiar nombre",
+    //                         "updateState": "Actualizar",
+    //                         "createState": "Crear Estado",
+    //                         "removeAllStates": "Remover Estados",
+    //                         "removeState": "Remover",
+    //                         "savedStates": "Estados Guardados",
+    //                         "stateRestore": "Estado %d"
+    //                     },
+    //                     "autoFill": {
+    //                         "cancel": "Cancelar",
+    //                         "fill": "Rellene todas las celdas con <i>%d<\/i>",
+    //                         "fillHorizontal": "Rellenar celdas horizontalmente",
+    //                         "fillVertical": "Rellenar celdas verticalmente"
+    //                     },
+    //                     "decimal": ",",
+    //                     "searchBuilder": {
+    //                         "add": "Añadir condición",
+    //                         "button": {
+    //                             "0": "Constructor de búsqueda",
+    //                             "_": "Constructor de búsqueda (%d)"
+    //                         },
+    //                         "clearAll": "Borrar todo",
+    //                         "condition": "Condición",
+    //                         "conditions": {
+    //                             "date": {
+    //                                 "before": "Antes",
+    //                                 "between": "Entre",
+    //                                 "empty": "Vacío",
+    //                                 "equals": "Igual a",
+    //                                 "notBetween": "No entre",
+    //                                 "not": "Diferente de",
+    //                                 "after": "Después",
+    //                                 "notEmpty": "No Vacío"
+    //                             },
+    //                             "number": {
+    //                                 "between": "Entre",
+    //                                 "equals": "Igual a",
+    //                                 "gt": "Mayor a",
+    //                                 "gte": "Mayor o igual a",
+    //                                 "lt": "Menor que",
+    //                                 "lte": "Menor o igual que",
+    //                                 "notBetween": "No entre",
+    //                                 "notEmpty": "No vacío",
+    //                                 "not": "Diferente de",
+    //                                 "empty": "Vacío"
+    //                             },
+    //                             "string": {
+    //                                 "contains": "Contiene",
+    //                                 "empty": "Vacío",
+    //                                 "endsWith": "Termina en",
+    //                                 "equals": "Igual a",
+    //                                 "startsWith": "Empieza con",
+    //                                 "not": "Diferente de",
+    //                                 "notContains": "No Contiene",
+    //                                 "notStartsWith": "No empieza con",
+    //                                 "notEndsWith": "No termina con",
+    //                                 "notEmpty": "No Vacío"
+    //                             },
+    //                             "array": {
+    //                                 "not": "Diferente de",
+    //                                 "equals": "Igual",
+    //                                 "empty": "Vacío",
+    //                                 "contains": "Contiene",
+    //                                 "notEmpty": "No Vacío",
+    //                                 "without": "Sin"
+    //                             }
+    //                         },
+    //                         "data": "Data",
+    //                         "deleteTitle": "Eliminar regla de filtrado",
+    //                         "leftTitle": "Criterios anulados",
+    //                         "logicAnd": "Y",
+    //                         "logicOr": "O",
+    //                         "rightTitle": "Criterios de sangría",
+    //                         "title": {
+    //                             "0": "Constructor de búsqueda",
+    //                             "_": "Constructor de búsqueda (%d)"
+    //                         },
+    //                         "value": "Valor"
+    //                     },
+    //                     "searchPanes": {
+    //                         "clearMessage": "Borrar todo",
+    //                         "collapse": {
+    //                             "0": "Paneles de búsqueda",
+    //                             "_": "Paneles de búsqueda (%d)"
+    //                         },
+    //                         "count": "{total}",
+    //                         "countFiltered": "{shown} ({total})",
+    //                         "emptyPanes": "Sin paneles de búsqueda",
+    //                         "loadMessage": "Cargando paneles de búsqueda",
+    //                         "title": "Filtros Activos - %d",
+    //                         "showMessage": "Mostrar Todo",
+    //                         "collapseMessage": "Colapsar Todo"
+    //                     },
+    //                     "select": {
+    //                         "cells": {
+    //                             "1": "1 celda seleccionada",
+    //                             "_": "%d celdas seleccionadas"
+    //                         },
+    //                         "columns": {
+    //                             "1": "1 columna seleccionada",
+    //                             "_": "%d columnas seleccionadas"
+    //                         },
+    //                         "rows": {
+    //                             "1": "1 fila seleccionada",
+    //                             "_": "%d filas seleccionadas"
+    //                         }
+    //                     },
+    //                     "thousands": ".",
+    //                     "datetime": {
+    //                         "previous": "Anterior",
+    //                         "hours": "Horas",
+    //                         "minutes": "Minutos",
+    //                         "seconds": "Segundos",
+    //                         "unknown": "-",
+    //                         "amPm": [
+    //                             "AM",
+    //                             "PM"
+    //                         ],
+    //                         "months": {
+    //                             "0": "Enero",
+    //                             "1": "Febrero",
+    //                             "10": "Noviembre",
+    //                             "11": "Diciembre",
+    //                             "2": "Marzo",
+    //                             "3": "Abril",
+    //                             "4": "Mayo",
+    //                             "5": "Junio",
+    //                             "6": "Julio",
+    //                             "7": "Agosto",
+    //                             "8": "Septiembre",
+    //                             "9": "Octubre"
+    //                         },
+    //                         "weekdays": {
+    //                             "0": "Dom",
+    //                             "1": "Lun",
+    //                             "2": "Mar",
+    //                             "4": "Jue",
+    //                             "5": "Vie",
+    //                             "3": "Mié",
+    //                             "6": "Sáb"
+    //                         },
+    //                         "next": "Próximo"
+    //                     },
+    //                     "editor": {
+    //                         "close": "Cerrar",
+    //                         "create": {
+    //                             "button": "Nuevo",
+    //                             "title": "Crear Nuevo Registro",
+    //                             "submit": "Crear"
+    //                         },
+    //                         "edit": {
+    //                             "button": "Editar",
+    //                             "title": "Editar Registro",
+    //                             "submit": "Actualizar"
+    //                         },
+    //                         "remove": {
+    //                             "button": "Eliminar",
+    //                             "title": "Eliminar Registro",
+    //                             "submit": "Eliminar",
+    //                             "confirm": {
+    //                                 "_": "¿Está seguro de que desea eliminar %d filas?",
+    //                                 "1": "¿Está seguro de que desea eliminar 1 fila?"
+    //                             }
+    //                         },
+    //                         "error": {
+    //                             "system": "Ha ocurrido un error en el sistema (<a target=\"\\\" rel=\"\\ nofollow\" href=\"\\\">Más información&lt;\\\/a&gt;).<\/a>"
+    //                         },
+    //                         "multi": {
+    //                             "title": "Múltiples Valores",
+    //                             "restore": "Deshacer Cambios",
+    //                             "noMulti": "Este registro puede ser editado individualmente, pero no como parte de un grupo.",
+    //                             "info": "Los elementos seleccionados contienen diferentes valores para este registro. Para editar y establecer todos los elementos de este registro con el mismo valor, haga clic o pulse aquí, de lo contrario conservarán sus valores individuales."
+    //                         }
+    //                     },
+    //                     "info": "Mostrando _START_ a _END_ de _TOTAL_ registros",
+    //                     "stateRestore": {
+    //                         "creationModal": {
+    //                             "button": "Crear",
+    //                             "name": "Nombre:",
+    //                             "order": "Clasificación",
+    //                             "paging": "Paginación",
+    //                             "select": "Seleccionar",
+    //                             "columns": {
+    //                                 "search": "Búsqueda de Columna",
+    //                                 "visible": "Visibilidad de Columna"
+    //                             },
+    //                             "title": "Crear Nuevo Estado",
+    //                             "toggleLabel": "Incluir:",
+    //                             "scroller": "Posición de desplazamiento",
+    //                             "search": "Búsqueda",
+    //                             "searchBuilder": "Búsqueda avanzada"
+    //                         },
+    //                         "removeJoiner": "y",
+    //                         "removeSubmit": "Eliminar",
+    //                         "renameButton": "Cambiar Nombre",
+    //                         "duplicateError": "Ya existe un Estado con este nombre.",
+    //                         "emptyStates": "No hay Estados guardados",
+    //                         "removeTitle": "Remover Estado",
+    //                         "renameTitle": "Cambiar Nombre Estado",
+    //                         "emptyError": "El nombre no puede estar vacío.",
+    //                         "removeConfirm": "¿Seguro que quiere eliminar %s?",
+    //                         "removeError": "Error al eliminar el Estado",
+    //                         "renameLabel": "Nuevo nombre para %s:"
+    //                     },
+    //                     "infoThousands": "."
+    //                 } 
+    //             });
+    
+    //             window.genDoc = function (id) {
+    //                 Swal.fire({
+    //                     title: 'Cargando',
+    //                     didOpen: () => Swal.showLoading(),
+    //                     allowOutsideClick: false,
+    //                     allowEscapeKey: false,
+    //                     showConfirmButton: false
+    //                 });
+    
+    //                 $.ajax({
+    //                     url: wb_subdir + '/php/documentos/generateDocument.php',
+    //                     method: 'POST',
+    //                     data: { vehiculoId: id },
+    //                     success: function (response) {
+    //                         const data = JSON.parse(response);
+    
+    //                         if (data.success) {
+    //                             Swal.fire({
+    //                                 icon: 'success',
+    //                                 title: 'Documento generado',
+    //                                 confirmButtonColor: '#053684',
+    //                                 confirmButtonText: 'Ver PDF'
+    //                             }).then(() => {
+    //                                 if (data.redirectUrl) {
+    //                                     window.open(data.redirectUrl, '_blank');
+    //                                 }
+    //                             });
+    //                         } else {
+    //                             Swal.fire({
+    //                                 icon: 'error',
+    //                                 title: 'Error',
+    //                                 text: data.message
+    //                             });
+    //                         }
+    //                     },
+    //                     error: function () {
+    //                         Swal.fire({
+    //                             icon: 'error',
+    //                             title: 'Error',
+    //                             text: 'Hubo un problema con la solicitud.'
+    //                         });
+    //                     }
+    //                 });
+    //             };
+    
+    //             $(document).off('click', '#default-table tbody tr').on('click', '#default-table tbody tr', function () {
+    //                 const id = $(this).find('td:first').text().trim();
+    //                 const estatus = $(this).find('td').eq(12).text().trim();
+    //                 if (!id) return console.error('El ID no fue encontrado en la fila seleccionada.');
+    
+    //                 if (estatus === 'Finalizado') {
+    //                     Swal.close();
+    //                     return;
+    //                 } else if (estatus === '') {
+    //                     console.log('Sin caso.');
+    //                     Swal.close();
+    //                     return;
+    //                 }
+    
+    //                 Swal.fire({
+    //                     title: 'Cargando',
+    //                     didOpen: () => Swal.showLoading(),
+    //                     allowOutsideClick: false,
+    //                     allowEscapeKey: false,
+    //                     showConfirmButton: false
+    //                 });
+    
+    //                 $.ajax({
+    //                     url: wb_subdir + '/php/vehiculos/checkStatusCase1.php',
+    //                     method: 'POST',
+    //                     data: { vehiculoId: id },
+    //                     success: function (response) {
+    //                         if (response && response.case) {
+    //                             manejarCaso(id, response.case, response.estatus);
+    //                         } else {
+    //                             Swal.fire({
+    //                                 icon: 'error',
+    //                                 title: 'Error',
+    //                                 text: 'No se recibió un caso válido.'
+    //                             });
+    //                         }
+    //                     },
+    //                     error: function () {
+    //                         Swal.fire({
+    //                             icon: 'error',
+    //                             title: 'Error',
+    //                             text: 'Hubo un problema al cargar los registros.'
+    //                         });
+    //                     }
+    //                 });
+    //             });
+    
+    //             function manejarCaso(id, tipoCaso, estatus) {
+    //                 const casos = ['Producto', 'Múltiple', 'Vacío'];
+    //                 const acciones = [iniciarModalCaso0, iniciarModalCaso1, iniciarModalCaso2];
+    //                 const index = casos.indexOf(tipoCaso);
+    
+    //                 if (index >= 0 && estatus !== 'Finalizado') {
+    //                     setTimeout(() => {
+    //                         acciones[index](id);
+    //                     }, 500);
+    //                 }
+    //             }
+    //         },
+    //         error: function () {
+    //             tbody.empty().append(`
+    //                 <tr>
+    //                     <td colspan="13" class="text-center text-red-500">Error al cargar los registros</td>
+    //                 </tr>
+    //             `);
+    //         }
+    //     });
+    // }
        
     function iniciarModalCaso0(id) {
         let pesoBrutoInicial = null;
