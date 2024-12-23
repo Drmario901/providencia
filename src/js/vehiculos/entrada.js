@@ -22,12 +22,12 @@ jQuery(document).ready(function($) {
     // }
 
     // //READ WEIGHT FUNCTION
-    let port_number = 'COM2'; 
+    let port_number = 'COM7'; 
 
     $('#portNumber').on('click', function() {
-        port_number = $('#portNumber').val() || 'COM2';
-        if (port_number !== 'COM2' && port_number !== null) {
-            port_number = 'COM7';
+        port_number = $('#portNumber').val() || 'COM7';
+        if (port_number !== 'COM7' && port_number !== null) {
+            port_number = 'COM2';
         }
     });
     
