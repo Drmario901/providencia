@@ -33,7 +33,7 @@
         echo $favicon;
         echo $disable; 
     ?>
-    
+
     <style>
        .table-container {
         overflow-x: auto;
@@ -41,7 +41,7 @@
       } 
       table {
         width: 100%;
-        min-width: 1000px;
+        min-width: 100%;
       }
       @media (max-width: 1024px) {
         .responsive-table {
@@ -296,13 +296,14 @@
                                     </label>
                                 </div>
                             </div>
-                            <div>
+                            <!-- <div class="table-container"> -->
+                                <div>
                                 <table id="default-table" class="w-full text-xs responsive-table">
                                     <thead class="bg-gray-50 dark:bg-gray-700">
-                                        <!-- HEADINGS -->
+                                    <!-- HEADINGS -->
                                     </thead>
                                     <tbody class="bg-white divide-y divide-gray-200 dark:divide-gray-700">
-                                        <!-- ELEMENTS -->
+                                    <!-- ELEMENTS -->
                                     </tbody>
                                 </table>
                             </div>
