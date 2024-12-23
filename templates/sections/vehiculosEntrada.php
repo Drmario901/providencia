@@ -256,7 +256,7 @@
                                     <select id="portNumber" class="w-full border border-gray-300 rounded-lg p-2 text-gray-700 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option value="" disabled selected>Seleccionar una balanza</option>
                                         <option value="COM2">Balanza 1</option>
-                                        <option value="COM3">Balanza 2</option>
+                                        <option value="COM7">Balanza 2</option>
                                     </select>
                                 </div>
                                 <div class="flex-grow">
