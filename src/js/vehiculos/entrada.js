@@ -39,9 +39,9 @@ jQuery(document).ready(function($) {
             data: JSON.stringify({port_name: port_number}),
             success: function(response) {
                 if (response && response.data) {
-                    const match = response.data.match(/[-+]?\d*\.?\d+/); 
+                    const match = response.data.match(/([-+]?\d*\.?\d+)kg/); 
                     if (match) {
-                        const peso = match[0];
+                        const peso = match[1];
                         console.log(peso);
                         $('#entryWeight').val(peso); 
                     } else {
