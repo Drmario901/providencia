@@ -310,6 +310,7 @@
                     </div>
                 </div>
                 <br>
+                <br>
                 <footer class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
                     &copy; <?php echo date('Y'); ?> <a href="/<?php echo $wb_subdir?>/" class="hover:underline" target="_blank">Serviaves C.A</a>. Todos los derechos reservados.
                 </footer>
