@@ -2225,7 +2225,7 @@ jQuery(document).ready(function($) {
     
                 if ($('#print').is(':checked')) {
                     $.ajax({
-                        url: 'http://127.0.0.1:8080/entry',
+                        url: 'http://127.0.0.1:8081/entry',
                         method: 'POST',
                         contentType: 'application/json',
                         data: JSON.stringify({
