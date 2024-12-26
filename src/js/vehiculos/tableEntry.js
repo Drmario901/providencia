@@ -1143,7 +1143,7 @@ jQuery(document).ready(function($) {
                     <input type="hidden" id="vehiculoId" name="vehiculoId" value="${id}">
 
                     <button type="button" id="registrarSalida" class="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 text-sm font-medium">
-                        Registrar Salida Parcial
+                        Registrar Salida
                     </button>
                 </form>
             </div>`,
@@ -1325,6 +1325,8 @@ jQuery(document).ready(function($) {
     
                 $('#registrarSalida').on('click', function(e) {
                     e.preventDefault();
+                    const $button = $(this);
+                    $button.prop('disabled', true).text('Procesando...');
                 
                     const productoSeleccionado = $('#producto').val();
                     const unidadMedidaSeleccionada = $('#unidadMedida').val();
@@ -1339,6 +1341,7 @@ jQuery(document).ready(function($) {
                 
                     if (!productoSeleccionado || !unidadMedidaSeleccionada || !siloSeleccionado || !cantidadIngresada || isNaN(pesoDescargado) || pesoDescargado <= 0) {
                         $('#notification').html('<div class="alert alert-warning">Debe completar todos los campos y leer un peso válido.</div>').fadeIn();
+                        $button.prop('disabled', false).text('Registrar Salida');
                         return;
                     }
                 
@@ -1364,7 +1367,7 @@ jQuery(document).ready(function($) {
                             $('#producto option:selected').remove();
                             $('#cantidad').val('');
                             $('#pesoBrutoCaso1').val('');
-    
+                
                             if (response.status === 'pendiente') {
                                 $('#notification').html(`<div class="alert alert-success">Producto ${productoSeleccionado} registrado correctamente. Quedan productos por descargar.</div>`).fadeIn().delay(1500).fadeOut();
                             } else if (response.status === 'finalizado') {
@@ -1378,61 +1381,63 @@ jQuery(document).ready(function($) {
                                     Swal.close();
                                     cargarRegistros($('#fecha-table').val());
                                 });
-    
-                            if ($('#print').is(':checked')) {
-                                $.ajax({
-                                    url: wb_subdir + '/php/vehiculos/exitTicketData.php',  
-                                    method: 'POST',
-                                    data: { vehiculoId: id },
-                                    dataType: 'json',
-                                    success: function(response) {
-                                        if (response.status === 'success') {
-                                            const data = response.data;
-                                            
-                                            $.ajax({
-                                                url: 'http://127.0.0.1:8080/exit',  
-                                                method: 'POST',
-                                                contentType: 'application/json',
-                                                data: JSON.stringify({
-                                                    placa: data.VHP_PLACA,
-                                                    chofer: data.conductor_nombre,
-                                                    cedula: data.cedula,  
-                                                    //tipo: data.tipo,  
-                                                    destino: data.destino,  
-                                                    silo_origen: data.silo_origen,  
-                                                    peso_bruto: data.peso_bruto,
-                                                    peso_neto: data.peso_neto,
-                                                    codigo_productos: data.codigo_productos,
-                                                    producto_ingresado: data.productos,
-                                                    productos_con_silos: data.productos_con_silos,
-                                                }),
-                                                success: function(response) {
-                                                    console.log("Respuesta de salida:", response);
-                                                    $('#notification').html('<div class="alert alert-success">Salida registrada correctamente.</div>').fadeIn();
-                                                },
-                                                error: function(xhr, status, error) {
-                                                    console.error('Error al enviar los datos de salida:', error);
-                                                    $('#notification').html('<div class="alert alert-danger">Error al registrar la salida.</div>').fadeIn();
-                                                }
-                                            });
-                                        } else {
-                                            console.error('Error al obtener los datos:', response.message);
-                                            $('#notification').html('<div class="alert alert-danger">Error al obtener datos del vehículo.</div>').fadeIn();
+                
+                                if ($('#print').is(':checked')) {
+                                    $.ajax({
+                                        url: wb_subdir + '/php/vehiculos/exitTicketData.php',  
+                                        method: 'POST',
+                                        data: { vehiculoId: id },
+                                        dataType: 'json',
+                                        success: function(response) {
+                                            if (response.status === 'success') {
+                                                const data = response.data;
+                                                
+                                                $.ajax({
+                                                    url: 'http://127.0.0.1:8080/exit',  
+                                                    method: 'POST',
+                                                    contentType: 'application/json',
+                                                    data: JSON.stringify({
+                                                        placa: data.VHP_PLACA,
+                                                        chofer: data.conductor_nombre,
+                                                        cedula: data.cedula,  
+                                                        //tipo: data.tipo,  
+                                                        destino: data.destino,  
+                                                        silo_origen: data.silo_origen,  
+                                                        peso_bruto: data.peso_bruto,
+                                                        peso_neto: data.peso_neto,
+                                                        codigo_productos: data.codigo_productos,
+                                                        producto_ingresado: data.productos,
+                                                        productos_con_silos: data.productos_con_silos,
+                                                    }),
+                                                    success: function(response) {
+                                                        console.log("Respuesta de salida:", response);
+                                                        $('#notification').html('<div class="alert alert-success">Salida registrada correctamente.</div>').fadeIn();
+                                                    },
+                                                    error: function(xhr, status, error) {
+                                                        console.error('Error al enviar los datos de salida:', error);
+                                                        $('#notification').html('<div class="alert alert-danger">Error al registrar la salida.</div>').fadeIn();
+                                                    }
+                                                });
+                                            } else {
+                                                console.error('Error al obtener los datos:', response.message);
+                                                $('#notification').html('<div class="alert alert-danger">Error al obtener datos del vehículo.</div>').fadeIn();
+                                            }
+                                        },
+                                        error: function(xhr, status, error) {
+                                            console.error('Error en la solicitud AJAX:', error);
+                                            $('#notification').html('<div class="alert alert-danger">Hubo un problema al obtener los datos de salida.</div>').fadeIn();
                                         }
-                                    },
-                                    error: function(xhr, status, error) {
-                                        console.error('Error en la solicitud AJAX:', error);
-                                        $('#notification').html('<div class="alert alert-danger">Hubo un problema al obtener los datos de salida.</div>').fadeIn();
-                                    }
-                                });
+                                    });
+                                }
                             }
-                            }
+                            $button.prop('disabled', false).text('Registrar Salida');
                         },
                         error: function() {
                             $('#notification').html('<div class="alert alert-danger">Ocurrió un error al registrar la salida</div>').fadeIn();
+                            $button.prop('disabled', false).text('Registrar Salida');
                         }
                     });
-                });                  
+                });                                  
             }
         });
     }
@@ -1687,84 +1692,70 @@ jQuery(document).ready(function($) {
     
                 $("#formSalidaCaso2").off("submit").on("submit", function (e) {
                     e.preventDefault();
-
+                    const $button = $(this).find('button[type="submit"]');
+                    $button.prop('disabled', true).text('Procesando...');
+                
                     const tipoSalida = $(".tipo-salida:checked").attr("id");
                     const pesoBruto = $("#pesoBrutoCaso2").val();
                     const productosSeleccionados = $("#multipleProductSelectCaso2").val() || [];
                     const precintos = $("#multiplePrecintosCaso2").val() || [];
                     const destino = $("#destinoCaso2").val();
                     const observaciones = $("#observacionesCaso2").val();
-    
+                
                     if (!pesoBruto || pesoBruto <= 0) {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
                             text: "Debe ingresar un peso bruto válido.",
                         });
+                        $button.prop('disabled', false).text('Registrar Salida');
                         return;
                     }
-    
+                
                     if ((tipoSalida === "despachoMateriaPrimaCaso2" || tipoSalida === "despachoProductoTerminadoCaso2") && productosSeleccionados.length === 0) {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
                             text: "Debe seleccionar al menos un producto.",
                         });
+                        $button.prop('disabled', false).text('Registrar Salida');
                         return;
                     }
-    
+                
                     if (tipoSalida === "despachoProductoTerminadoCaso2" && precintos.length === 0) {
                         Swal.fire({
                             icon: "error",
                             title: "Error",
                             text: "Debe ingresar al menos un precinto.",
                         });
+                        $button.prop('disabled', false).text('Registrar Salida');
                         return;
                     }
-    
+                
                     const productosPesos = {};
                     $("#productosPesosCaso2")
                         .find("div[id^='peso_']")
                         .each(function () {
                             const productoId = $(this).attr("id").replace("peso_", "");
                             const peso = $(this).find("input[name^='peso_']").val();
-                            //const cantidad = $(this).find("input[name^='cantidad_']").val();
                             const unidad = $(this).find("select[name^='unidad_']").val();
-
+                
                             if (!peso || peso <= 0) {
                                 Swal.fire({
                                     icon: "error",
                                     title: "Error",
                                     text: `Debe ingresar un peso válido para el producto ${productoId}.`,
                                 });
+                                $button.prop('disabled', false).text('Registrar Salida');
                                 return false;
                             }
-
-                            // if (!cantidad || cantidad <= 0) {
-                            //     Swal.fire({
-                            //         icon: "error",
-                            //         title: "Error",
-                            //         text: `Debe ingresar una cantidad válida para el producto ${productoId}.`,
-                            //     });
-                            //     return false;
-                            // }
-
-                            // if (!unidad) {
-                            //     Swal.fire({
-                            //         icon: "error",
-                            //         title: "Error",
-                            //         text: `Debe seleccionar una unidad válida para el producto ${productoId}.`,
-                            //     });
-                            //     return false;
-                            // }
-
+                
                             productosPesos[productoId] = {
                                 peso: parseFloat(peso),
-                                //cantidad: parseInt(cantidad, 10),
                                 unidad: unidad,
                             };
                         });
-                        
+                
                     const data = {
                         vehiculoId: id,
                         tipoSalida,
@@ -1775,7 +1766,7 @@ jQuery(document).ready(function($) {
                         precintos,
                         observaciones,
                     };
-    
+                
                     $.ajax({
                         url: wb_subdir + "/php/vehiculos/saveVehicleExitCase2.php",
                         method: "POST",
@@ -1834,6 +1825,7 @@ jQuery(document).ready(function($) {
                                 }
                                 cargarRegistros($("#fecha-table").val());
                             });
+                            $button.prop('disabled', false).text('Registrar Salida');
                         },
                         error: function (xhr, status, error) {
                             console.error('Error al registrar la salida:', error);
@@ -1842,9 +1834,10 @@ jQuery(document).ready(function($) {
                                 title: "Error",
                                 text: "Ocurrió un error al registrar la salida.",
                             });
+                            $button.prop('disabled', false).text('Registrar Salida');
                         }
-                    });                    
-                });
+                    });
+                });                
             },
         });
     }
@@ -2136,18 +2129,40 @@ jQuery(document).ready(function($) {
 
     $('#entryForm').on('submit', function(e) {
         e.preventDefault();
-
+    
         $(this).find('button[type="submit"]').prop('disabled', true);
     
         let caso = $('#product-entry').is(':checked') ? 0 : ($('#multiple-products').is(':checked') ? 1 : 2);
     
         if (!$('#plate').val() || !$('#driverName').val() || !$('#driver').val() || !$('#plateType').val() ||
-            !$('#entryWeight').val() || !$('#fecha-form').val() || !$('#multipleProductSelect').val() || 
+            !$('#entryWeight').val() || !$('#fecha-form').val() || 
             (!$('#product-entry').is(':checked') && !$('#multiple-products').is(':checked') && caso !== 2)) {
     
             Swal.fire({
                 icon: 'warning',
                 title: 'Por favor completa todos los campos obligatorios',
+                confirmButtonColor: '#053684',
+                showConfirmButton: true
+            });
+            $('#entryForm').find('button[type="submit"]').prop('disabled', false);
+            return;
+        }
+    
+        if (caso === 0 && !$('#productSelect').val()) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Debe seleccionar al menos un producto',
+                confirmButtonColor: '#053684',
+                showConfirmButton: true
+            });
+            $('#entryForm').find('button[type="submit"]').prop('disabled', false);
+            return;
+        }
+    
+        if (caso === 1 && $('#multipleProductSelect').val().length < 2) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Debe seleccionar al menos dos productos',
                 confirmButtonColor: '#053684',
                 showConfirmButton: true
             });
@@ -2178,22 +2193,21 @@ jQuery(document).ready(function($) {
             data.codigo_productos = 'Vacío'; 
             data.producto_ingresado = 'Vacío'; 
         }
-
+    
         Swal.fire({
             title: 'Registrando',
-            //text: 'Cargando',
             didOpen: () => {
-                  Swal.showLoading(); 
+                Swal.showLoading(); 
             },
             showClass: {
-               popup: `animate__animated animate__fadeInUp animate__faster`
+                popup: 'animate__animated animate__fadeInUp animate__faster'
             },
             hideClass: {
-                popup: `animate__animated animate__fadeOutDown animate__faster`
+                popup: 'animate__animated animate__fadeOutDown animate__faster'
             },
             allowOutsideClick: false,
             allowEscapeKey: false,
-             showConfirmButton: false
+            showConfirmButton: false
         });
     
         $.ajax({
@@ -2258,8 +2272,7 @@ jQuery(document).ready(function($) {
             },
             complete: function() {
                 $('#entryForm').find('button[type="submit"]').prop('disabled', false);
-                //Swal.close();
             }
         });
-    });    
+    });        
 });
