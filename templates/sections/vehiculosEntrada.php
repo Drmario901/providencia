@@ -14,8 +14,8 @@
         require_lib_js('tailwind/tailwind.js');
         require_lib_js('sweetalert2/sweetalert2.all.min.js');
         require_lib_css('sweetalert2/sweetalert2.min.css');
-        require_lib_css('simple-datatables/style.css');
-        require_lib_css('datatables/datatable-tailwind.css');
+        // require_lib_css('simple-datatables/style.css');
+        // require_lib_css('datatables/datatable-tailwind.css');
         require_lib_css('animate-css/animate-css.css');
         require_lib_js('jquery/jquery.min.js');
         require_lib_js('simple-datatables/simple-datatables.js');
