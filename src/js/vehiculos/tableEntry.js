@@ -908,7 +908,7 @@ jQuery(document).ready(function($) {
                     $button.html('<i data-lucide="loader" class="lucide animate-spin mr-2"></i> Leyendo...').prop('disabled', true);
     
                     $.ajax({
-                        url: 'http://127.0.0.1:8081/index',
+                        url: 'http://127.0.0.1:8080/index',
                         contentType: 'application/json',
                         data: JSON.stringify({port_name: port_number}),
                         method: 'POST',
@@ -1001,7 +1001,7 @@ jQuery(document).ready(function($) {
                                                 const data = response.data;
                 
                                                 $.ajax({
-                                                    url: 'http://127.0.0.1:8080/exit',
+                                                    url: 'http://127.0.0.1:8081/exit',
                                                     method: 'POST',
                                                     contentType: 'application/json',
                                                     data: JSON.stringify({
