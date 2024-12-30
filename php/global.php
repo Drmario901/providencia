@@ -47,6 +47,12 @@
     function require_css_cdn(string $cdn_css_url){
         echo "<link rel='stylesheet' href='$cdn_css_url'>";
     }
+
+    function require_tailwind(){
+        global $wb_subdir;
+        echo "<link rel='stylesheet' href='/$wb_subdir/src/output.css'>";
+    }
+    
     /**
      * Importa un script partiendo de la carpeta '/src/_lib/'
      * @param $dir La dirección del archivo js. Por ejemplo, si vale 'bootstrap/js/bootstrap.js', apunta hacia '/src/_lib/bootstrap/js/bootstrap.js'

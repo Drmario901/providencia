@@ -11,7 +11,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Serviaves - Almacenes</title>
     <?php
-        require_lib_js('tailwind/tailwind.js');
+        // require_lib_js('tailwind/tailwind.js');
+        require_tailwind();
         require_lib_js('sweetalert2/sweetalert2.all.min.js');
         require_lib_css('sweetalert2/sweetalert2.min.css');
         require_lib_css('simple-datatables/style.css');

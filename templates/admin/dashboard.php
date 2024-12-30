@@ -10,14 +10,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard - Serviaves</title>
 <?php
-    require_lib_js('tailwind/tailwind.js');
+    //require_lib_js('tailwind/tailwind.js');
+    require_tailwind();
     require_lib_js('sweetalert2/sweetalert2.all.min.js');
     require_lib_css('sweetalert2/sweetalert2.min.css');
     require_lib_js('jquery/jquery.min.js');
     require_lib_js('chart.js/chart.js');
     require_js('global.js');
     echo $favicon;
-    echo $disable; 
+    //echo $disable; 
 ?> 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
