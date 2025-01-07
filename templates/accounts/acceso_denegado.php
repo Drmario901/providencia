@@ -1,6 +1,7 @@
 <?php
     require_tailwind();
     global $wb_subdir;
+    //hola
 ?>
 <div class="min-h-screen flex justify-center items-center bg-gray-200">
     <div class="w-11/12 max-w-md p-5 bg-white shadow-lg rounded-lg">
