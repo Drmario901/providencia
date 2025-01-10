@@ -45,7 +45,7 @@ use React\MySQL\Factory as MySQLFactory;
 
 $host = $db_host;
 $user = $db_usuario;
-$password = $db_contrasena;
+$password = rawurlencode($db_contrasena);
 $dbname = 'serviaves';
 
 $loop = Factory::create();
