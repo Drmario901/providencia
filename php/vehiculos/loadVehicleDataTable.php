@@ -47,9 +47,11 @@ $host = $db_host;
 $user = $db_usuario;
 $password = rawurlencode($db_contrasena);
 $dbname = 'serviaves';
+$puerto = $port;
 
 $loop = Factory::create();
-$mysql = (new MySQLFactory($loop))->createLazyConnection("{$user}:{$password}@{$host}/{$dbname}");
+// $mysql = (new MySQLFactory($loop))->createLazyConnection("{$user}:{$password}@{$host}/{$dbname}");
+$mysql = (new MySQLFactory($loop))->createLazyConnection("{$user}:{$password}@{$host}:{$puerto}/{$dbname}");
 
 $fecha = isset($_POST['fecha']) && !empty($_POST['fecha']) ? $_POST['fecha'] : null;
 $fecha_inicio = isset($_POST['startDate']) && !empty($_POST['startDate']) ? $_POST['startDate'] : null;
