@@ -20,7 +20,7 @@
     echo $favicon;
     //echo $disable; 
 ?> 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   </head>
   <?php
     //SPINNER
