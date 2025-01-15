@@ -40,15 +40,18 @@ try {
 
     switch ($tipoDocumento) {
         case 'NRE':
-            $response['redirectUrl'] = "/providencia/vehiculos/documentos/recepcion?vehiculoId=$vehiculoId";
-            break;
+            // $response['redirectUrl'] = "/providencia/vehiculos/documentos/recepcion?vehiculoId=$vehiculoId";
+            $response['redirectUrl'] = "http://api-serviaves.zapto.org/providencia/vehiculos/documentos/recepcion?vehiculoId=$vehiculoId";
+             break;
 
         case 'NEN':
-            $response['redirectUrl'] = "/providencia/vehiculos/documentos/despacho?vehiculoId=$vehiculoId";
+            // $response['redirectUrl'] = "/providencia/vehiculos/documentos/despacho?vehiculoId=$vehiculoId";
+            $response['redirectUrl'] = "http://api-serviaves.zapto.org/providencia/vehiculos/documentos/despacho?vehiculoId=$vehiculoId";
             break;
         
         case 'NPT':
-            $response['redirectUrl'] = "/providencia/vehiculos/documentos/producto_terminado?vehiculoId=$vehiculoId";
+            // $response['redirectUrl'] = "/providencia/vehiculos/documentos/producto_terminado?vehiculoId=$vehiculoId";
+            $response['redirectUrl'] = "http://api-serviaves.zapto.org/providencia/vehiculos/documentos/producto_terminado?vehiculoId=$vehiculoId";
             break;
 
         default:
