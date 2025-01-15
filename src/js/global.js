@@ -73,7 +73,8 @@ document.addEventListener('DOMContentLoaded', function () {
 jQuery(document).ready(function($) {
     $('#logout-btn').on('click', function() {
         let userId = $(this).data('id'); 
-        
+        let fullUrl = window.location.href; 
+
         Swal.fire({
             title: '¿Estás seguro de que quieres cerrar sesión?',
             text: "Se cerrará la sesión de este usuario.",
@@ -88,7 +89,7 @@ jQuery(document).ready(function($) {
                 $.ajax({
                     url: wb_subdir + '/php/logout.php', 
                     type: 'POST',
-                    data: { id: userId },
+                    data: { id: userId, fullUrl: fullUrl }, 
                     success: function(response) {
                         Swal.fire({
                             title: 'Sesión cerrada',

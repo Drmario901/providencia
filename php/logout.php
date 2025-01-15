@@ -8,8 +8,8 @@
     session_start();
     session_unset();
     session_write_close();
-    
-    $domain = $_SERVER['HTTP_HOST'];
-    header("Location: https://$domain/index/");
+
+    $fullUrl = isset($_POST['fullUrl']) ? $_POST['fullUrl'] : '';
+    header("Location: " . $fullUrl);
 
 ?>
