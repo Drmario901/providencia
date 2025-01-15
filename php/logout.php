@@ -9,7 +9,7 @@
     session_unset();
     session_write_close();
 
-    header("Location: ../index.php");
+    header("Location: ../index/");
 
 
 ?>
