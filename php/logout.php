@@ -8,8 +8,8 @@
     session_start();
     session_unset();
     session_write_close();
-
-    header("Location: /index/");
-
+    
+    $domain = $_SERVER['HTTP_HOST'];
+    header("Location: https://$domain/index/");
 
 ?>
